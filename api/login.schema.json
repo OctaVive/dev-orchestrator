@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.dev-orchestrator.invalid/v1/login.schema.json",
+  "title": "Password login or bootstrap credentials; no role or session claims",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["username", "password"],
+  "properties": {
+    "username": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"},
+    "password": {"type": "string", "minLength": 1, "maxLength": 1024, "pattern": "^[^\\x00]*$"}
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.dev-orchestrator.invalid/v1/deployment.schema.json",
+  "title": "Untrusted deployment intent; authorization and policy checks still required",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "app_id", "repository_url", "branch", "deployment_type", "config_path", "build_context"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "app_id": {"$ref": "common.schema.json#/$defs/id"},
+    "repository_url": {"type": "string", "minLength": 12, "maxLength": 2048, "pattern": "^https://[^\\s]+$"},
+    "branch": {"type": "string", "minLength": 1, "maxLength": 255},
+    "deployment_type": {"enum": ["dockerfile", "compose"]},
+    "config_path": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"},
+    "build_context": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$"},
+    "environment": {"$ref": "common.schema.json#/$defs/environment"},
+    "volumes": {"$ref": "common.schema.json#/$defs/mounts"}
+  }
+}

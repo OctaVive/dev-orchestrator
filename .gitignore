@@ -1,0 +1,10 @@
+/bin/
+/coverage.out
+/coverage.html
+*.test
+.env
+.env.*
+!.env.example
+/data/
+/web/node_modules/
+/web/dist/

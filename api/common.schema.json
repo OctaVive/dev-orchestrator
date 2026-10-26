@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.dev-orchestrator.invalid/v1/common.schema.json",
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 63, "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"},
+    "environment": {
+      "type": "object", "maxProperties": 32,
+      "propertyNames": {"pattern": "^[A-Za-z_][A-Za-z0-9_]{0,63}$"},
+      "additionalProperties": {"type": "string", "maxLength": 4096, "pattern": "^[^\\x00]*$"}
+    },
+    "mount": {
+      "type": "object", "additionalProperties": false,
+      "required": ["volume_id", "target", "read_only"],
+      "properties": {
+        "volume_id": {"$ref": "#/$defs/id"},
+        "target": {"type": "string", "maxLength": 128, "pattern": "^/data(/[a-zA-Z0-9_-]+)*$"},
+        "read_only": {"type": "boolean"}
+      }
+    },
+    "mounts": {"type": "array", "maxItems": 8, "items": {"$ref": "#/$defs/mount"}},
+    "resources": {
+      "type": "object", "additionalProperties": false,
+      "required": ["cpu_millis", "memory_bytes", "pids", "tmp_bytes", "writable_bytes", "log_bytes"],
+      "properties": {
+        "cpu_millis": {"type": "integer", "minimum": 100, "maximum": 4000},
+        "memory_bytes": {"type": "integer", "minimum": 16777216, "maximum": 8589934592},
+        "pids": {"type": "integer", "minimum": 16, "maximum": 512},
+        "tmp_bytes": {"type": "integer", "minimum": 1048576, "maximum": 268435456},
+        "writable_bytes": {"type": "integer", "minimum": 67108864, "maximum": 10737418240},
+        "log_bytes": {"type": "integer", "minimum": 1048576, "maximum": 20971520}
+      }
+    }
+  }
+}

@@ -1,0 +1,309 @@
+openapi: 3.1.0
+info:
+  title: Dev Orchestrator PH1 API
+  version: 0.2.0
+  description: >-
+    P1-M03 implements authentication, operator-only setup and admin status.
+    Deployment submit/status operations below remain design contracts and are
+    NOT implemented. No endpoint authorizes engine commands. All management
+    access requires server-side role checks and mutations require CSRF/Origin.
+servers:
+  - url: /api/v1
+security:
+  - portalSession: []
+paths:
+  /auth/csrf:
+    get:
+      operationId: getLoginChallenge
+      security: []
+      summary: Issue a five-minute signed pre-login cookie and CSRF challenge
+      responses:
+        '200':
+          description: Host-only Secure HttpOnly Strict nonce cookie; no-store JSON
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Challenge'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /auth/login:
+    post:
+      operationId: passwordLogin
+      summary: Authenticate with a fresh server-issued session cookie
+      security:
+        - loginNonce: []
+      description: >-
+        Requires exact configured Origin, TLS and signed pre-login challenge.
+        Rotates the presented previous session after success. Password-only PH1;
+        TOTP is not implemented. Max body 8 KiB. No role/session fields accepted.
+      parameters:
+        - $ref: '#/components/parameters/CSRF'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: './login.schema.json'}
+      responses:
+        '200':
+          description: Secure HttpOnly host-only session cookie; token not in JSON
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AuthSession'}
+        '400': {$ref: '#/components/responses/InvalidRequest'}
+        '401': {$ref: '#/components/responses/Unauthenticated'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '429': {$ref: '#/components/responses/Throttled'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /auth/session:
+    get:
+      operationId: getCurrentSession
+      summary: Recheck active identity, role and expiry; return session-bound CSRF
+      responses:
+        '200':
+          description: Current session, no raw token or password material
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AuthSession'}
+        '401': {$ref: '#/components/responses/Unauthenticated'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /auth/logout:
+    post:
+      operationId: logout
+      summary: Atomically revoke current server-side session and audit logout
+      parameters:
+        - $ref: '#/components/parameters/CSRF'
+      responses:
+        '204': {description: Session revoked and browser cookie expired}
+        '401': {$ref: '#/components/responses/Unauthenticated'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /admin/status:
+    get:
+      operationId: adminStatus
+      x-required-role: admin
+      summary: Authentication-only readiness indicator; deployments remain disabled
+      responses:
+        '200':
+          description: No infrastructure or secret details
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [deployment_execution_enabled]
+                properties:
+                  deployment_execution_enabled: {const: false}
+        '401': {$ref: '#/components/responses/Unauthenticated'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /setup/csrf:
+    get:
+      operationId: getOperatorSetupChallenge
+      servers:
+        - url: https://localhost:9443/api/v1
+      security: []
+      description: >-
+        Separate operator-only literal-loopback TLS listener. Never forward this
+        listener through the public proxy. Portal always returns 404 for setup.
+        Expired/disabled/completed setup returns 404.
+      responses:
+        '200':
+          description: Separate setup nonce cookie and CSRF token
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Challenge'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /setup:
+    post:
+      operationId: bootstrapFirstAdmin
+      servers:
+        - url: https://localhost:9443/api/v1
+      security:
+        - operatorToken: []
+          setupNonce: []
+      summary: Create exactly one initial admin and permanent setup audit marker
+      description: >-
+        Operator-only listener, loopback peer, exact Origin, signed setup CSRF,
+        expiring out-of-band token, strong password required. No session is
+        issued here; log in separately. Password policy: at least 15 Unicode
+        characters, at most 1024 UTF-8 bytes, nonblank, no NUL, offline common
+        password baseline denied. Expired/completed setup returns 404.
+      parameters:
+        - $ref: '#/components/parameters/CSRF'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: './login.schema.json'}
+      responses:
+        '201':
+          description: User, admin role and setup audit marker committed together
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [created]
+                properties:
+                  created: {const: true}
+        '400': {$ref: '#/components/responses/InvalidRequest'}
+        '401': {$ref: '#/components/responses/Unauthenticated'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '429': {$ref: '#/components/responses/Throttled'}
+  /apps/{app_id}/deployments:
+    parameters:
+      - $ref: '#/components/parameters/AppID'
+    post:
+      operationId: submitDeployment
+      summary: Submit an admin-authorized deployment intent
+      x-required-role: admin
+      description: >-
+        Requires a verified active admin session and valid CSRF token. The
+        body app_id must equal the path app_id. Repository origins, app/volume
+        ownership, quotas and isolation readiness are checked before enqueue.
+        An idempotency key reused with a different body returns 409. No build
+        executes synchronously in the management process. Not implemented yet.
+      parameters:
+        - $ref: '#/components/parameters/CSRF'
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: {type: string, minLength: 16, maxLength: 128, pattern: '^[A-Za-z0-9_-]+$'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './deployment.schema.json'
+      responses:
+        '202':
+          description: Persisted job, not a successful deployment
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [deployment_id, state]
+                properties:
+                  deployment_id: {$ref: './common.schema.json#/$defs/id'}
+                  state: {const: SUBMITTED}
+        '400': {$ref: '#/components/responses/InvalidRequest'}
+        '401': {$ref: '#/components/responses/Unauthenticated'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '413': {$ref: '#/components/responses/TooLarge'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /deployments/{deployment_id}:
+    get:
+      operationId: getDeployment
+      summary: Read an admin-visible deployment attempt
+      x-required-role: admin
+      parameters:
+        - name: deployment_id
+          in: path
+          required: true
+          schema: {$ref: './common.schema.json#/$defs/id'}
+      responses:
+        '200':
+          description: Persisted status, never raw credentials or engine responses
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [deployment_id, app_id, state]
+                properties:
+                  deployment_id: {$ref: './common.schema.json#/$defs/id'}
+                  app_id: {$ref: './common.schema.json#/$defs/id'}
+                  state:
+                    enum: [SUBMITTED, VALIDATING, CLONING, BUILDING, SCANNING, APPROVED, DEPLOYING, HEALTH_CHECK, RUNNING, FAILED, CANCELLED, ROLLED_BACK]
+        '401': {$ref: '#/components/responses/Unauthenticated'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+components:
+  securitySchemes:
+    loginNonce:
+      type: apiKey
+      in: cookie
+      name: __Host-orch_login_nonce
+    setupNonce:
+      type: apiKey
+      in: cookie
+      name: __Host-orch_setup_nonce
+    operatorToken:
+      type: http
+      scheme: bearer
+      description: 256-bit operator token from private file; setup listener only
+    portalSession:
+      type: apiKey
+      in: cookie
+      name: __Host-portal_session
+      description: Server-side session; Secure, HttpOnly, Path=/, host-only, SameSite=Lax
+  parameters:
+    AppID:
+      name: app_id
+      in: path
+      required: true
+      schema: {$ref: './common.schema.json#/$defs/id'}
+    CSRF:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      schema: {type: string, minLength: 32, maxLength: 256}
+      description: Server-validated session-bound token; trusted Origin also required
+  schemas:
+    Challenge:
+      type: object
+      additionalProperties: false
+      required: [csrf_token]
+      properties:
+        csrf_token: {type: string, pattern: '^[0-9a-f]{64}$'}
+    AuthSession:
+      type: object
+      additionalProperties: false
+      required: [user, csrf_token, expires_at]
+      properties:
+        user:
+          type: object
+          additionalProperties: false
+          required: [id, username, role]
+          properties:
+            id: {$ref: './common.schema.json#/$defs/id'}
+            username: {type: string, maxLength: 64}
+            role: {enum: [admin, user]}
+        csrf_token: {type: string, pattern: '^[0-9a-f]{64}$'}
+        expires_at: {type: string, format: date-time}
+    Error:
+      type: object
+      additionalProperties: false
+      required: [code, message, correlation_id]
+      properties:
+        code: {type: string, maxLength: 64}
+        message: {type: string, maxLength: 256}
+        correlation_id: {type: string, maxLength: 64}
+  responses:
+    Throttled:
+      description: Temporary bounded-window rate limit; Retry-After 300 seconds
+      headers:
+        Retry-After: {schema: {type: integer, const: 300}}
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    InvalidRequest:
+      description: Invalid input, without echoing sensitive fields
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    Unauthenticated:
+      description: No valid active session
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    Forbidden:
+      description: Role or CSRF check failed
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    NotFound:
+      description: Missing or inaccessible resource; do not reveal ownership
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    Conflict:
+      description: Conflicting idempotency key or application generation
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    TooLarge:
+      description: Request exceeds 64 KiB contract body limit
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    Unavailable:
+      description: Isolation prerequisites or service unavailable; no insecure fallback
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}

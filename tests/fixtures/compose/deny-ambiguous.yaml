@@ -1,0 +1,5 @@
+services:
+  web:
+    image: example.invalid/app:latest
+    privileged: false
+    privileged: true

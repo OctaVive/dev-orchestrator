@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "app_id": "11111111-1111-4111-8111-111111111111",
+  "repository_url": "https://github.com/example/inventory.git",
+  "branch": "main",
+  "deployment_type": "dockerfile",
+  "config_path": "Dockerfile",
+  "build_context": ".",
+  "environment": {"APP_MODE": "production"},
+  "volumes": []
+}

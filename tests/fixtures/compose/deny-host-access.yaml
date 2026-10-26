@@ -1,0 +1,11 @@
+services:
+  web:
+    image: example.invalid/app:latest
+    network_mode: host
+    pid: host
+    ipc: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host
+    devices:
+      - /dev/sda:/dev/sda
