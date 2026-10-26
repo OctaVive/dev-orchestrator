@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "command_id": "33333333-3333-4333-8333-333333333333",
+  "job_id": "22222222-2222-4222-8222-222222222222",
+  "app_id": "44444444-4444-4444-8444-444444444444",
+  "deployment_id": "55555555-5555-4555-8555-555555555555",
+  "template_id": "build-linux-v1",
+  "profile_id": "build-small-v1",
+  "nonce": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "expires_at": "2030-01-01T00:05:00Z"
+}

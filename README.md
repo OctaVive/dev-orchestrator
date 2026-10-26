@@ -6,6 +6,10 @@ Security-first, self-hosted Git-to-container application portal. Administrators 
 
 **PH1 in progress: P1-M01 contracts, P1-M02 SQLite persistence and P1-M03 authentication API.** A TLS-only JSON API can now be run explicitly; there is no GUI or working deployment platform yet. No Docker integration, repository execution, Git cloning or VM provisioning exists.
 
+**P1-M04 core added; real KVM gate pending.** Separate provisioner lease journal, controller-only mTLS and lifecycle tests exist. The shipped provisioner backend is intentionally unconfigured: no VM execution, simulated success or unsafe fallback is available. See [build provisioner status](docs/implementation/build-provisioner.md).
+
+Testing after cloning onto a Debian-based Linux VM: [M04 check-off test plan](docs/testing/P1-M04-linux-checklist.md).
+
 Implemented:
 
 - Versioned deployment-request and runtime-agent JSON Schema contracts.
@@ -18,6 +22,7 @@ Implemented:
 - Real database concurrency, failure rollback and subprocess crash-recovery tests.
 - Separate operator-only first-admin setup, Argon2id passwords, hashed server-side sessions, CSRF, rate limits and backend role checks.
 - TLS-only API entrypoint (`cmd/api`) and real local HTTPS authentication tests.
+- Independent fixed-template build-lease contract, replay/idempotency ledger, expiry/cleanup state machine and mTLS service boundary (test-only VM simulator; no real backend).
 
 Not implemented: full TOTP/user/ACL administration, existing-data migration upgrades/backup workflow, agent signature verification/replay storage, Compose parsing, Git/network isolation, image scanning, Docker execution, UI and application proxy. API authentication is **not application gateway authorization, SSRF protection or proof of runtime isolation**. No real deployment is enabled.
 

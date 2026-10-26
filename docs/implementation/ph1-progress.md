@@ -113,6 +113,40 @@ No Linux runtime/permission/race-detector result, comprehensive breached-passwor
 
 Credentials decoder fuzz smoke: PASS, 22,042 executions with a 10-second budget and two workers. This is bounded regression evidence, not proof of complete parser/DoS correctness.
 
-### Next task: P1-M04
+## P1-M04 — provisioner lease/mTLS core (PARTIAL)
 
-Implement fixed-template build VM provisioner contracts/lifecycle with hard expiry and cleanup. Actual KVM validation requires an operator-approved Linux lab/hardware decision (Q01); Windows unit tests cannot establish that security boundary. M05 external egress controls and M06 controlled cloning must pass before accepting real repository builds. P1-M08 Compose normalization can proceed independently, but no unsafe fallback may execute repository Compose directly.
+Status: core implemented; real Linux backend and guest-create/destroy/expiry acceptance **not completed**. See [build provisioner implementation and remaining gates](build-provisioner.md). No VM, service installation, image download, hypervisor command or network change was performed.
+
+### Deliverables
+
+- `api/build-lease.schema.json`, `api/provisioner.openapi.yaml`: bounded controller-only protocol; fixed template/profile IDs, immutable ≤30-minute deadline, no XML/path/network/shell/credential input.
+- `internal/provisioner`: separate host-private SQLite namespace/schema/checksum, one-slot reservation, immutable identity/deadline/tombstones, command/nonce replay prevention, transactional versioned lifecycle events and ownership proof kept off the wire.
+- Cleanup/expiry/restart reconciliation and independent guard loop; capacity retained on failure or partial cleanup. A fresh guard heartbeat and every backend enforcement control are required before admission.
+- `internal/provisionerrpc`: real TLS 1.3 mutual auth, explicit client CA, pinned short-lived controller leaf, exact URI SAN and per-request expiry checks; no portal cookie/Origin/identity-header fallback.
+- `cmd/provisioner`: loopback-only contract prototype. **Only UnconfiguredBackend is linked**, no simulator/unsafe fallback flag. Capabilities report false; create returns 503; unsupported guard does not claim readiness.
+- Tests: actual SQLite and local mTLS; test-only simulated VM state for idempotency, quota specification, expiry, cleanup failures, cancellation/late-start fencing, foreign resource protection and interrupted-startup reconciliation. The simulator is not linked into production.
+
+### Acceptance still blocked
+
+The driver does not implement KVM/libvirt, pinned image measurement, host quotas, broker/disconnected networking, a host-monotonic hard kill or real late-start fencing. No mock result proves those controls. Real build execution is deliberately unavailable, and P1-M04 must not be marked complete based on these tests.
+
+### Verification of the implemented core
+
+Executed with portable Go 1.27.3 on Windows:
+
+| Check | Result |
+|---|---|
+| Full uncached test suite with coverage | PASS: provisioner core 77.6%, provisioner mTLS 70.6%, prototype command 47.6%, contracts 90.4%; previous auth/storage/API regression tests also pass |
+| Late-start/cancellation/concurrent-create model tests, `-count=20` | PASS; these use test-only simulated VM maps, not real guests |
+| Real local mTLS tests | PASS: missing/untrusted/expired clients rejected, pinned worker URI denied, unpinned controller denied, reused connection expiry rechecked; shipped backend create remains 503 |
+| Build-lease decoder fuzz, 10 s / two workers | PASS, 279,950 executions; bounded smoke evidence only |
+| `go vet ./...` | PASS |
+| `go mod verify` | PASS; no new dependencies introduced |
+| Linux amd64 CGO-disabled cross-compilation | PASS, not Linux runtime execution |
+| Local Markdown links | PASS, zero broken links |
+
+No actual KVM, host firewall/quota, independent kernel timer, Linux permissions or race-detector result is claimed. No VM image, production credential, service installation or host network setting was created/changed.
+
+### Next work: finish P1-M04 on an approved Linux lab
+
+Resolve Q01/Q05 (Linux host, virtualization, resources and quota/network mechanisms), then implement/review the fixed Linux backend and independent host deadline/fence. Record actual guest create/destroy, resource exhaustion, controller/provisioner/guard loss and expired-lease inventory evidence before linking it into the executable. Start with no-NIC test guests; M05 must separately prove controlled egress before M06/M07 real repository cloning/building. P1-M08 policy work remains independently implementable without enabling execution.

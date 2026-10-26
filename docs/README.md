@@ -54,7 +54,9 @@ The initial planning tree was staged under `C:\Users\mitchel\.opencode\plan` whi
 - [PH1 capability and evidence checklist](implementation/ph1-capability-checklist.md)
 - [SQLite storage and migration contract](implementation/sqlite-storage.md)
 - [Authentication API and operator setup](implementation/auth-core.md)
+- [Build provisioner core and remaining Linux gates](implementation/build-provisioner.md)
+- [M04 Debian-based Linux VM check-off test plan](testing/P1-M04-linux-checklist.md)
 - [Open questions](decisions/open-questions.md)
 - [Exception policy](decisions/security-exceptions.md)
 
-This index lists 42 supporting documents (43 files including this index). **P1-M01–P1-M03** implementation has started following explicit authorization outside Plan mode. Mandatory gate: prove isolated VM provisioning and egress controls before accepting real repositories.
+This index lists 44 supporting documents (45 files including this index). **P1-M01–P1-M03** have implemented foundations; **P1-M04 is partial** (lease/mTLS core, no real VM backend or completed KVM acceptance gate). Mandatory gate: prove isolated VM provisioning and egress controls before accepting real repositories.

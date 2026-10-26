@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.dev-orchestrator.invalid/v1/build-lease.schema.json",
+  "title": "Controller-only bounded build VM intent; never arbitrary host configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "command_id", "job_id", "app_id", "deployment_id", "template_id", "profile_id", "nonce", "expires_at"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "command_id": {"$ref": "common.schema.json#/$defs/id"},
+    "job_id": {"$ref": "common.schema.json#/$defs/id"},
+    "app_id": {"$ref": "common.schema.json#/$defs/id"},
+    "deployment_id": {"$ref": "common.schema.json#/$defs/id"},
+    "template_id": {"$ref": "common.schema.json#/$defs/name"},
+    "profile_id": {"const": "build-small-v1"},
+    "nonce": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "expires_at": {"type": "string", "format": "date-time", "maxLength": 35}
+  }
+}

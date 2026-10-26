@@ -1,12 +1,12 @@
 # PH1 capability and security evidence checklist
 
-P1-M01–P1-M03 inventory. A checked contract/storage/auth assertion is not an infrastructure guarantee. No real repositories, containers or VMs have been executed by these increments; auth tests use temporary local TLS listeners only.
+P1-M01–P1-M04-core inventory. A checked contract/storage/auth/lifecycle assertion is not an infrastructure guarantee. No real repositories, containers or VMs have been executed; transport tests use temporary local TLS/mTLS listeners only. P1-M04's real KVM backend/acceptance remains pending.
 
 ## Required isolation capabilities (all pending)
 
 | Capability | External evidence needed | Task / release behavior |
 |---|---|---|
-| Linux KVM and fixed clean template | Actual guest boot, pinned template, no host shares | P1-M04; block builds if unavailable |
+| Linux KVM and fixed clean template | Actual guest boot, measured pinned template, no host shares; only the ID/digest/profile contract exists so far | P1-M04 still partial; shipped backend always blocks builds |
 | Host-enforced CPU/RAM/disk/time budget | Exhaust guest, management stays operable, hard expiry works | M04/M07; no local-build fallback |
 | Build egress broker only | Packet capture/probes for direct IP/DNS/IPv6/metadata/host reachability | M05; block real Git builds |
 | Rebinding/redirect/dependency isolation | Live malicious resolver and dependency fixtures | M05/M06; URL validation insufficient |
@@ -14,9 +14,9 @@ P1-M01–P1-M03 inventory. A checked contract/storage/auth assertion is not an i
 | Rootless cgroup/MAC/seccomp support | Engine inspection and resource attack fixtures | M09; refuse unsupported profile |
 | App-private network and no host ports | Cross-app/host scans plus relay connectivity | M09/M11; private engine alone insufficient |
 | Volume quotas/ownership | Wrong-app attach denied, symlink race and quota exhaustion | M10; named volumes alone insufficient |
-| mTLS + command signature/replay ledger | Wrong identities/keys, expired commands, restart replay tests | M04/M09; shape-only envelopes cannot execute |
+| mTLS + command signature/replay ledger | M04 controller mTLS/URI/pin/expiry and durable command/nonce checks tested; runtime signature ledger and real host adapter still pending | M04 Linux gate/M09; neither shape-only runtime envelopes nor model tests authorize execution |
 | Authenticated gateway | Direct URL, HTTP/WS/stream auth, forged header and outage tests | M03/M11; fail closed |
-| Cleanup independent of API | Hard-expired guest gone; orphan sweep and inventory | M04/M12; retain reservation on uncertain cleanup |
+| Cleanup independent of API | Lease sweep/independent guard logic, simulated interruption and failure retention tested; actual externally killed guest/inventory evidence absent | M04 remains pending/M12; retain reservation on uncertain cleanup |
 
 ## Requirement-to-test map
 
@@ -29,10 +29,10 @@ P1-M01–P1-M03 inventory. A checked contract/storage/auth assertion is not an i
 | SEC-05 no management socket | No engine integration; architectural restriction | M09 process/mount inventory |
 | SEC-06 Compose dangerous fields | Agent-spec unknown fields rejected, YAML is unparsed | M08 strict Compose parser + agent policy |
 | SEC-07 SSRF/egress | Lexical URL protocol/path tests only | M05/M06 external enforcement |
-| SEC-08 resource limits | Schema requires bounded resource data | M04/M07/M09 actual enforcement |
+| SEC-08 resource limits | Fixed build profile and admission gates tested; no real host quota enforcement yet | M04/M07/M09 actual enforcement |
 | SEC-09 volume/credential isolation | Mount shape/nonoverlap tests only | M10 ownership/quota/storage proof |
 | SEC-10 secrets absent from logs | Decoder/auth errors sanitized; password hashes/token hashes verified in DB; auth audit contains no request secrets; raw session token only in secure cookie | Remaining M04–M14 logging/build output paths |
-| SEC-11 cleanup | No execution resources created | M04/M12 actual timeout/crash inventory |
+| SEC-11 cleanup | Actual lease DB with test-only VM model exercises expiry/retry/failure reservation; no real execution resources created | M04/M12 actual timeout/crash inventory |
 | SEC-12 timed revoke | Logout/disabled account/auth epoch/current roles enforced on next management request; DB outage denies | App gateway/WS/SSE timed lease closure in PH2/PH3 |
 | SEC-13 proxy rollback | Not implemented | M11 |
 | SEC-14 backup restore | DB integrity/reopen and abrupt-process WAL recovery tests; not backup/restore | M14 smoke; PH5 complete drill; existing-data upgrades blocked pending backup workflow |

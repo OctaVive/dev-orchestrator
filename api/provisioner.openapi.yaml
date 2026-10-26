@@ -1,0 +1,160 @@
+openapi: 3.1.0
+info:
+  title: Independent build provisioner contract
+  version: 0.1.0
+  description: >-
+    P1-M04 core only. The shipped backend cannot execute VMs; valid create
+    requests return 503 until a verified Linux backend exists. This API is not
+    part of the portal and never accepts browser cookies, Origin, host paths,
+    XML, shell commands or caller-selected controller identities.
+servers:
+  - url: https://localhost:9444/internal/v1
+security:
+  - controllerMTLS: []
+paths:
+  /capabilities:
+    get:
+      operationId: provisionerCapabilities
+      responses:
+        '200':
+          description: Controls plus watchdog freshness; shipped execution_enabled is false
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [execution_enabled, controls, guard_fresh]
+                properties:
+                  execution_enabled: {type: boolean}
+                  guard_fresh: {type: boolean}
+                  controls:
+                    type: object
+                    additionalProperties: false
+                    required: [pinned_template, kvm_isolation, external_quotas, isolated_network, host_deadline, late_start_fence, ownership_checks, confirmed_cleanup]
+                    properties:
+                      pinned_template: {type: boolean}
+                      kvm_isolation: {type: boolean}
+                      external_quotas: {type: boolean}
+                      isolated_network: {type: boolean}
+                      host_deadline: {type: boolean}
+                      late_start_fence: {type: boolean}
+                      ownership_checks: {type: boolean}
+                      confirmed_cleanup: {type: boolean}
+        '403': {$ref: '#/components/responses/Denied'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /build-leases:
+    post:
+      operationId: reserveBuildVM
+      description: >-
+        Body limit 16 KiB. Expiry is future, immutable and at most 30 minutes
+        ahead. Caller identity comes only from a verified pinned controller
+        certificate. Same command/fingerprint is idempotent, never renews TTL.
+        Current binary always denies execution; 201 is reserved for a future
+        verified backend, not a fake/simulated success.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: './build-lease.schema.json'}
+      responses:
+        '201': {$ref: '#/components/responses/Lease'}
+        '200': {$ref: '#/components/responses/Lease'}
+        '400': {$ref: '#/components/responses/Invalid'}
+        '403': {$ref: '#/components/responses/Denied'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '413': {description: Body exceeds 16 KiB}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /build-leases/{job_id}:
+    parameters:
+      - $ref: '#/components/parameters/JobID'
+    get:
+      operationId: getBuildLease
+      description: Only the owning controller may read this job. No host proof/nonce/path returned.
+      responses:
+        '200': {$ref: '#/components/responses/Lease'}
+        '403': {$ref: '#/components/responses/Denied'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /build-leases/{job_id}/release:
+    parameters:
+      - $ref: '#/components/parameters/JobID'
+    post:
+      operationId: releaseBuildLease
+      description: >-
+        Only {} accepted, max 1 KiB. Idempotent, owning controller only. Cleanup
+        remains pending/failed and capacity held until VM absence, artifact
+        absence and late-start fencing are confirmed. No force-delete override.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, additionalProperties: false, maxProperties: 0}
+      responses:
+        '200': {$ref: '#/components/responses/Lease'}
+        '400': {$ref: '#/components/responses/Invalid'}
+        '403': {$ref: '#/components/responses/Denied'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+components:
+  securitySchemes:
+    controllerMTLS:
+      type: mutualTLS
+      description: >-
+        TLS 1.3; explicit client CA; exact sole URI SAN
+        spiffe://dev-orchestrator/controller/{configured-controller-UUID};
+        pinned leaf SHA-256; explicit clientAuth EKU; total validity <=24 hours;
+        validity/pin checked on every HTTP request, including reused TLS connections.
+  parameters:
+    JobID:
+      name: job_id
+      in: path
+      required: true
+      schema: {$ref: './common.schema.json#/$defs/id'}
+  schemas:
+    Lease:
+      type: object
+      additionalProperties: false
+      required: [job_id, command_id, controller_id, app_id, deployment_id, template, profile_id, state, version, reason, created_at, expires_at]
+      properties:
+        job_id: {$ref: './common.schema.json#/$defs/id'}
+        command_id: {$ref: './common.schema.json#/$defs/id'}
+        controller_id: {$ref: './common.schema.json#/$defs/id'}
+        app_id: {$ref: './common.schema.json#/$defs/id'}
+        deployment_id: {$ref: './common.schema.json#/$defs/id'}
+        template:
+          type: object
+          additionalProperties: false
+          required: [id, digest]
+          properties:
+            id: {$ref: './common.schema.json#/$defs/name'}
+            digest: {$ref: './common.schema.json#/$defs/digest'}
+        profile_id: {const: build-small-v1}
+        state: {enum: [RESERVED, STARTING, ACTIVE, CLEANUP_PENDING, CLEANUP_FAILED, CLEANED]}
+        version: {type: integer, minimum: 1}
+        reason: {enum: [requested, starting, started, released, expired, create_failed, start_timeout, clock_invalid, controls_lost, cleanup_failed, retry, cleaned]}
+        created_at: {type: string, format: date-time}
+        expires_at: {type: string, format: date-time}
+    Error:
+      type: object
+      additionalProperties: false
+      required: [code]
+      properties:
+        code: {type: string, maxLength: 64}
+  responses:
+    Lease:
+      description: Durable lease state, not proof of image build or app health
+      content: {application/json: {schema: {$ref: '#/components/schemas/Lease'}}}
+    Denied:
+      description: Invalid controller identity, authority or browser request; TLS may fail before HTTP
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    Invalid:
+      description: Invalid bounded contract or expiry
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    Conflict:
+      description: Replay, changed command or occupied build slot
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    NotFound:
+      description: Missing job or different owning controller
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    Unavailable:
+      description: Backend/guard/ledger unavailable or cleanup unconfirmed; no simulated success
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}

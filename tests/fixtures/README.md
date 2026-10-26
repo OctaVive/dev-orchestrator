@@ -7,6 +7,7 @@ These files are **test data**, not runnable examples. Never run `docker compose 
 | `contracts/dockerfile-request.json` | `internal/contracts` tests | Dockerfile intent shape accepted, typed roundtrip |
 | `contracts/compose-request.json` | Same | Compose intent shape accepted; does NOT parse Compose |
 | `contracts/agent-command.json` | Same | Envelope shape/context accepted; dummy zero signature is NOT cryptographically valid |
+| `contracts/build-lease.json` | Same / provisioner tests | Bounded fixed-template VM intent only; no host XML/path/network/secret inputs; not actual VM creation |
 | Generated contract mutations | Same | Unknown keys, unsafe types, resource omissions, host settings, malformed JSON, mount overlaps rejected |
 | `compose/review-candidate.yaml` | Future P1-M08 | Candidate two-service subset; not yet validated or approved |
 | `compose/deny-privileged.yaml` | Future P1-M08 | Must reject privileged configuration |
