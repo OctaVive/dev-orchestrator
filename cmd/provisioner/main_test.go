@@ -44,3 +44,18 @@ func TestPrivateServiceFileIsBoundedAndSanitized(t *testing.T) {
 		t.Fatal("oversized private file accepted/leaked")
 	}
 }
+
+func TestLinuxBackendRequiresExplicitValidHostConfiguration(t *testing.T) {
+	for _, args := range [][]string{
+		{"-backend", "linux-kvm", "-mode", "guard", "-ledger", filepath.Join(t.TempDir(), "leases.db")},
+		{"-linux-config", filepath.Join(t.TempDir(), "missing.json")},
+		{"-mode", "host-run", "-host-job", "../../foreign"},
+		{"-mode", "host-expire", "-host-job", "../../foreign"},
+		{"-backend", "tcg"},
+		{"-backend", "docker"},
+	} {
+		if err := run(context.Background(), args); err == nil {
+			t.Fatalf("unsafe host configuration accepted: %v", args)
+		}
+	}
+}

@@ -1,20 +1,21 @@
 # P1-M04 — build provisioner core and remaining Linux gate
 
-## Status: PARTIAL, not accepted for real builds
+## Status: Linux backend implemented; mandatory acceptance NOT RUN / NOT PASSED
 
-Linux operator checklist: [P1-M04 Debian-based Linux VM test plan](../testing/P1-M04-linux-checklist.md). It separates runnable software verification from the still-blocked real KVM acceptance cases.
+Mandatory gate: [Linux checklist](../testing/P1-M04-linux-checklist.md), [real-host execution](../testing/P1-M04-real-host.md), and [acceptance record](../testing/P1-M04-acceptance-report.md). All required tests MUST actually execute successfully before M04 is marked PASS. Cross-compilation or skipped host tests do not count.
 
-Implemented: strict fixed-template request, independent durable host lease ledger, lifecycle/cleanup manager, controller-only mTLS transport, and disabled-by-default command. **Not implemented/proven:** a real Linux KVM/libvirt backend, image artifact, kernel resource enforcement, host deadline kill/fencing or actual VM create/destroy tests. P1-M04's guest-create/destroy/expiry acceptance gate remains **open**. Never count a simulator as isolation evidence.
+Implemented: fixed-template/mTLS/ledger lifecycle plus a Debian/Linux QEMU/KVM backend, pinned raw-image copy, preallocated bounded disks, systemd CPU/memory/task limits, QEMU IO throttle, disconnected unprivileged guests, independent boot-time deadlines, durable fences, ownership/inode-checked cleanup and opt-in real-host tests. **Not proven on the Windows development host:** real Linux boot/enforcement/failure behavior. The operator supplies and reviews the credential-free boot image; no opaque image artifact is shipped. Acceptance remains open.
 
-The shipped `cmd/provisioner` hard-codes `UnconfiguredBackend`. It cannot create VMs or confirm resource cleanup and has no simulator/unsafe/backend-selection flag. Valid create requests return 503 without reserving resources. Guard mode refuses to claim readiness. Merely moving this binary to Linux does not enable it.
+The default backend remains `disabled`: create returns 503 and guard refuses readiness. Explicit `-backend linux-kvm -linux-config /var/lib/orchestrator-builder/host/backend.json` selects real execution only on a configured root-owned Linux/KVM host. Unsupported hosts/backends fail closed; no simulator/TCG/container fallback. See the [host runbook](../../infra/builder/README.md). No automatic installer or service enablement runs.
 
 ## Boundary / implemented components
 
 - `api/build-lease.schema.json`, `api/provisioner.openapi.yaml`: separate service protocol, not portal endpoints.
 - `internal/provisioner`: ledger, fixed profiles, immutable leases, replay/idempotency, lifecycle and host-local sweep/guard loop.
 - `internal/provisionerrpc`: TLS 1.3 mutual auth, explicit client CA, sole controller URI SAN, leaf pin and per-request certificate validation.
-- `cmd/provisioner`: optional **loopback-only prototype** service; separate host credential files and ledger. No shell/libvirt/Docker invocation or host network manipulation.
-- `*_test.go`: simulator-only backend plus actual SQLite and real local mTLS transport tests. Simulated VM maps never ship in the executable.
+- `cmd/provisioner`: loopback-only mTLS service, explicit backend configuration, guard and internal systemd guest/expiry entry points. No shell/libvirt/Docker invocation or guest network attachment.
+- `linux_backend_linux.go`: fixed QEMU command, systemd units/timer, private host journal and FD-only disk handoff. Direct QEMU rather than libvirt keeps the entire guest inside the owned deadline unit.
+- `*_test.go`: model/SQLite/mTLS tests plus explicitly authorized Linux real-host cases. Simulated VM maps never ship in the executable.
 
 There is no import of management auth/storage into the provisioner domain, no portal cookie authority, and no management DB mount. Shared contract schema code carries no management credentials. There is no build runner, Git fetch, cloud-init credential injection or VM template image in this increment.
 
@@ -22,11 +23,11 @@ There is no import of management auth/storage into the provisioner domain, no po
 
 Controller supplies schema version, command/job/app/deployment UUIDs, approved template ID, `build-small-v1` profile, random 256-bit nonce and absolute expiry. No controller ID claim, path, URL, XML, interface, network, shell, device, resource override or secret is accepted. Identity comes from the certificate. Template ID resolves against an operator-owned ID/digest catalog; catalog digest is part of the request fingerprint. A digest string alone is not proof that image bytes were measured.
 
-| Fixed profile control | Required future backend enforcement |
+| Fixed profile control | Linux backend enforcement (acceptance pending) |
 |---|---|
 | 2 guest vCPUs; 2000 host CPU millis | Bound the whole VM/QEMU execution group, not just vCPU count |
 | 4096 MiB guest; 4608 MiB host memory | Guest allocation plus bounded emulator overhead; no unbounded swap |
-| 10240 MiB virtual disk; 11264 MiB physical budget | Real filesystem/block quota including COW metadata; virtual image size alone insufficient |
+| 10240 MiB virtual disk; 11264 MiB physical budget | Preallocated fixed raw disk, no COW/backing chain/logs; fixed file-size ceiling; inode-verified bounded metadata. Shared immutable template is outside per-job allocation |
 | 1000 disk IOPS | External block IO throttling |
 | 128 host PIDs | Bound QEMU/helper host processes/threads |
 | 512 guest runner PIDs | Defense in depth only; malicious guest root can bypass guest-local limits |
@@ -41,7 +42,7 @@ Values are a proposed initial fixed profile, **not measured supported host capab
 
 Tables: ledger checksum/version, guard heartbeat, leases, append-only lifecycle events. Lease identity, deadline, nonce hash, fingerprint and random host ownership proof cannot be updated/deleted through ordinary SQL. Tombstones prevent job/command/nonce reuse. State and its versioned event commit together under BEGIN IMMEDIATE; no hypervisor calls occur inside DB transactions.
 
-The host proof is private and never returned by RPC or logged; a future backend must match it against VM/artifact metadata before any destructive operation. Name prefixes alone are not ownership. Ledger writes are not defense against a compromised host/database owner. Retention/encrypted backups and disaster recovery for this separate ledger are still future work; do not share the management backup file or mount it into guests.
+The host proof is private and never returned by RPC or logged. Linux matches proof-derived systemd descriptions and durable private state, plus disk device/inode/link identities before removal. Name prefixes alone are not ownership. Ledger writes are not defense against a compromised host/database owner. Retention/encrypted backups and disaster recovery for this separate ledger are still future work; do not share the management backup file or mount it into guests.
 
 ## State machine / cleanup
 
@@ -65,7 +66,7 @@ Accepted cleanup gets an independent bounded context even if the RPC/controller 
 
 Host-local sweep recovers expired jobs, startup interrupted for ≥1 minute, prior cleanup failures and invalid/lost controls. Successful sweeps refresh a heartbeat; admission requires age ≤10 seconds. Intended guard process tick is 2 seconds; normal shutdown clears readiness. Watchdog does not renew leases and has no public RPC endpoint.
 
-**A ticker/context is not a hard VM kill guarantee.** A stalled/crashed guard, inaccessible ledger, wall-clock rollback, delayed hypervisor RPC and create-versus-destroy races require real externally enforced monotonic deadlines and late-start fencing. Thus the shipped backend reports every enforcement control false. No code claims that logical lease expiry itself stops a guest. Cleanup absence/fence assertions are a future backend obligation requiring host evidence, not caller-supplied booleans.
+**A ticker/context is not a hard VM kill guarantee.** Linux records an absolute CLOCK_BOOTTIME deadline/boot ID before allocation, registers a separate PID-1 alarm timer before guest start, and runs a timerfd supervisor inside the VM's systemd lifetime unit. A frozen supervisor is killed by the independent expiry service; supervisor death triggers control-group teardown. A host-wide flock and permanent tombstones fence delayed helper starts. Cleanup requires stopped units, empty guest cgroup and verified file removal. Assertions still require real-host evidence; kernel/PID1 failure remains a residual risk.
 
 ## Controller authentication
 
@@ -77,14 +78,13 @@ Reject cookies, browser Origin and forged Host/identity headers. No CORS/browser
 
 Do not install this as a production hypervisor service yet. Optional diagnostics use `go run ./cmd/provisioner` with explicit `-ledger`, pinned `-template-digest`, `-controller-id`, public `-controller-cert-sha256`, `-client-ca`, `-tls-cert`, `-tls-key`, and exact `-authority`. Default bind is `127.0.0.1:9444`; prototype forbids non-loopback bind. Credential inputs are bounded regular files; private key Unix permissions are restricted. No services/VMs/firewall rules are installed by this code.
 
-Only an approved mTLS client can read capabilities. Expect `execution_enabled:false`; POST create must return 503. `-mode guard` returns unavailable with the shipped backend, not fake healthy heartbeats. All simulation is test-only. Portal `/api/v1/admin/status` continues to report deployment execution disabled independently.
+Only an approved mTLS client can read capabilities. Default disabled mode reports `execution_enabled:false`; explicit Linux configuration plus a fresh guard can enable guest execution. Capabilities are implementation assertions, not an M04 acceptance certificate. All simulation is test-only. Portal `/api/v1/admin/status` continues to report deployment execution disabled independently.
 
 ## Remaining P1-M04 work before acceptance
 
-1. **M04-B / host decision:** operator-approved Linux LTS KVM/libvirt lab, sufficient reserved resources, private control NIC, quota-capable storage, maintained kernel/hypervisor, and explicit permission to provision test VMs. Windows/WSL/mock execution is not evidence.
-2. **M04-C / fixed Linux backend:** pinned immutable read-only template with no host credentials; initially no NIC, shared folder, socket, vsock/agent control channel or host mount. Resolve image paths exclusively from protected host configuration. Verify image bytes, architecture, private ownership metadata and actual engine constraints. No repository-selected XML or shell strings.
-3. **M04-D / hard deadline and fencing:** independent host-monotonic kill registration before guest start, guard crash/restart behavior, late-start rejection after cancellation/expiry, safe hypervisor-call timeout handling and ownership-verified artifact/quota release. Confirm no delayed create can succeed after cleanup was acknowledged. No-op timers or simple process cancellation are not acceptable substitutes.
-4. **M04-E / real acceptance:** actual fresh guest create, external CPU/RAM/PID/disk/IO budgets, foreign-resource protection, expired lease termination after controller loss, provisioner/guard crash cases, host clock changes, partial-create cleanup and slot retention on failure. Record kernel/libvirt/template/policy versions and actual inventory evidence.
-5. Only after these pass may an executable link a real backend. M05 then adds externally verified broker-only network access; M06 controlled cloning; M07 builds. No arbitrary repositories before their gates.
+1. Approve the isolated Linux lab, host configuration, maintained hypervisor and credential-free pinned image.
+2. Execute every required software and real-host test, including workload/fault cases V01–V16, and retain actual kernel/process/storage/timing evidence. No skipped/blocked test counts as PASS.
+3. Review the exact implementation/image/policy and sign the acceptance record. **M04 MUST NOT PASS before successful execution.**
+4. Only after acceptance proceed to M05 broker-only networking, M06 cloning and M07 builds. No arbitrary repositories before those separate gates.
 
 Shared hardware/hypervisor escape, host-root compromise, denial of service, guest-root bypass of guest-local limits and SSD physical erasure remain residual risks even after implementation. This is not complete malicious-workload isolation and is not a Kubernetes scheduler.

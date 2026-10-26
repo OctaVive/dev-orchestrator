@@ -4,9 +4,9 @@ Security-first, self-hosted Git-to-container application portal. Administrators 
 
 ## Implementation status
 
-**PH1 in progress: P1-M01 contracts, P1-M02 SQLite persistence and P1-M03 authentication API.** A TLS-only JSON API can now be run explicitly; there is no GUI or working deployment platform yet. No Docker integration, repository execution, Git cloning or VM provisioning exists.
+**PH1 in progress: P1-M01 contracts, P1-M02 SQLite persistence and P1-M03 authentication API.** A TLS-only JSON API can now be run explicitly; there is no GUI or working deployment platform yet. No Docker integration, repository execution or Git cloning exists.
 
-**P1-M04 core added; real KVM gate pending.** Separate provisioner lease journal, controller-only mTLS and lifecycle tests exist. The shipped provisioner backend is intentionally unconfigured: no VM execution, simulated success or unsafe fallback is available. See [build provisioner status](docs/implementation/build-provisioner.md).
+**P1-M04 Linux backend implemented; acceptance NOT PASSED.** Explicit QEMU/KVM/systemd backend includes pinned raw images, resource limits, no-NIC guests, independent deadlines and ownership-safe cleanup. Execution defaults to disabled; no simulator or unsafe fallback. The [mandatory real-host procedure](docs/testing/P1-M04-real-host.md) **must execute successfully before M04 PASS**. See [implementation status](docs/implementation/build-provisioner.md).
 
 Testing after cloning onto a Debian-based Linux VM: [M04 check-off test plan](docs/testing/P1-M04-linux-checklist.md).
 

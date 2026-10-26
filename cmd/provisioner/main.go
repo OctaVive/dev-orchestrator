@@ -1,6 +1,5 @@
-// The provisioner executable exposes an mTLS contract, NOT VM execution yet.
-// UnconfiguredBackend is deliberately hard-coded until Linux host enforcement
-// and KVM create/destroy/expiry integration gates have been demonstrated.
+// The provisioner defaults to disabled execution. Linux KVM requires explicit
+// root-owned host configuration and mandatory separate acceptance testing.
 package main
 
 import (
@@ -46,10 +45,41 @@ func run(ctx context.Context, args []string) error {
 	keyFile := f.String("tls-key", "", "private provisioner server key PEM")
 	templateID := f.String("template-id", "build-linux-v1", "fixed operator-approved template ID")
 	templateDigest := f.String("template-digest", "", "pinned sha256 digest; not an image URL/path")
+	backendName := f.String("backend", "disabled", "disabled or linux-kvm; no fallback")
+	linuxConfig := f.String("linux-config", "", "root-owned Linux backend configuration")
+	hostJob := f.String("host-job", "", "internal systemd guest job UUID")
 	if err := f.Parse(args); err != nil {
 		return err
 	}
-	if f.NArg() != 0 || *ledgerPath == "" || (*mode != "serve" && *mode != "guard") {
+	if f.NArg() != 0 {
+		return errors.New("unexpected arguments")
+	}
+	if *mode == "host-run" {
+		return provisioner.RunLinuxGuest(ctx, *linuxConfig, *hostJob)
+	}
+	if *mode == "host-expire" {
+		return provisioner.ExpireLinuxGuest(ctx, *linuxConfig, *hostJob)
+	}
+	var backend provisioner.Backend = provisioner.UnconfiguredBackend{}
+	switch *backendName {
+	case "disabled":
+		if *linuxConfig != "" {
+			return errors.New("linux-config requires linux-kvm backend")
+		}
+	case "linux-kvm":
+		c, err := provisioner.LoadLinuxConfig(*linuxConfig)
+		if err != nil {
+			return err
+		}
+		backend, err = provisioner.NewLinuxBackend(c)
+		if err != nil {
+			return err
+		}
+		*templateID, *templateDigest = c.TemplateID, c.Digest
+	default:
+		return errors.New("unsupported backend")
+	}
+	if *ledgerPath == "" || (*mode != "serve" && *mode != "guard") {
 		return errors.New("invalid provisioner mode or missing private ledger")
 	}
 	l, err := provisioner.OpenLedger(ctx, *ledgerPath)
@@ -57,7 +87,7 @@ func run(ctx context.Context, args []string) error {
 		return err
 	}
 	defer l.Close()
-	m, err := provisioner.NewManager(l, provisioner.UnconfiguredBackend{}, provisioner.Config{Templates: []provisioner.Template{{ID: *templateID, Digest: *templateDigest}}})
+	m, err := provisioner.NewManager(l, backend, provisioner.Config{Templates: []provisioner.Template{{ID: *templateID, Digest: *templateDigest}}})
 	if err != nil {
 		return err
 	}

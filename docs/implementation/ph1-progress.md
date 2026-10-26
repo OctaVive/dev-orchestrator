@@ -115,7 +115,7 @@ Credentials decoder fuzz smoke: PASS, 22,042 executions with a 10-second budget 
 
 ## P1-M04 — provisioner lease/mTLS core (PARTIAL)
 
-Status: core implemented; real Linux backend and guest-create/destroy/expiry acceptance **not completed**. See [build provisioner implementation and remaining gates](build-provisioner.md). No VM, service installation, image download, hypervisor command or network change was performed.
+Historical foundation status (superseded by the Linux implementation increment below): core implemented; real Linux backend and guest-create/destroy/expiry acceptance not completed at this point. No VM, service installation, image download, hypervisor command or network change was performed.
 
 ### Deliverables
 
@@ -146,6 +146,23 @@ Executed with portable Go 1.27.3 on Windows:
 | Local Markdown links | PASS, zero broken links |
 
 No actual KVM, host firewall/quota, independent kernel timer, Linux permissions or race-detector result is claimed. No VM image, production credential, service installation or host network setting was created/changed.
+
+## P1-M04 — Linux execution increment
+
+Status: **Linux backend code implemented; mandatory real-host acceptance NOT RUN / NOT PASSED.**
+
+- Explicit `linux-kvm` backend, fail-closed on non-Linux/unsupported/unconfigured hosts; default disabled, no simulator/TCG/container fallback.
+- Direct QEMU under systemd instead of libvirt: fixed non-root QEMU command, no NIC/control socket/host mount, inherited raw-disk FD set and seccomp sandbox.
+- Pinned credential-free operator-supplied raw boot image (<=1 GiB), copied and measured into a preallocated 10 GiB private disk, file-size bound and total 1000 IOPS throttle; systemd CPU/RAM/swap/tasks envelope.
+- Durable root-private ownership/boot-time journals, immutable boot-ID/deadline, system-wide flock/start fencing, PID-1 absolute BOOTTIME alarm expiry plus timerfd supervisor and unit runtime cap.
+- Ownership description, file inode/device/link and empty-cgroup checks before confirmed cleanup; foreign/unknown files quarantine capacity; fences retained permanently.
+- Host example configuration and reviewed service assets/runbook in `infra/builder/`; no install/enable/image download performed by development work.
+- Opt-in real-host tests for VM lifecycle, kernel envelope, independent expiry with SIGSTOPed supervisor and foreign-disk preservation. Ordinary tests explicitly skip privileged host cases.
+- **Mandatory acceptance:** [Linux checklist](../testing/P1-M04-linux-checklist.md) + [real-host procedure](../testing/P1-M04-real-host.md) + [signed report](../testing/P1-M04-acceptance-report.md). Every required real workload/fault case must actually pass before M04 PASS. Model tests and cross-compilation are not substitutes.
+
+The Windows suite passes and Linux provisioner tests cross-compile. Linux/KVM runtime, race detector, boot-image review and real enforcement evidence remain pending. M05–M14 remain unimplemented.
+
+Verification for this increment: full uncached `go test -p 1 -count=1 ./...`, Windows and Linux-targeted `go vet ./...`, `go mod verify`, Linux amd64 production build/test-binary cross-compilation, Bash fixture syntax and documentation links passed. The initial full-suite invocation hit its 120-second tool timeout; a complete rerun with a 300-second tool budget passed without changing test/policy deadlines. No privileged Linux fixture build or host acceptance test was executed.
 
 ### Next work: finish P1-M04 on an approved Linux lab
 

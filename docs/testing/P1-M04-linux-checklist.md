@@ -1,6 +1,6 @@
 # P1-M04 — Debian-based Linux VM test checklist
 
-**Current release status: M04 is PARTIAL.** This checklist verifies the implemented lease/mTLS core on Linux and records the prerequisites for a real nested-KVM backend. The shipped provisioner **cannot start VMs**, even on a correctly configured Linux host.
+**Current release status: M04 is NOT PASSED — Linux acceptance NOT RUN.** The explicit Linux QEMU/KVM/systemd backend is implemented; default execution remains disabled. Complete this checklist AND [the mandatory real-host procedure](P1-M04-real-host.md), then sign [the acceptance record](P1-M04-acceptance-report.md). All mandatory tests MUST actually execute successfully before M04 PASS.
 
 Use `[x]` only after recording evidence. Record **FAIL**, **BLOCKED** or **NOT RUN** rather than ticking an unavailable test. Passing every software test does **not** complete the real-guest acceptance section.
 
@@ -109,7 +109,7 @@ Record missing tools/permission failures as BLOCKED. Do not automatically instal
 
 ## 2. Current software-core verification — runnable now
 
-No KVM, Docker, production certificate or manual CA setup is required here. The tests generate their own short-lived test identities and use an in-memory VM simulator **only in `_test.go`**.
+No KVM, Docker, production certificate or manual CA setup is required here. Tests generate short-lived identities and use a VM simulator **only in `_test.go`**. Privileged `TestLinuxHost*` cases intentionally SKIP in this normal-user suite; they MUST separately run without SKIP in the real-host procedure.
 
 Each pipeline uses `pipefail`. A `tee` log is not a pass by itself: verify exit code 0 and the test output. Do not ignore an initial failure because a later retry passed; retain both logs and explain the cause.
 
@@ -130,7 +130,7 @@ CGO_ENABLED=0 go build -o "$EVIDENCE/bin/orchestrator-provisioner" ./cmd/provisi
 CGO_ENABLED=0 go test -p 1 -count=1 -v -cover ./internal/contracts ./internal/provisioner ./internal/provisionerrpc ./cmd/provisioner 2>&1 | tee "$EVIDENCE/m04-core-tests.txt"
 ```
 
-- [ ] **S02 PASS:** every selected package returns `ok`/`PASS`; no failing or unexpectedly skipped assertion. Record coverage but do not equate a coverage percentage with isolation assurance.
+- [ ] **S02 PASS:** every selected package returns `ok`/`PASS`; no failing or unexpectedly skipped assertion (the explicit real-host authorization skips above are expected here only). Record coverage but do not equate a coverage percentage with isolation assurance.
 
 Check these groups in that output:
 
@@ -145,7 +145,7 @@ Check these groups in that output:
 | [ ] | Real mTLS: no/untrusted/expired client denied; worker/pin/URI/browser confusion denied | `TestRealMutualTLSAndControllerOnlyAdmission`, `TestCertificatePolicyRejectsLongLifetimeAndCommonNameFallback` |
 | [ ] | No production simulator/unsafe backend flag; prototype rejects public bind | `TestPrototypeCannotEnableExecutionOrExposePublicBind` |
 
-**Important:** the expiry/foreign-VM/fence tests above operate on simulated VM maps. SQLite and TLS are real; the guest is not. They cannot satisfy section 5.
+**Important:** the named expiry/foreign-VM/fence model tests above operate on simulated VM maps. SQLite and TLS are real; those guests are not. They cannot satisfy section 5; execute the separate authorized `TestLinuxHost*` cases and required fault/workload matrix.
 
 ### S03 — Full M01–M04 regression
 
@@ -270,15 +270,15 @@ git diff --exit-code -- go.mod go.sum
 
 **Nested-KVM preflight:** PASS / BLOCKED / FAIL: __________
 
-**Overall M04 acceptance for the current revision: BLOCKED — real backend not implemented.**
+**Overall M04 acceptance: NOT PASSED until mandatory real-host tests execute successfully.**
 
 Send back `checklist.md`, `commit.txt`, distro/kernel/Go details, the relevant failure logs, and virtualization/KVM/cgroup results (redact private host information). Do not send the entire evidence tree if it contains credentials from unrelated work.
 
-## 5. Real nested-KVM acceptance — BLOCKED in the current implementation
+## 5. Real nested-KVM acceptance — mandatory, execution pending
 
-Do **not** check these off using software-model logs, an arbitrary VM manually started in virt-manager, a generic libvirt demo, TCG, rootful/rootless DinD or a different program. No real-backend integration test command exists yet in this repository. Moving the repo to Linux does not change that.
+Do **not** check these off using software-model logs, an arbitrary manually started VM, libvirt demo, TCG, DinD or a different program. Execute [the real-host procedure](P1-M04-real-host.md): it provides opt-in real backend test commands, workload/fault evidence requirements and mandatory sign-off. Moving the repo to Linux alone is insufficient.
 
-After the fixed backend/host deadline/fence is implemented, use an **explicitly approved disposable lab** with a pinned credential-free image, dedicated storage/IDs and recorded baseline inventory. Start with a no-NIC guest. Confirm the intended service identity and record backend/kernel/libvirt/image/policy versions. Do not run resource-exhaustion, process-kill, clock-change or storage-fault tests on production infrastructure.
+Use an **explicitly approved disposable lab** with a pinned credential-free image, dedicated storage/IDs and recorded baseline inventory. Guests have no NIC. Confirm the intended service identity and record backend/kernel/QEMU/systemd/image/policy versions. Do not run resource-exhaustion, process-kill, clock-change or storage-fault tests on production infrastructure.
 
 Record the timing criteria before testing: host enforcement must be scheduled at the immutable deadline; proposed healthy-host observation tolerance is at most 5 seconds, with cleanup confirmation within the architecture's 2-minute cleanup SLA. Tolerance is for observation/scheduling measurement, **not lease renewal**. A frozen or failed host cannot offer an absolute timing guarantee; disclose that residual risk. Missing hard-kill/fence evidence fails acceptance.
 
@@ -301,9 +301,9 @@ Record the timing criteria before testing: host enforcement must be scheduled at
 | [ ] **V15 — Network and patch posture** | Inspect no-NIC guest/host management separation and versions | No management/host/metadata access path; maintained hypervisor/kernel; M05 broker egress remains disabled until separately tested |
 | [ ] **V16 — Safe final inventory** | Compare exact owned guest/disk/quota/timer inventory to baseline | No owned orphan guest, timer, disk or lease left active; foreign resources unchanged; evidence retained |
 
-Do not improvise dangerous commands for this blocked section. Add concrete backend-specific commands and independently observed kernel/hypervisor evidence when that implementation exists. Example inspection alone (`virsh list`, a quota setting in XML, CPU flags, a successful callback or `execution_enabled:true`) is not the required enforcement test.
+Use the linked backend-specific procedure; do not improvise dangerous production commands. Inspection alone (a quota setting, CPU flags, a successful callback or `execution_enabled:true`) is not the required enforcement test. Raw preallocation/file-size bounds replace COW/project quotas in this backend.
 
-**Real-guest result:** BLOCKED until implemented / PASS / FAIL: __________
+**Real-guest result:** NOT RUN / BLOCKED / PASS / FAIL: __________
 
 **M04 can be accepted only when:** required core checks pass, the actual backend is reviewed, every applicable V01–V16 case passes with evidence, and unsupported patterns/residual risks remain documented. Only then proceed to enabling M05 controlled egress and later real cloning/building. No production repositories or application deployment are authorized by this checklist.
 

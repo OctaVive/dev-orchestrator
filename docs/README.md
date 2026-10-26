@@ -10,7 +10,7 @@ The initial planning tree was staged under `C:\Users\mitchel\.opencode\plan` whi
 
 - PH1: management VM, separate runtime VM with a narrowly scoped agent, and disposable KVM build VMs. All can initially share one Linux hypervisor. No privileged DinD.
 - Build VM performs cloning and builds with rootless BuildKit. Runtime VM uses rootless Docker where tested requirements are enforceable; otherwise deployment is blocked, not silently weakened.
-- Go services, React/TypeScript portal, SQLite metadata, NGINX gateway, private OCI registry, KVM/libvirt provisioning. A small product, not a general-purpose scheduler.
+- Go services, React/TypeScript portal, SQLite metadata, NGINX gateway, private OCI registry, KVM provisioning (implemented Linux backend uses direct QEMU/systemd instead of proposed libvirt). A small product, not a general-purpose scheduler.
 - Apps use distinct origins, preferably a separate registrable domain from the portal, displayed in sandboxed iframes. Unsupported apps open in a protected new tab or are rejected; headers are not stripped to force embedding.
 - Security baseline applies to all plan variants. PH3 adds complete MFA/ACL workflows; PH1 is admin-only with password login, default-deny gateway authorization and schemas prepared for MFA/ACL.
 
@@ -56,7 +56,9 @@ The initial planning tree was staged under `C:\Users\mitchel\.opencode\plan` whi
 - [Authentication API and operator setup](implementation/auth-core.md)
 - [Build provisioner core and remaining Linux gates](implementation/build-provisioner.md)
 - [M04 Debian-based Linux VM check-off test plan](testing/P1-M04-linux-checklist.md)
+- [M04 mandatory real-host execution](testing/P1-M04-real-host.md)
+- [M04 acceptance record — must execute before PASS](testing/P1-M04-acceptance-report.md)
 - [Open questions](decisions/open-questions.md)
 - [Exception policy](decisions/security-exceptions.md)
 
-This index lists 44 supporting documents (45 files including this index). **P1-M01–P1-M03** have implemented foundations; **P1-M04 is partial** (lease/mTLS core, no real VM backend or completed KVM acceptance gate). Mandatory gate: prove isolated VM provisioning and egress controls before accepting real repositories.
+**P1-M01–P1-M03** have implemented foundations; **P1-M04 Linux code is implemented but acceptance is NOT PASSED**. Mandatory Linux tests must execute successfully before M04 PASS. Prove provisioning and the later egress controls before accepting real repositories.

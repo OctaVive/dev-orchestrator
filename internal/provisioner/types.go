@@ -120,8 +120,8 @@ type Backend interface {
 	Cleanup(context.Context, Machine) (CleanupResult, error)
 }
 
-// UnconfiguredBackend is the ONLY backend linked into the shipped command.
-// There is no simulator flag or automatic local/container execution fallback.
+// UnconfiguredBackend is the default backend. Linux KVM requires explicit host
+// configuration; there is no simulator or local/container execution fallback.
 type UnconfiguredBackend struct{}
 
 func (UnconfiguredBackend) Controls() Controls                    { return Controls{} }

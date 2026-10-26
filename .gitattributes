@@ -1,2 +1,5 @@
 # Migration checksums must be identical in Windows and Linux checkouts.
 *.sql text eol=lf
+# Linux host assets must remain executable/parseable after Windows checkout.
+*.sh text eol=lf
+*.service text eol=lf
