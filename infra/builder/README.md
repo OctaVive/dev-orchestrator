@@ -7,6 +7,52 @@ fallback. **M04 is NOT PASSED until the mandatory Linux acceptance run succeeds.
 
 ## Operator-approved lab setup
 
+### Staged acceptance helper
+
+For a **fresh disposable VM**, the opt-in automatic setup installs required apt
+packages, creates the dedicated account/storage, builds and installs binaries,
+builds/pins the idle fixture, writes the backend configuration, and runs the four
+automated real-host tests:
+
+```bash
+export PATH="$HOME/.local/opt/go1.27.3/go/bin:$PATH" # if installed here
+python3 infra/builder/m04-auto-lab.py --configure-and-test
+```
+
+Run as a normal user with sudo available, after reviewing the scripts. Requires
+Go satisfying go.mod, at least four vCPUs/~8 GiB RAM/30 GiB free storage, nested
+KVM access, and a running kernel with its boot image and matching modules.
+Refuses physical hosts and existing builder installations; partial failures
+retain files and logs for review (use a fresh VM snapshot to retry). Packages,
+image-build files and ownership tombstones remain installed; no global cleanup
+or production API/guard service enablement occurs. This automates only the four
+host cases, **not full M04 acceptance** or the destructive/manual fault matrix.
+
+Run `bash infra/builder/m04-acceptance.sh` for usage. As your normal user:
+
+```bash
+export EVIDENCE="$(mktemp -d "$HOME/m04-evidence.XXXXXX")"
+export PATH="$HOME/.local/opt/go1.27.3/go/bin:$PATH" # if installed here
+bash infra/builder/m04-acceptance.sh preflight
+bash infra/builder/m04-acceptance.sh build
+```
+
+The build prints the exact private binary directory. Review and install those
+binaries using the setup below, prepare/pin the fixture image and configuration,
+then **inside the approved disposable lab VM only** run:
+
+```bash
+M04_DISPOSABLE_HOST=YES-I-AUTHORIZE-REAL-KVM \
+  bash infra/builder/m04-acceptance.sh host-tests
+```
+
+Each invocation retains a separate log and exit code under `$EVIDENCE`. The
+helper never installs packages, creates accounts, changes configuration, or
+enables services. It refuses host tests outside a detected VM and rejects unsafe
+installed executable/config paths. VM detection is not proof the lab is safe:
+the operator must still approve its isolation. It does not automate or waive the
+remaining V01–V16 workload/fault matrix or acceptance sign-off.
+
 Read [the mandatory procedure](../../docs/testing/P1-M04-real-host.md) first.
 Commands below install files/services and reserve real disk/RAM. Run only after
 approving a dedicated Debian-family lab. Nothing is installed automatically.
