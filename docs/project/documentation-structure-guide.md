@@ -5,7 +5,7 @@ Use this guide when starting a project or organizing an existing one. It describ
 The reading order is:
 
 ```text
-Requirements -> milestone mapping -> phase -> milestone -> implementation -> acceptance evidence
+Requirements -> milestone mapping -> phase -> milestone design (LLD) -> implementation -> acceptance evidence
 ```
 
 ## Current documentation structure
@@ -56,7 +56,24 @@ docs/
         |-- P1M05/ ... P1M14/         # Each contains its own README.md
 ```
 
-Only PH1 currently has implementation milestone folders. PH2-PH5 remain phase plans. A milestone folder can describe planned work; its existence does not imply implementation or acceptance.
+The repository also contains this design collection at the repository root, alongside `docs/`:
+
+```text
+LLD-documents/
+|-- README.md                        # Collection index and reading guide
+|-- PH1/
+|   |-- README.md                    # Phase index, grouped by delivery track
+|   |-- p1-m01.md                    # One design document per minimal milestone
+|   |-- ... p1-m14.md
+|   |-- p1-r01.md ... p1-r06.md      # Recommended additions
+|   |-- p1-h01.md ... p1-h05.md      # Hardened additions
+|-- PH2/                             # README.md and 15 milestone documents
+|-- PH3/                             # README.md and 16 milestone documents
+|-- PH4/                             # README.md and 15 milestone documents
+|-- PH5/                             # README.md and 16 milestone documents
+```
+
+The [LLD collection](../../LLD-documents/README.md) contains 87 milestone documents across all five phases and all three delivery tracks. Only PH1 currently has implementation milestone folders under `docs/project/`; PH2-PH5 have phase plans and LLD documents. A design document or milestone folder does not imply implementation or acceptance.
 
 ## Folder and ownership conventions
 
@@ -68,6 +85,9 @@ Only PH1 currently has implementation milestone folders. PH2-PH5 remain phase pl
 | `PROJECT-STATUS.md` | Overall project status, current phase/milestone, blockers and next work | Project status or priorities change |
 | `progress.md` | Existing delivery progress records, linked from `PROJECT-STATUS.md` when retained | Delivery progress changes |
 | `plans/` | Phase scope, sequence and acceptance rules | The delivery plan changes |
+| `LLD-documents/README.md` (repository root) | Design collection index and reading conventions | Phases or collection conventions change |
+| `LLD-documents/PH1/README.md` | Phase design index for all delivery tracks | Milestones or their track assignments change |
+| `LLD-documents/PH1/p1-m01.md` | Functional explanation, technical design, diagrams and linked acceptance gate for one milestone | Its scope, dependencies or design changes |
 | `PH1/README.md` | Phase milestone index | Milestones are added or change status |
 | `PH1/P1M01/README.md` | Milestone scope, dependencies, acceptance and handoff | That milestone progresses |
 | `PH1/P1M01/testing/` | Milestone test procedures and acceptance records | Checks are defined or executed |
@@ -75,13 +95,14 @@ Only PH1 currently has implementation milestone folders. PH2-PH5 remain phase pl
 | `architecture/` | System design and rationale | Architectural decisions change |
 | `decisions/` | Unresolved choices and explicit exceptions | A decision is raised or resolved |
 
-Keep one authoritative definition of each requirement or shared contract. Other documents should link to it. Put documents used only by a milestone inside that milestone's folder. Put documents used by several milestones in `specifications/`.
+Keep one authoritative definition of each requirement or shared contract. Other documents should link to it. Put implementation notes and evidence used only by a milestone inside that milestone's implementation folder. Put documents used by several milestones in `specifications/`. Keep explanatory milestone designs in `LLD-documents/`, linking to the authoritative plans, specifications and evidence.
 
 ## Naming
 
 - Phase folders: `PH1`, `PH2`, `PH3`.
 - Milestone folders: `P1M01`, `P1M02`, `P2M01`.
 - Canonical task IDs in prose, tables and commits: `P1-M01`, `P1-M02`, `P2-M01`.
+- LLD documents use lowercase canonical task IDs as filenames: `LLD-documents/PH1/p1-m01.md`, `p1-r01.md`, `p1-h01.md`. `M`, `R` and `H` identify minimal, recommended and hardened tasks respectively.
 - Document filenames: lowercase words separated by hyphens, except standard entry points such as `README.md` and `PROJECT-STATUS.md`.
 - Every phase and milestone folder has a `README.md` entry point.
 - Use relative Markdown links so copied documentation works in another repository.
@@ -118,6 +139,22 @@ docs/
 ```
 
 This repository has minimal, recommended and hardened phase plans. Those tracks are optional for a new project; a single phase plan is enough when there are no distinct delivery tracks.
+
+Add a sibling `LLD-documents/` collection at the repository root using the structure above. Create a phase folder and `README.md` for each planned phase, and one Markdown design document for every milestone in the selected tracks.
+
+## Milestone design document contents
+
+Use a mix of functional and technical writing so readers understand both the purpose and the mechanism. Each LLD document includes:
+
+- The feature's purpose, intended users or operators, and observable outcome.
+- Its delivery track, scope, prerequisites and links to dependent contracts.
+- Components and responsibilities, with a Mermaid architecture drawing.
+- The functional flow, with a Mermaid flowchart showing validation, success and failure paths.
+- Technical behavior, protected state, trust boundaries and failure handling.
+- The source acceptance gate, validation expectations and handoff.
+- Links to the phase plan, shared specifications and existing implementation evidence.
+
+Diagrams describe logical responsibilities unless explicitly identified as deployment topology. They do not introduce API contracts or grant infrastructure access. Plans own scope and dependencies; specifications own shared interfaces; implementation records own status and test evidence. Keep LLD explanations and drawings aligned with those sources, preserving qualified acceptance and skipped checks.
 
 ## Copyable requirement map
 
@@ -188,6 +225,7 @@ Record PASS, FAIL, SKIP and Not run separately. A passing unit test establishes 
 2. Plan phases and milestones with explicit dependencies.
 3. Map each requirement to its delivery milestone and acceptance gate.
 4. Create phase indexes and milestone READMEs using the template above.
+   Create the repository-root `LLD-documents/` collection with phase indexes and one design document per milestone, including architecture drawings and flowcharts.
 5. Link shared specifications; keep milestone-specific notes and tests with their milestone.
 6. As implementation progresses, record behavior, validation, limitations and next work.
 7. Update milestone status, the phase index, `PROJECT-STATUS.md` and requirement evidence together.
@@ -203,6 +241,13 @@ date, current phase/milestone, completed and ongoing work, blockers or risks, an
 Keep it current as project status changes and link to detailed milestone evidence.
 Group milestones by phase: PH1/P1M01/, PH1/P1M02/, then PH2/P2M01/ when needed.
 Give each phase and milestone a README.md.
+Also create LLD-documents/ at the repository root, with a README.md and one folder per phase.
+Give each LLD phase folder a README.md and one document per milestone, using lowercase
+task IDs as filenames (for example PH1/p1-m01.md, p1-r01.md and p1-h01.md).
+Cover every milestone in the selected delivery tracks. Explain the feature functionally
+and technically, including components, dependencies, architecture drawings, flowcharts,
+failure handling, acceptance gates and links to authoritative contracts and evidence.
+Keep these design explanations aligned with plans and implementation records.
 Each milestone must identify its requirements, prerequisites, acceptance gate,
 relevant specifications, implementation status, evidence and remaining work.
 Keep shared contracts in specifications/ and milestone-specific documents inside
