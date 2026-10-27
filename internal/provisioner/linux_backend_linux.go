@@ -379,6 +379,10 @@ func (b *linuxBackend) Create(ctx context.Context, m Machine) error {
 		args = append(args, "--property="+p)
 	}
 	args = append(args, "--property=ReadWritePaths="+b.c.Root)
+	// The root supervisor validates /dev/kvm before dropping QEMU credentials.
+	// Its capability bounding set deliberately excludes DAC overrides, so it
+	// needs the device's configured group just as the QEMU child does.
+	args = append(args, "--property=SupplementaryGroups="+strconv.FormatUint(uint64(b.c.KVMGID), 10))
 	args = append(args, "--", b.c.Executable, "-mode", "host-run", "-linux-config", config, "-host-job", m.Lease.JobID)
 	if _, err = hostCommand(ctx, "/usr/bin/systemd-run", args...); err != nil {
 		return err
@@ -403,7 +407,7 @@ func serviceProperties(ttl time.Duration) []string {
 		"Slice=system.slice", "CapabilityBoundingSet=CAP_SETUID CAP_SETGID", "RestrictNamespaces=yes", "DevicePolicy=closed", "DeviceAllow=/dev/kvm rw",
 		"InaccessiblePaths=/tmp /var/tmp /dev/shm /run/user",
 		"CPUQuota=200%", "MemoryMax=4608M", "MemorySwapMax=0", "TasksMax=128", "LimitFSIZE=10737418240", "LimitCORE=0", "OOMPolicy=stop",
-		"PrivateNetwork=yes", "PrivateTmp=yes", "ProtectSystem=strict", "ProtectHome=yes", "NoNewPrivileges=yes", "RestrictSUIDSGID=yes", "RestrictRealtime=yes", "LockPersonality=yes", "ProtectKernelTunables=yes", "ProtectKernelModules=yes", "ProtectControlGroups=yes", "ProtectKernelLogs=yes", "RestrictAddressFamilies=AF_UNIX", "UMask=0077", "StandardOutput=null", "StandardError=null"}
+		"PrivateNetwork=yes", "PrivateTmp=yes", "ProtectSystem=strict", "ProtectHome=yes", "NoNewPrivileges=yes", "RestrictSUIDSGID=yes", "RestrictRealtime=yes", "LockPersonality=yes", "ProtectKernelTunables=yes", "ProtectKernelModules=yes", "ProtectControlGroups=yes", "ProtectKernelLogs=yes", "RestrictAddressFamilies=AF_UNIX", "UMask=0077", "StandardOutput=null", "StandardError=journal"}
 }
 
 func (b *linuxBackend) prepare(ctx context.Context, s *hostMachine) error {
