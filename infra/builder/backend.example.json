@@ -1,0 +1,11 @@
+{
+  "root": "/var/lib/orchestrator-builder/host",
+  "image": "/var/lib/orchestrator-builder/images/build-linux-v1.raw",
+  "digest": "sha256:REPLACE_WITH_APPROVED_IMAGE_SHA256",
+  "template_id": "build-linux-v1",
+  "executable": "/usr/local/sbin/orchestrator-provisioner",
+  "qemu": "/usr/bin/qemu-system-x86_64",
+  "uid": 991,
+  "gid": 991,
+  "kvm_gid": 108
+}

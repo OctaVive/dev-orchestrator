@@ -1,0 +1,19 @@
+[Unit]
+Description=Orchestrator controller-only build provisioner
+After=orchestrator-builder-guard.service
+Requires=orchestrator-builder-guard.service
+
+[Service]
+Type=simple
+User=root
+UMask=0077
+EnvironmentFile=/etc/orchestrator-builder/controller.env
+ExecStart=/usr/local/sbin/orchestrator-provisioner -mode serve -backend linux-kvm -linux-config /var/lib/orchestrator-builder/host/backend.json -ledger /var/lib/orchestrator-builder/ledger/leases.db -listen 127.0.0.1:9444 -authority localhost:9444 -controller-id ${CONTROLLER_ID} -controller-cert-sha256 ${CONTROLLER_CERT_SHA256} -client-ca /etc/orchestrator-builder/client-ca.pem -tls-cert /etc/orchestrator-builder/server.pem -tls-key /etc/orchestrator-builder/server-key.pem
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=yes
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

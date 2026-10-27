@@ -1,0 +1,739 @@
+//go:build linux
+
+package provisioner
+
+import (
+	"bytes"
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+	"os/exec"
+	"os/user"
+	"path/filepath"
+	"runtime"
+	"strconv"
+	"strings"
+	"syscall"
+	"time"
+
+	"golang.org/x/sys/unix"
+)
+
+type linuxBackend struct{ c LinuxConfig }
+type hostMachine struct {
+	Machine  Machine
+	BootID   string
+	Deadline int64 // absolute CLOCK_BOOTTIME nanoseconds; never renewed
+	Fenced   bool
+	DiskDev  uint64
+	DiskIno  uint64
+	ReadyDev uint64
+	ReadyIno uint64
+}
+
+// Every ancestor must be root-owned and not group/world writable. This excludes
+// symlinks, user-controlled path replacement and shared writable ancestors.
+func trustedPath(path string, private bool) (os.FileInfo, error) {
+	if !filepath.IsAbs(path) || filepath.Clean(path) != path {
+		return nil, ErrInvalid
+	}
+	var result os.FileInfo
+	for p := path; ; p = filepath.Dir(p) {
+		i, err := os.Lstat(p)
+		if err != nil || i.Mode()&os.ModeSymlink != 0 {
+			return nil, ErrUnavailable
+		}
+		s, ok := i.Sys().(*syscall.Stat_t)
+		if !ok || s.Uid != 0 || i.Mode().Perm()&0022 != 0 {
+			return nil, ErrUnavailable
+		}
+		if p == path {
+			result = i
+			if private && i.Mode().Perm()&0077 != 0 {
+				return nil, ErrUnavailable
+			}
+		}
+		if p == "/" {
+			break
+		}
+	}
+	return result, nil
+}
+
+func loadLinuxConfig(path string) (LinuxConfig, error) {
+	i, err := trustedPath(path, true)
+	if err != nil || !i.Mode().IsRegular() || i.Size() > 8192 {
+		return LinuxConfig{}, ErrInvalid
+	}
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return LinuxConfig{}, err
+	}
+	d := json.NewDecoder(bytes.NewReader(b))
+	d.DisallowUnknownFields()
+	var c LinuxConfig
+	if d.Decode(&c) != nil || d.Decode(new(any)) != io.EOF {
+		return c, ErrInvalid
+	}
+	return c, nil
+}
+
+func validateLinuxConfig(c LinuxConfig) error {
+	if !templateName.MatchString(c.TemplateID) || !templateDigest.MatchString(c.Digest) || c.UID < 100 || c.GID < 100 || c.KVMGID == 0 {
+		return ErrInvalid
+	}
+	// systemd-run's ExecStart serialization must not interpret caller syntax.
+	for _, p := range []string{c.Root, c.Image, c.Executable, c.QEMU} {
+		if !filepath.IsAbs(p) || strings.ContainsAny(p, " \t\n\r%\\\"'$") {
+			return ErrInvalid
+		}
+	}
+	return nil
+}
+
+func newLinuxBackend(c LinuxConfig) (Backend, error) {
+	if os.Geteuid() != 0 || runtime.GOARCH != "amd64" || validateLinuxConfig(c) != nil {
+		return nil, ErrUnavailable
+	}
+	account, e := user.LookupId(strconv.FormatUint(uint64(c.UID), 10))
+	if e != nil || account.Username != "orchestrator-qemu" || account.Gid != strconv.FormatUint(uint64(c.GID), 10) {
+		return nil, ErrUnavailable
+	}
+	i, err := trustedPath(c.Root, true)
+	if err != nil || !i.IsDir() {
+		return nil, ErrUnavailable
+	}
+	stored, e := loadLinuxConfig(filepath.Join(c.Root, "backend.json"))
+	if e != nil || stored != c {
+		return nil, ErrUnavailable
+	}
+	for _, p := range []string{c.Executable, c.QEMU, "/usr/bin/systemd-run", "/usr/bin/systemctl"} {
+		i, err = trustedPath(p, false)
+		if err != nil || !i.Mode().IsRegular() || i.Mode().Perm()&0111 == 0 {
+			return nil, ErrUnavailable
+		}
+	}
+	i, err = trustedPath(c.Image, true)
+	if err != nil || !i.Mode().IsRegular() || i.Size() < 512 || i.Size() > 1<<30 {
+		return nil, ErrUnavailable
+	}
+	var fs unix.Statfs_t
+	if unix.Statfs(c.Root, &fs) != nil || (fs.Type != unix.EXT4_SUPER_MAGIC && fs.Type != unix.XFS_SUPER_MAGIC) {
+		return nil, ErrUnavailable
+	}
+	if _, err = os.Stat("/run/systemd/system"); err != nil {
+		return nil, ErrUnavailable
+	}
+	b, err := os.ReadFile("/sys/fs/cgroup/cgroup.controllers")
+	if err != nil {
+		return nil, ErrUnavailable
+	}
+	for _, controller := range []string{"cpu", "memory", "pids"} {
+		if !strings.Contains(" "+strings.TrimSpace(string(b))+" ", " "+controller+" ") {
+			return nil, ErrUnavailable
+		}
+	}
+	f, err := os.OpenFile("/dev/kvm", os.O_RDWR, 0)
+	if err != nil {
+		return nil, ErrUnavailable
+	}
+	defer f.Close()
+	ki, err := f.Stat()
+	if err != nil || ki.Sys().(*syscall.Stat_t).Gid != c.KVMGID {
+		return nil, ErrUnavailable
+	}
+	version, _, errno := unix.Syscall(unix.SYS_IOCTL, f.Fd(), 0xae00, 0)
+	if errno != 0 || version != 12 {
+		return nil, ErrUnavailable
+	}
+	return &linuxBackend{c}, nil
+}
+
+func (b *linuxBackend) Controls() Controls {
+	return Controls{true, true, true, true, true, true, true, true}
+}
+func bootNow() (int64, error) {
+	var t unix.Timespec
+	err := unix.ClockGettime(unix.CLOCK_BOOTTIME, &t)
+	return t.Nano(), err
+}
+func bootID() (string, error) {
+	b, err := os.ReadFile("/proc/sys/kernel/random/boot_id")
+	return strings.TrimSpace(string(b)), err
+}
+func (b *linuxBackend) statePath(job string) string { return filepath.Join(b.c.Root, job+".json") }
+func unitName(job string) string                    { return "orchestrator-build-" + job + ".service" }
+func ownerDescription(m Machine) string {
+	return "orchestrator-build:" + digest([]byte(m.Lease.JobID+":"+m.OwnershipProof))
+}
+
+func (b *linuxBackend) lock(ctx context.Context) (*os.File, error) {
+	f, err := os.OpenFile(filepath.Join(b.c.Root, "host.lock"), os.O_CREATE|os.O_RDWR|unix.O_NOFOLLOW, 0600)
+	if err != nil {
+		return nil, err
+	}
+	for {
+		if err = unix.Flock(int(f.Fd()), unix.LOCK_EX|unix.LOCK_NB); err == nil {
+			return f, nil
+		}
+		if err != unix.EWOULDBLOCK {
+			f.Close()
+			return nil, err
+		}
+		select {
+		case <-ctx.Done():
+			f.Close()
+			return nil, ctx.Err()
+		case <-time.After(10 * time.Millisecond):
+		}
+	}
+}
+func unlock(f *os.File) {
+	if f != nil {
+		_ = unix.Flock(int(f.Fd()), unix.LOCK_UN)
+		_ = f.Close()
+	}
+}
+
+// OwnershipProof is explicitly serialized here ONLY in the private host journal.
+type diskState struct {
+	Value hostMachine
+	Proof string
+}
+
+func (b *linuxBackend) read(job string) (hostMachine, error) {
+	p := b.statePath(job)
+	if _, err := trustedPath(p, true); err != nil {
+		if _, e := os.Lstat(p); os.IsNotExist(e) {
+			return hostMachine{}, os.ErrNotExist
+		}
+		return hostMachine{}, err
+	}
+	f, err := os.Open(p)
+	if err != nil {
+		return hostMachine{}, err
+	}
+	defer f.Close()
+	var s diskState
+	d := json.NewDecoder(io.LimitReader(f, 16385))
+	d.DisallowUnknownFields()
+	if d.Decode(&s) != nil || d.Decode(new(any)) != io.EOF {
+		return hostMachine{}, ErrInvalid
+	}
+	s.Value.Machine.OwnershipProof = s.Proof
+	return s.Value, nil
+}
+func (b *linuxBackend) write(s hostMachine) error {
+	p := b.statePath(s.Machine.Lease.JobID)
+	f, err := os.OpenFile(p+".new", os.O_WRONLY|os.O_CREATE|os.O_EXCL|unix.O_NOFOLLOW, 0600)
+	if err != nil {
+		return err
+	}
+	defer os.Remove(p + ".new")
+	err = json.NewEncoder(f).Encode(diskState{s, s.Machine.OwnershipProof})
+	if err == nil {
+		err = f.Sync()
+	}
+	closeErr := f.Close()
+	if err == nil {
+		err = closeErr
+	}
+	if err != nil {
+		return err
+	}
+	if err = os.Rename(p+".new", p); err != nil {
+		return err
+	}
+	d, err := os.Open(b.c.Root)
+	if err != nil {
+		return err
+	}
+	defer d.Close()
+	return d.Sync()
+}
+func validMachine(m Machine, c LinuxConfig) bool {
+	_, err := hex.DecodeString(m.OwnershipProof)
+	return identifier.MatchString(m.Lease.JobID) && len(m.OwnershipProof) == 64 && err == nil && m.Budget == SmallBudget() && m.Lease.ProfileID == "build-small-v1" && m.Lease.Template == (Template{c.TemplateID, c.Digest})
+}
+func sameMachine(a, b Machine) bool {
+	return a.Lease.JobID == b.Lease.JobID && a.OwnershipProof == b.OwnershipProof && a.Lease.Template == b.Lease.Template && a.Lease.ExpiresAt.Equal(b.Lease.ExpiresAt)
+}
+
+func hostCommand(ctx context.Context, path string, args ...string) (string, error) {
+	c := exec.CommandContext(ctx, path, args...)
+	c.Env = []string{"PATH=/usr/sbin:/usr/bin", "LANG=C", "SYSTEMD_COLORS=0"}
+	var out limitedOutput
+	c.Stdout = &out
+	c.Stderr = &out
+	err := c.Run()
+	return out.String(), err
+}
+
+type limitedOutput struct{ bytes.Buffer }
+
+func (o *limitedOutput) Write(p []byte) (int, error) {
+	n := len(p)
+	if o.Len() < 32768 {
+		_, _ = o.Buffer.Write(p[:min(len(p), 32768-o.Len())])
+	}
+	return n, nil
+}
+
+// Check description before touching any systemd object. Absent units are safe;
+// foreign collisions, including inactive units, are never stopped or reset.
+func (b *linuxBackend) unit(ctx context.Context, m Machine) (bool, bool, error) {
+	return b.namedUnit(ctx, m, unitName(m.Lease.JobID))
+}
+func (b *linuxBackend) namedUnit(ctx context.Context, m Machine, name string) (bool, bool, error) {
+	out, err := hostCommand(ctx, "/usr/bin/systemctl", "show", name, "--property=LoadState,ActiveState,Description")
+	if err != nil {
+		return false, false, ErrUnavailable
+	}
+	fields := map[string]string{}
+	for _, l := range strings.Split(out, "\n") {
+		k, v, ok := strings.Cut(l, "=")
+		if ok {
+			fields[k] = v
+		}
+	}
+	if fields["LoadState"] == "not-found" {
+		return false, false, nil
+	}
+	if fields["Description"] != ownerDescription(m) {
+		return false, false, ErrConflict
+	}
+	active := fields["ActiveState"]
+	if active == "" {
+		return false, false, ErrUnavailable
+	}
+	return true, active != "inactive" && active != "failed", nil
+}
+func expiryName(job string) string { return "orchestrator-expiry-" + job }
+
+func (b *linuxBackend) Create(ctx context.Context, m Machine) error {
+	if !validMachine(m, b.c) {
+		return ErrInvalid
+	}
+	l, err := b.lock(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() { unlock(l) }()
+	if _, err = b.read(m.Lease.JobID); !os.IsNotExist(err) {
+		return ErrConflict
+	}
+	if _, err = os.Lstat(filepath.Join(b.c.Root, m.Lease.JobID+".ready")); !os.IsNotExist(err) {
+		return ErrConflict
+	}
+	if exists, _, e := b.unit(ctx, m); e != nil || exists {
+		return ErrConflict
+	}
+	for _, suffix := range []string{".timer", ".service"} {
+		if exists, _, e := b.namedUnit(ctx, m, expiryName(m.Lease.JobID)+suffix); e != nil || exists {
+			return ErrConflict
+		}
+	}
+	now, err := bootNow()
+	if err != nil {
+		return err
+	}
+	boot, err := bootID()
+	if err != nil {
+		return err
+	}
+	remaining := time.Until(m.Lease.ExpiresAt)
+	if remaining <= 0 || remaining > 30*time.Minute {
+		return ErrInvalid
+	}
+	s := hostMachine{Machine: m, BootID: boot, Deadline: now + int64(remaining)}
+	if err = b.write(s); err != nil {
+		return err
+	}
+	// Do all image/storage work under the same lock as cleanup. Partial disk
+	// creation is owned by the durable record and can never be mistaken for clean.
+	if err = b.prepare(ctx, &s); err != nil {
+		return err
+	}
+	config := filepath.Join(b.c.Root, "backend.json")
+	// A separate PID-1 timer expires this exact owned unit even if the guest
+	// supervisor is SIGSTOPed. WakeSystem selects CLOCK_BOOTTIME, not wall time.
+	timerArgs := []string{"--quiet", "--unit=" + expiryName(m.Lease.JobID), "--description=" + ownerDescription(m),
+		"--on-boot=" + strconv.FormatFloat(float64(s.Deadline)/1e9, 'f', 9, 64) + "s", "--timer-property=WakeSystem=yes", "--timer-property=AccuracySec=1us", "--timer-property=Description=" + ownerDescription(m),
+		"--property=Type=exec", "--property=Restart=no", "--", b.c.Executable, "-mode", "host-expire", "-linux-config", config, "-host-job", m.Lease.JobID}
+	if _, err = hostCommand(ctx, "/usr/bin/systemd-run", timerArgs...); err != nil {
+		return err
+	}
+	if _, active, e := b.namedUnit(ctx, m, expiryName(m.Lease.JobID)+".timer"); e != nil || !active {
+		return ErrUnavailable
+	}
+	remaining = time.Until(m.Lease.ExpiresAt)
+	if remaining <= 0 {
+		return ErrUnavailable
+	}
+	args := []string{"--quiet", "--no-block", "--unit=" + unitName(m.Lease.JobID), "--description=" + ownerDescription(m)}
+	for _, p := range serviceProperties(remaining) {
+		args = append(args, "--property="+p)
+	}
+	args = append(args, "--property=ReadWritePaths="+b.c.Root)
+	args = append(args, "--", b.c.Executable, "-mode", "host-run", "-linux-config", config, "-host-job", m.Lease.JobID)
+	if _, err = hostCommand(ctx, "/usr/bin/systemd-run", args...); err != nil {
+		return err
+	}
+	// Release lock before waiting: helper must acquire it to validate the fence.
+	unlock(l)
+	l = nil
+	for {
+		if _, err = os.Stat(filepath.Join(b.c.Root, m.Lease.JobID+".ready")); err == nil {
+			return nil
+		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(25 * time.Millisecond):
+		}
+	}
+}
+
+func serviceProperties(ttl time.Duration) []string {
+	return []string{"Type=exec", "Restart=no", "KillMode=control-group", "TimeoutStopSec=2s", "SendSIGKILL=yes", "RuntimeMaxSec=" + strconv.FormatFloat(ttl.Seconds(), 'f', 3, 64),
+		"Slice=system.slice", "CapabilityBoundingSet=CAP_SETUID CAP_SETGID", "RestrictNamespaces=yes", "DevicePolicy=closed", "DeviceAllow=/dev/kvm rw",
+		"InaccessiblePaths=/tmp /var/tmp /dev/shm /run/user",
+		"CPUQuota=200%", "MemoryMax=4608M", "MemorySwapMax=0", "TasksMax=128", "LimitFSIZE=10737418240", "LimitCORE=0", "OOMPolicy=stop",
+		"PrivateNetwork=yes", "PrivateTmp=yes", "ProtectSystem=strict", "ProtectHome=yes", "NoNewPrivileges=yes", "RestrictSUIDSGID=yes", "RestrictRealtime=yes", "LockPersonality=yes", "ProtectKernelTunables=yes", "ProtectKernelModules=yes", "ProtectControlGroups=yes", "ProtectKernelLogs=yes", "RestrictAddressFamilies=AF_UNIX", "UMask=0077", "StandardOutput=null", "StandardError=null"}
+}
+
+func (b *linuxBackend) prepare(ctx context.Context, s *hostMachine) error {
+	m := s.Machine
+	f, err := os.Open(b.c.Image)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	i, err := f.Stat()
+	if err != nil || i.Size() > 1<<30 {
+		return ErrInvalid
+	}
+	p := filepath.Join(b.c.Root, m.Lease.JobID+".raw")
+	d, err := os.OpenFile(p, os.O_RDWR|os.O_CREATE|os.O_EXCL|unix.O_NOFOLLOW, 0600)
+	if err != nil {
+		return err
+	}
+	defer d.Close()
+	info, err := d.Stat()
+	if err != nil {
+		return err
+	}
+	st := info.Sys().(*syscall.Stat_t)
+	s.DiskDev = uint64(st.Dev)
+	s.DiskIno = st.Ino
+	if err = b.write(*s); err != nil {
+		return err
+	}
+	if err = unix.Fallocate(int(d.Fd()), 0, 0, int64(m.Budget.VirtualDiskMiB)<<20); err != nil {
+		return err
+	}
+	h := sha256.New()
+	buf := make([]byte, 1<<20)
+	for {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+		n, e := f.Read(buf)
+		if n > 0 {
+			if _, err = d.Write(buf[:n]); err != nil {
+				return err
+			}
+			_, _ = h.Write(buf[:n])
+		}
+		if e == io.EOF {
+			break
+		}
+		if e != nil {
+			return e
+		}
+	}
+	if "sha256:"+hex.EncodeToString(h.Sum(nil)) != b.c.Digest {
+		return ErrInvalid
+	}
+	return d.Sync()
+}
+
+func (b *linuxBackend) Cleanup(ctx context.Context, m Machine) (CleanupResult, error) {
+	if !validMachine(m, b.c) {
+		return CleanupResult{}, ErrInvalid
+	}
+	l, err := b.lock(ctx)
+	if err != nil {
+		return CleanupResult{}, err
+	}
+	defer unlock(l)
+	s, err := b.read(m.Lease.JobID)
+	if os.IsNotExist(err) {
+		s = hostMachine{Machine: m, Fenced: true}
+	} else if err != nil || !sameMachine(s.Machine, m) {
+		return CleanupResult{}, ErrConflict
+	}
+	s.Fenced = true
+	if err = b.write(s); err != nil {
+		return CleanupResult{}, err
+	}
+	exists, running, err := b.unit(ctx, m)
+	if err != nil {
+		return CleanupResult{}, err
+	}
+	if exists && running {
+		if _, err = hostCommand(ctx, "/usr/bin/systemctl", "stop", unitName(m.Lease.JobID)); err != nil {
+			return CleanupResult{}, err
+		}
+	}
+	_, running, err = b.unit(ctx, m)
+	if err != nil || running {
+		return CleanupResult{}, ErrCleanup
+	}
+	if err = confirmGuestGroupEmpty(m.Lease.JobID); err != nil {
+		return CleanupResult{}, err
+	}
+	for _, suffix := range []string{".timer", ".service"} {
+		name := expiryName(m.Lease.JobID) + suffix
+		exists, active, e := b.namedUnit(ctx, m, name)
+		if e != nil {
+			return CleanupResult{}, e
+		}
+		if exists && active {
+			if _, e = hostCommand(ctx, "/usr/bin/systemctl", "stop", name); e != nil {
+				return CleanupResult{}, e
+			}
+		}
+		_, active, e = b.namedUnit(ctx, m, name)
+		if e != nil || active {
+			return CleanupResult{}, ErrCleanup
+		}
+	}
+	// Retain root-owned journal tombstones forever. Never recursively remove a
+	// directory or follow a link; only these exact, verified regular files exist.
+	for _, suffix := range []string{".raw", ".ready"} {
+		p := filepath.Join(b.c.Root, m.Lease.JobID+suffix)
+		i, e := trustedPath(p, true)
+		if e != nil {
+			if _, e = os.Lstat(p); os.IsNotExist(e) {
+				continue
+			}
+			return CleanupResult{}, ErrConflict
+		}
+		st := i.Sys().(*syscall.Stat_t)
+		if !i.Mode().IsRegular() || st.Nlink != 1 {
+			return CleanupResult{}, ErrConflict
+		}
+		dev, ino := s.DiskDev, s.DiskIno
+		if suffix == ".ready" {
+			dev, ino = s.ReadyDev, s.ReadyIno
+		}
+		if ino == 0 || ino != st.Ino || dev != uint64(st.Dev) {
+			return CleanupResult{}, ErrConflict
+		}
+		if err = os.Remove(p); err != nil {
+			return CleanupResult{}, err
+		}
+	}
+	d, err := os.Open(b.c.Root)
+	if err != nil {
+		return CleanupResult{}, err
+	}
+	defer d.Close()
+	if err = d.Sync(); err != nil {
+		return CleanupResult{}, err
+	}
+	return CleanupResult{true, true, true}, nil
+}
+
+func confirmGuestGroupEmpty(job string) error {
+	data, err := os.ReadFile(filepath.Join("/sys/fs/cgroup/system.slice", unitName(job), "cgroup.events"))
+	if os.IsNotExist(err) {
+		return nil
+	}
+	if err != nil || !strings.Contains(string(data), "populated 0\n") {
+		return ErrCleanup
+	}
+	return nil
+}
+
+func runLinuxGuest(ctx context.Context, config, job string) error {
+	if !identifier.MatchString(job) {
+		return ErrInvalid
+	}
+	c, err := loadLinuxConfig(config)
+	if err != nil {
+		return err
+	}
+	backend, err := newLinuxBackend(c)
+	if err != nil {
+		return err
+	}
+	b := backend.(*linuxBackend)
+	if config != filepath.Join(c.Root, "backend.json") {
+		return ErrInvalid
+	}
+	cgroup, err := os.ReadFile("/proc/self/cgroup")
+	if err != nil || !strings.Contains(string(cgroup), "/"+unitName(job)+"\n") {
+		return ErrUnavailable
+	}
+	l, err := b.lock(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if l != nil {
+			unlock(l)
+		}
+	}()
+	s, err := b.read(job)
+	if err != nil || s.Fenced || !validMachine(s.Machine, c) {
+		return ErrConflict
+	}
+	boot, err := bootID()
+	if err != nil || boot != s.BootID {
+		return ErrUnavailable
+	}
+	now, err := bootNow()
+	if err != nil || now >= s.Deadline {
+		return ErrUnavailable
+	}
+	// This timer is independent of controller, API, guard, wall clock and Go's
+	// scheduler. Its supervisor belongs to the VM's systemd control group: death
+	// of the main process causes systemd to kill every remaining guest process.
+	timer, err := unix.TimerfdCreate(unix.CLOCK_BOOTTIME, unix.TFD_CLOEXEC)
+	if err != nil {
+		return err
+	}
+	defer unix.Close(timer)
+	if err = unix.TimerfdSettime(timer, unix.TFD_TIMER_ABSTIME, &unix.ItimerSpec{Value: unix.NsecToTimespec(s.Deadline)}, nil); err != nil {
+		return err
+	}
+	disk, err := os.OpenFile(filepath.Join(c.Root, job+".raw"), os.O_RDWR|unix.O_NOFOLLOW, 0)
+	if err != nil {
+		return err
+	}
+	defer disk.Close()
+	i, err := disk.Stat()
+	if err != nil || i.Size() != int64(SmallBudget().VirtualDiskMiB)<<20 || !i.Mode().IsRegular() {
+		return ErrInvalid
+	}
+	st := i.Sys().(*syscall.Stat_t)
+	if st.Ino != s.DiskIno || uint64(st.Dev) != s.DiskDev {
+		return ErrConflict
+	}
+	q := exec.Command(c.QEMU, qemuArgs()...)
+	q.Env = []string{"PATH=/usr/bin", "LANG=C"}
+	q.ExtraFiles = []*os.File{disk}
+	q.SysProcAttr = &syscall.SysProcAttr{Credential: &syscall.Credential{Uid: c.UID, Gid: c.GID, Groups: []uint32{c.KVMGID}}, Pdeathsig: syscall.SIGKILL}
+	if err = q.Start(); err != nil {
+		return err
+	}
+	done := make(chan error, 1)
+	go func() { done <- q.Wait() }()
+	deadline := make(chan struct{})
+	go func() { var data [8]byte; _, _ = unix.Read(timer, data[:]); close(deadline) }()
+	// Ensure QEMU did not immediately reject KVM or a required control.
+	select {
+	case err = <-done:
+		return fmt.Errorf("guest exited during launch: %w", err)
+	case <-time.After(300 * time.Millisecond):
+	}
+	ready, err := os.OpenFile(filepath.Join(c.Root, job+".ready"), os.O_CREATE|os.O_EXCL|os.O_WRONLY|unix.O_NOFOLLOW, 0600)
+	if err != nil {
+		_ = q.Process.Kill()
+		<-done
+		return err
+	}
+	ri, e := ready.Stat()
+	if e == nil {
+		rs := ri.Sys().(*syscall.Stat_t)
+		s.ReadyDev = uint64(rs.Dev)
+		s.ReadyIno = rs.Ino
+		e = b.write(s)
+	}
+	if e == nil {
+		e = ready.Sync()
+	}
+	_ = ready.Close()
+	if e != nil {
+		_ = q.Process.Kill()
+		<-done
+		return e
+	}
+	unlock(l)
+	l = nil
+	select {
+	case err = <-done:
+		return err
+	case <-ctx.Done():
+	case <-deadline:
+	}
+	_ = q.Process.Kill()
+	<-done
+	return nil
+}
+
+func qemuArgs() []string {
+	return []string{"-no-user-config", "-nodefaults", "-machine", "q35,accel=kvm", "-cpu", "host", "-smp", "2", "-m", "4096", "-display", "none", "-serial", "none", "-monitor", "none", "-nic", "none", "-no-reboot",
+		"-sandbox", "on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny",
+		"-add-fd", "fd=3,set=1", "-drive", "file=/dev/fdset/1,format=raw,if=virtio,cache=writeback,aio=threads,throttling.iops-total=1000"}
+}
+
+func expireLinuxGuest(ctx context.Context, config, job string) error {
+	if !identifier.MatchString(job) {
+		return ErrInvalid
+	}
+	c, err := loadLinuxConfig(config)
+	if err != nil {
+		return err
+	}
+	// Do not require KVM/image/backend health to kill an already admitted guest.
+	if os.Geteuid() != 0 || validateLinuxConfig(c) != nil || config != filepath.Join(c.Root, "backend.json") {
+		return ErrUnavailable
+	}
+	b := &linuxBackend{c}
+	s, err := b.read(job)
+	if err != nil {
+		return err
+	}
+	if !validMachine(s.Machine, c) {
+		return ErrInvalid
+	}
+	boot, err := bootID()
+	if err != nil {
+		return err
+	}
+	now, err := bootNow()
+	if err != nil {
+		return err
+	}
+	if boot == s.BootID && now < s.Deadline {
+		return ErrConflict
+	}
+	if _, active, e := b.unit(ctx, s.Machine); e != nil {
+		return e
+	} else if active {
+		if _, e = hostCommand(ctx, "/usr/bin/systemctl", "kill", "--signal=SIGKILL", "--kill-whom=all", unitName(job)); e != nil {
+			return e
+		}
+		if _, e = hostCommand(ctx, "/usr/bin/systemctl", "stop", unitName(job)); e != nil {
+			return e
+		}
+	}
+	l, err := b.lock(ctx)
+	if err != nil {
+		return err
+	}
+	defer unlock(l)
+	current, err := b.read(job)
+	if err != nil || !sameMachine(current.Machine, s.Machine) {
+		return ErrConflict
+	}
+	current.Fenced = true
+	return b.write(current)
+}
