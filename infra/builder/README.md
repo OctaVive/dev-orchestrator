@@ -150,7 +150,8 @@ No service automatically asserts M04 PASS. Default CLI backend is still disabled
   PID-1 `RuntimeMaxSec`, independent absolute boot-time alarm timer, and timerfd
   supervisor enforce lifetime. Guard/API/controller failure cannot renew it.
 - Expiry verifies ownership before killing the exact unit; cleanup additionally
-  verifies empty cgroup and inode/device/link identities before removing the
+  verifies empty cgroup and filesystem UUID/inode/link identities (legacy records
+  retain device/inode checks) before removing the
   exact `.raw`/`.ready` files. No recursive deletion. Foreign collisions,
   interrupted unknown files, or unverifiable state quarantine capacity.
 - A kernel/PID1/hypervisor failure cannot guarantee deadlines. CLOCK_BOOTTIME
@@ -172,3 +173,62 @@ Rollback: disable these two named service units, wait for/confirm all exact
 owned guests and timers to stop, preserve ledger/tombstones/evidence, then
 replace only reviewed binaries/config. Do not erase fencing history or reuse a
 job ID. No automated existing-ledger upgrade is provided.
+
+## Extended real-host matrix harness
+
+`internal/provisioner/linux_matrix_linux_test.go` and
+`internal/provisionerrpc/linux_matrix_linux_test.go` add opt-in tests for boot and
+image-pin verification, fresh disks, actual QEMU credentials/FDs/namespaces,
+bounded CPU/memory/IO/PID fixtures, real API replay and service loss, allocation
+failure, cleanup quarantine, SIGKILL recovery and a foreign systemd canary.
+Ordinary `go test` skips these privileged cases.
+
+Build both test packages as the normal user, review the source and hashes, and
+install their exact binaries into root-owned `/usr/local/libexec` paths before
+running them as root. Besides `M04_DISPOSABLE_HOST=YES-I-AUTHORIZE-REAL-KVM`, these
+tests require `M04_MATRIX_ROOT` naming a new trusted private lab directory with
+separate `idle`, `cpu`, `memory`, `io`, `pids`, `api`, `tampered` and `allocation`
+backend roots. Each root must have its own reviewed `backend.json`; its `root`
+must match that directory. Use never-booted, credential-free fixtures from the
+reviewed builder and pin each exact image. The tampered fixture changes one byte
+while retaining the original pin. The allocation root must be a separate small
+ext4/XFS test filesystem so the 10 GiB allocation returns ENOSPC without filling
+the OS filesystem. Never repoint an existing production configuration.
+
+Run one case at a time with `-test.count=1 -test.v`, capture each exit code, and
+confirm cleanup before the next guest. The crash-recovery test SIGKILLs only its
+checkpointed test subprocess; guests still expire independently. API tests use
+short-lived private test certificates and temporary loopback listeners, without
+installing/enabling the production services. Preserve private ledgers, fenced
+JSON and all failed/retried logs. Test output is evidence, not release sign-off.
+
+The ledger/metadata-only V14 subtest is disabled unless explicitly enabled with
+`M04_MATRIX_V14=YES-I-AUTHORIZE-SNAPSHOT-TESTS`; it does not implement the separate
+clock-change/reboot procedure. Those operations still require the isolated
+outer-VM snapshot described in the acceptance procedure. A requested skip, an
+unreviewed patch posture, or an unresolved prior orphan keeps full M04 unpassed.
+
+Guest file ownership records now capture the filesystem UUID directly from the
+open disk/ready file (`FS_IOC_GETFSUUID`), alongside the inode. UUID-aware records
+remain valid if Linux renumbers the same filesystem after a storage-controller
+or outer-hypervisor change; foreign filesystems and different inodes still fail
+closed. The original device number remains in the audit record. Boot-ID/expiry
+checks still prevent starting any pre-reboot guest. On older kernels without
+this ioctl, records retain the strict legacy device/inode check.
+
+Replace the provisioner and every installed host/matrix/RPC test binary together
+before admitting new guests: older strict JSON readers do not understand the
+new optional identity fields. Stop admission and confirm no owned guest first;
+never replace a supervisor binary while guests are running.
+
+Legacy records lacking the UUID are never automatically accepted after device
+renumbering. The opt-in `TestLinuxMaintenanceRecoverLegacyFilesystem` maintenance
+case accepts only an explicitly identified, fenced, expired, prior-boot disk with
+expected device/inode, actual filesystem UUID and reviewed whole-file SHA-256.
+It requires a trusted private root-owned backup directory; it durably preserves
+the original journal/proof and an audit record before enrolling the stable UUID,
+then uses normal backend cleanup. It does not change the recorded device number,
+lease, deadline or ownership proof. This is exact-record recovery, never global
+state rewriting or permission to ignore identity mismatches. Use only after
+independent migration evidence review; its authorization variables are absent
+from normal tests and production RPC.

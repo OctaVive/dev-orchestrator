@@ -6,7 +6,7 @@ Security-first, self-hosted Git-to-container application portal. Administrators 
 
 **PH1 in progress: P1-M01 contracts, P1-M02 SQLite persistence and P1-M03 authentication API.** A TLS-only JSON API can now be run explicitly; there is no GUI or working deployment platform yet. No Docker integration, repository execution or Git cloning exists.
 
-**P1-M04 Linux backend implemented; acceptance NOT PASSED.** Explicit QEMU/KVM/systemd backend includes pinned raw images, resource limits, no-NIC guests, independent deadlines and ownership-safe cleanup. Execution defaults to disabled; no simulator or unsafe fallback. The [mandatory real-host procedure](docs/testing/P1-M04-real-host.md) **must execute successfully before M04 PASS**. See [implementation status](docs/implementation/build-provisioner.md).
+**P1-M04: Implemented/tested\*.** \* V14 and V15 marked as SKIP. V01–V13 and V16 passed the real-host checks; the skipped cases are not passes. Explicit QEMU/KVM/systemd backend includes pinned raw images, resource limits, no-NIC guests, independent deadlines and ownership-safe cleanup. Execution defaults to disabled; no simulator or unsafe fallback. See the [acceptance record](docs/testing/P1-M04-acceptance-report.md) and [real-host procedure](docs/testing/P1-M04-real-host.md) for results and the qualified status. See [implementation status](docs/implementation/build-provisioner.md).
 
 Testing after cloning onto a Debian-based Linux VM: [M04 check-off test plan](docs/testing/P1-M04-linux-checklist.md).
 
@@ -22,7 +22,7 @@ Implemented:
 - Real database concurrency, failure rollback and subprocess crash-recovery tests.
 - Separate operator-only first-admin setup, Argon2id passwords, hashed server-side sessions, CSRF, rate limits and backend role checks.
 - TLS-only API entrypoint (`cmd/api`) and real local HTTPS authentication tests.
-- Independent fixed-template build-lease contract, replay/idempotency ledger, expiry/cleanup state machine and mTLS service boundary (test-only VM simulator; no real backend).
+- Independent fixed-template build-lease contract, replay/idempotency ledger, expiry/cleanup state machine, mTLS boundary and tested real QEMU/KVM/systemd backend.
 
 Not implemented: full TOTP/user/ACL administration, existing-data migration upgrades/backup workflow, agent signature verification/replay storage, Compose parsing, Git/network isolation, image scanning, Docker execution, UI and application proxy. API authentication is **not application gateway authorization, SSRF protection or proof of runtime isolation**. No real deployment is enabled.
 

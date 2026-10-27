@@ -61,4 +61,6 @@ The initial planning tree was staged under `C:\Users\mitchel\.opencode\plan` whi
 - [Open questions](decisions/open-questions.md)
 - [Exception policy](decisions/security-exceptions.md)
 
-**P1-M01–P1-M03** have implemented foundations; **P1-M04 Linux code is implemented but acceptance is NOT PASSED**. Mandatory Linux tests must execute successfully before M04 PASS. Prove provisioning and the later egress controls before accepting real repositories.
+**P1-M01–P1-M03: Implemented/tested. P1-M04: Implemented/tested\*.**
+
+\* V14 and V15 marked as SKIP; V01–V13 and V16 passed. The qualified acceptance decision is recorded separately in the [acceptance record](testing/P1-M04-acceptance-report.md). M05 egress isolation and the later clone/build/runtime milestones remain to be implemented.

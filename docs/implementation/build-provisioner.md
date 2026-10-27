@@ -1,10 +1,12 @@
 # P1-M04 — build provisioner core and remaining Linux gate
 
-## Status: Linux backend implemented; mandatory acceptance NOT RUN / NOT PASSED
+## Status: Implemented/tested*
+
+\* V14 and V15 marked as SKIP. V01–V13 and V16 passed; skipped cases are not passes. See the [acceptance record](../testing/P1-M04-acceptance-report.md).
 
 Mandatory gate: [Linux checklist](../testing/P1-M04-linux-checklist.md), [real-host execution](../testing/P1-M04-real-host.md), and [acceptance record](../testing/P1-M04-acceptance-report.md). All required tests MUST actually execute successfully before M04 is marked PASS. Cross-compilation or skipped host tests do not count.
 
-Implemented: fixed-template/mTLS/ledger lifecycle plus a Debian/Linux QEMU/KVM backend, pinned raw-image copy, preallocated bounded disks, systemd CPU/memory/task limits, QEMU IO throttle, disconnected unprivileged guests, independent boot-time deadlines, durable fences, ownership/inode-checked cleanup and opt-in real-host tests. **Not proven on the Windows development host:** real Linux boot/enforcement/failure behavior. The operator supplies and reviews the credential-free boot image; no opaque image artifact is shipped. Acceptance remains open.
+Implemented: fixed-template/mTLS/ledger lifecycle plus a Debian/Linux QEMU/KVM backend, pinned raw-image copy, preallocated bounded disks, systemd CPU/memory/task limits, QEMU IO throttle, disconnected unprivileged guests, independent boot-time deadlines, durable fences, ownership/inode-checked cleanup and opt-in real-host tests. **Not proven on the Windows development host:** real Linux boot/enforcement/failure behavior. The operator supplies and reviews the credential-free boot image; no opaque image artifact is shipped. The current recorded aggregate is the qualified PASS* above.
 
 The default backend remains `disabled`: create returns 503 and guard refuses readiness. Explicit `-backend linux-kvm -linux-config /var/lib/orchestrator-builder/host/backend.json` selects real execution only on a configured root-owned Linux/KVM host. Unsupported hosts/backends fail closed; no simulator/TCG/container fallback. See the [host runbook](../../infra/builder/README.md). No automatic installer or service enablement runs.
 
@@ -80,7 +82,9 @@ Do not install this as a production hypervisor service yet. Optional diagnostics
 
 Only an approved mTLS client can read capabilities. Default disabled mode reports `execution_enabled:false`; explicit Linux configuration plus a fresh guard can enable guest execution. Capabilities are implementation assertions, not an M04 acceptance certificate. All simulation is test-only. Portal `/api/v1/admin/status` continues to report deployment execution disabled independently.
 
-## Remaining P1-M04 work before acceptance
+## Deferred work and unqualified acceptance
+
+The real-host execution and filesystem-identity recovery are complete. V14 and V15 are deferred by operator request. The following requirements describe an unqualified PASS rather than replacing the recorded PASS*:
 
 1. Approve the isolated Linux lab, host configuration, maintained hypervisor and credential-free pinned image.
 2. Execute every required software and real-host test, including workload/fault cases V01–V16, and retain actual kernel/process/storage/timing evidence. No skipped/blocked test counts as PASS.

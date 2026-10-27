@@ -28,13 +28,16 @@ EOF
 : "${EVIDENCE:?Create/export a private evidence directory first; see --help}"
 [[ -d $EVIDENCE && ! -L $EVIDENCE ]] || { echo 'Invalid evidence directory.' >&2; exit 1; }
 EVIDENCE="$(realpath -- "$EVIDENCE")"
-[[ $EVIDENCE != "$ROOT" && $EVIDENCE != "$ROOT/"* ]]
+[[ $EVIDENCE != "$ROOT" && $EVIDENCE != "$ROOT/"* ]] || {
+  echo 'Evidence directory must be outside the checkout.' >&2; exit 1;
+}
 [[ $(stat -c %u "$EVIDENCE") == $(id -u) && $(stat -c %a "$EVIDENCE") == 700 ]] || {
   echo 'Evidence directory must be owned by you, mode 0700.' >&2; exit 1;
 }
 RUN="$(mktemp -d "$EVIDENCE/${1}.XXXXXX")"
 exec > >(tee "$RUN/output.txt") 2>&1
 trap 'rc=$?; printf "%s\n" "$rc" > "$RUN/exit-code.txt"' EXIT
+trap 'rc=$?; echo "FAILED: acceptance helper line $LINENO (exit $rc); evidence: $RUN" >&2' ERR
 echo "Evidence: $RUN"
 date -u
 git rev-parse HEAD
@@ -43,7 +46,7 @@ export GOTOOLCHAIN=local
 
 case $1 in
   preflight)
-    [[ $(uname -m) == x86_64 ]]
+    [[ $(uname -m) == x86_64 ]] || { echo 'BLOCKED: requires x86-64.' >&2; exit 1; }
     id
     cat /etc/os-release
     uname -a
@@ -52,9 +55,15 @@ case $1 in
     free -h
     df -h "$EVIDENCE"
     findmnt -T "$EVIDENCE" -o TARGET,SOURCE,FSTYPE,OPTIONS
-    [[ $(stat -fc %T /sys/fs/cgroup) == cgroup2fs ]]
-    [[ $(cat /proc/1/comm) == systemd ]]
-    [[ -c /dev/kvm && -r /dev/kvm && -w /dev/kvm ]]
+    [[ $(stat -fc %T /sys/fs/cgroup) == cgroup2fs && $(cat /proc/1/comm) == systemd ]] || {
+      echo 'BLOCKED: requires systemd PID 1 and cgroup v2.' >&2; exit 1;
+    }
+    [[ -c /dev/kvm && -r /dev/kvm && -w /dev/kvm ]] || {
+      echo 'BLOCKED: /dev/kvm must exist and be readable/writable by the current user.' >&2
+      id
+      ls -l /dev/kvm || true
+      exit 1
+    }
     qemu-system-x86_64 --version
     qemu-img --version
     qemu-system-x86_64 -accel help
@@ -74,6 +83,10 @@ case $1 in
   host-tests)
     [[ ${M04_DISPOSABLE_HOST:-} == YES-I-AUTHORIZE-REAL-KVM ]] || {
       echo 'Explicit disposable-lab authorization required.' >&2; exit 1;
+    }
+    sudo -n true || {
+      echo 'BLOCKED: sudo -n true failed. Authenticate sudo in your lab session before running host-tests.' >&2
+      exit 1
     }
     virt="$(systemd-detect-virt --vm || true)"
     [[ -n $virt && $virt != none ]] || {

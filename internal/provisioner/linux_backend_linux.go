@@ -19,6 +19,7 @@ import (
 	"strings"
 	"syscall"
 	"time"
+	"unsafe"
 
 	"golang.org/x/sys/unix"
 )
@@ -39,15 +40,68 @@ func (d *launchDiagnostic) Write(p []byte) (int, error) {
 	}
 	return n, nil
 }
+
 type hostMachine struct {
-	Machine  Machine
-	BootID   string
-	Deadline int64 // absolute CLOCK_BOOTTIME nanoseconds; never renewed
-	Fenced   bool
-	DiskDev  uint64
-	DiskIno  uint64
-	ReadyDev uint64
-	ReadyIno uint64
+	Machine     Machine
+	BootID      string
+	Deadline    int64 // absolute CLOCK_BOOTTIME nanoseconds; never renewed
+	Fenced      bool
+	DiskDev     uint64
+	DiskIno     uint64
+	DiskFSUUID  string `json:",omitempty"`
+	ReadyDev    uint64
+	ReadyIno    uint64
+	ReadyFSUUID string `json:",omitempty"`
+}
+
+// FS_IOC_GETFSUUID reads the filesystem's UUID through an existing file FD.
+// Unlike st_dev (and XFS statfs.f_fsid), it survives a storage-controller or
+// hypervisor change. Linux amd64 UAPI: _IOR(0x15, 0, struct fsuuid2), 17 bytes.
+// Older kernels retain the legacy device/inode check rather than guessing.
+func fileFilesystemUUID(f *os.File) (string, error) {
+	var value [17]byte
+	_, _, errno := unix.Syscall(unix.SYS_IOCTL, f.Fd(), 0x80111500, uintptr(unsafe.Pointer(&value[0])))
+	runtime.KeepAlive(f)
+	if errno == unix.ENOTTY || errno == unix.EOPNOTSUPP || errno == unix.ENOSYS {
+		return "", nil
+	}
+	if errno != 0 {
+		return "", errno
+	}
+	if value[0] != 16 || bytes.Equal(value[1:], make([]byte, 16)) {
+		return "", ErrUnavailable
+	}
+	return hex.EncodeToString(value[1:]), nil
+}
+
+func sameOwnedFile(dev, ino uint64, fsUUID string, currentDev, currentIno uint64, currentUUID string) bool {
+	if ino == 0 || ino != currentIno {
+		return false
+	}
+	if fsUUID == "" {
+		return dev == currentDev
+	} // legacy: never infer migration
+	uuid, err := hex.DecodeString(fsUUID)
+	return err == nil && len(uuid) == 16 && !bytes.Equal(uuid, make([]byte, 16)) && fsUUID == currentUUID
+}
+
+func verifyOwnedFile(f *os.File, info os.FileInfo, dev, ino uint64, fsUUID string) error {
+	st, ok := info.Sys().(*syscall.Stat_t)
+	if !ok {
+		return ErrConflict
+	}
+	var currentUUID string
+	if fsUUID != "" {
+		var err error
+		currentUUID, err = fileFilesystemUUID(f)
+		if err != nil {
+			return fmt.Errorf("%w: read filesystem UUID: %v", ErrUnavailable, err)
+		}
+	}
+	if !sameOwnedFile(dev, ino, fsUUID, uint64(st.Dev), st.Ino, currentUUID) {
+		return ErrConflict
+	}
+	return nil
 }
 
 // Every ancestor must be root-owned and not group/world writable. This excludes
@@ -405,14 +459,44 @@ func (b *linuxBackend) Create(ctx context.Context, m Machine) error {
 	// Release lock before waiting: helper must acquire it to validate the fence.
 	unlock(l)
 	l = nil
+	return waitGuestReady(ctx, func() (bool, error) {
+		_, err := os.Stat(filepath.Join(b.c.Root, m.Lease.JobID+".ready"))
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return err == nil, err
+	}, func() (bool, error) {
+		_, active, err := b.unit(ctx, m) // verifies ownership before trusting state
+		return active, err
+	}, unitName(m.Lease.JobID))
+}
+
+// systemd-run --no-block acknowledges admission, not successful startup.
+// A dead supervisor cannot publish readiness; report it without spending the
+// entire operation budget. Activating units remain eligible (ExecStartPre).
+func waitGuestReady(ctx context.Context, ready func() (bool, error), active func() (bool, error), unit string) error {
 	for {
-		if _, err = os.Stat(filepath.Join(b.c.Root, m.Lease.JobID+".ready")); err == nil {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		ok, err := ready()
+		if err != nil {
+			return err
+		}
+		running, err := active()
+		if err != nil {
+			return err
+		}
+		if !running {
+			return fmt.Errorf("%w: guest unit %s exited before readiness; inspect journalctl -b -u %s", ErrUnavailable, unit, unit)
+		}
+		if ok {
 			return nil
 		}
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
-		case <-time.After(25 * time.Millisecond):
+		case <-time.After(100 * time.Millisecond):
 		}
 	}
 }
@@ -449,8 +533,13 @@ func (b *linuxBackend) prepare(ctx context.Context, s *hostMachine) error {
 	st := info.Sys().(*syscall.Stat_t)
 	s.DiskDev = uint64(st.Dev)
 	s.DiskIno = st.Ino
+	var identityErr error
+	s.DiskFSUUID, identityErr = fileFilesystemUUID(d)
 	if err = b.write(*s); err != nil {
 		return err
+	}
+	if identityErr != nil {
+		return identityErr
 	}
 	if err = unix.Fallocate(int(d.Fd()), 0, 0, int64(m.Budget.VirtualDiskMiB)<<20); err != nil {
 		return err
@@ -547,12 +636,25 @@ func (b *linuxBackend) Cleanup(ctx context.Context, m Machine) (CleanupResult, e
 		if !i.Mode().IsRegular() || st.Nlink != 1 {
 			return CleanupResult{}, ErrConflict
 		}
-		dev, ino := s.DiskDev, s.DiskIno
+		dev, ino, fsUUID := s.DiskDev, s.DiskIno, s.DiskFSUUID
 		if suffix == ".ready" {
 			dev, ino = s.ReadyDev, s.ReadyIno
+			fsUUID = s.ReadyFSUUID
 		}
-		if ino == 0 || ino != st.Ino || dev != uint64(st.Dev) {
-			return CleanupResult{}, ErrConflict
+		f, e := os.OpenFile(p, os.O_RDONLY|unix.O_NOFOLLOW|unix.O_NONBLOCK, 0)
+		if e != nil {
+			return CleanupResult{}, e
+		}
+		current, e := f.Stat()
+		if e == nil && !os.SameFile(i, current) {
+			e = ErrConflict
+		}
+		if e == nil {
+			e = verifyOwnedFile(f, current, dev, ino, fsUUID)
+		}
+		_ = f.Close()
+		if e != nil {
+			return CleanupResult{}, e
 		}
 		if err = os.Remove(p); err != nil {
 			return CleanupResult{}, err
@@ -641,9 +743,8 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 	if err != nil || i.Size() != int64(SmallBudget().VirtualDiskMiB)<<20 || !i.Mode().IsRegular() {
 		return ErrInvalid
 	}
-	st := i.Sys().(*syscall.Stat_t)
-	if st.Ino != s.DiskIno || uint64(st.Dev) != s.DiskDev {
-		return ErrConflict
+	if err = verifyOwnedFile(disk, i, s.DiskDev, s.DiskIno, s.DiskFSUUID); err != nil {
+		return err
 	}
 	// QEMU may open an fdset read-only during block initialization even for a
 	// writable raw drive. fdset lookup requires an exact access-mode match.
@@ -657,14 +758,11 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 	if err != nil || !os.SameFile(i, readInfo) {
 		return ErrConflict
 	}
-	q := exec.Command(c.QEMU, qemuArgs()...)
+	q := guestCommand(c, disk, readDisk)
 	var diagnostic launchDiagnostic
 	q.Stderr = &diagnostic
-	q.Env = []string{"PATH=/usr/bin", "LANG=C"}
-	q.ExtraFiles = []*os.File{disk, readDisk}
-	q.SysProcAttr = &syscall.SysProcAttr{Credential: &syscall.Credential{Uid: c.UID, Gid: c.GID, Groups: []uint32{c.KVMGID}}, Pdeathsig: syscall.SIGKILL}
 	if err = q.Start(); err != nil {
-		return err
+		return fmt.Errorf("start guest QEMU: %w", err)
 	}
 	done := make(chan error, 1)
 	go func() { done <- q.Wait() }()
@@ -673,7 +771,7 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 	// Ensure QEMU did not immediately reject KVM or a required control.
 	select {
 	case err = <-done:
-		return fmt.Errorf("guest exited during launch: %w; qemu stderr: %q", err, diagnostic.String())
+		return guestExitError(err, &diagnostic)
 	case <-time.After(300 * time.Millisecond):
 	}
 	ready, err := os.OpenFile(filepath.Join(c.Root, job+".ready"), os.O_CREATE|os.O_EXCL|os.O_WRONLY|unix.O_NOFOLLOW, 0600)
@@ -687,7 +785,12 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 		rs := ri.Sys().(*syscall.Stat_t)
 		s.ReadyDev = uint64(rs.Dev)
 		s.ReadyIno = rs.Ino
+		var identityErr error
+		s.ReadyFSUUID, identityErr = fileFilesystemUUID(ready)
 		e = b.write(s)
+		if e == nil {
+			e = identityErr
+		}
 	}
 	if e == nil {
 		e = ready.Sync()
@@ -702,13 +805,30 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 	l = nil
 	select {
 	case err = <-done:
-		return err
+		return guestExitError(err, &diagnostic)
 	case <-ctx.Done():
 	case <-deadline:
 	}
 	_ = q.Process.Kill()
 	<-done
 	return nil
+}
+
+// Called only after Wait has drained the bounded stderr buffer.
+func guestExitError(err error, diagnostic *launchDiagnostic) error {
+	if err == nil {
+		err = ErrUnavailable // even exit 0 is unexpected before expiry/cancellation
+	}
+	return fmt.Errorf("guest exited: %w; qemu stderr: %q", err, diagnostic.String())
+}
+
+func guestCommand(c LinuxConfig, disk, readDisk *os.File) *exec.Cmd {
+	q := exec.Command(c.QEMU, qemuArgs()...)
+	q.Env = []string{"PATH=/usr/bin", "LANG=C"}
+	// ExtraFiles starts at child FD 3, matching the two fixed -add-fd options.
+	q.ExtraFiles = []*os.File{disk, readDisk}
+	q.SysProcAttr = &syscall.SysProcAttr{Credential: &syscall.Credential{Uid: c.UID, Gid: c.GID, Groups: []uint32{c.KVMGID}}, Pdeathsig: syscall.SIGKILL}
+	return q
 }
 
 func qemuArgs() []string {

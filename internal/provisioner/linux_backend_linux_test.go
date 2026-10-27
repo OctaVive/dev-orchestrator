@@ -144,6 +144,16 @@ func TestLinuxHostLifecycleAndKernelEnvelope(t *testing.T) {
 	labCreate(t, b, m)
 	ctx, cancel := context.WithTimeout(context.Background(), 80*time.Second)
 	defer cancel()
+	for property, want := range map[string]string{
+		"SupplementaryGroups": strconv.FormatUint(uint64(b.c.KVMGID), 10),
+		"StandardError":       "journal",
+	} {
+		out, err := hostCommand(ctx, "/usr/bin/systemctl", "show", unitName(m.Lease.JobID), "--property="+property, "--value")
+		if err != nil || strings.TrimSpace(out) != want {
+			t.Fatalf("%s: got %q, want %q: %v", property, out, want, err)
+		}
+		t.Logf("%s=%s", property, strings.TrimSpace(out))
+	}
 	out, err := hostCommand(ctx, "/usr/bin/systemctl", "show", unitName(m.Lease.JobID), "--property=ControlGroup", "--value")
 	if err != nil {
 		t.Fatal(err)

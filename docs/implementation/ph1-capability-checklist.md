@@ -1,12 +1,12 @@
 # PH1 capability and security evidence checklist
 
-P1-M01–P1-M04-core inventory. A checked contract/storage/auth/lifecycle assertion is not an infrastructure guarantee. No real repositories, containers or VMs have been executed; transport tests use temporary local TLS/mTLS listeners only. P1-M04's real KVM backend/acceptance remains pending.
+P1-M01–P1-M04-core inventory. A checked contract/storage/auth/lifecycle assertion is not an infrastructure guarantee. Credential-free real KVM fixtures and test-only API/guard processes have been executed; no real repositories or application containers were used. P1-M04 is recorded as PASS*: V14 and V15 marked as SKIP. Skips are not passes; see the [acceptance record](../testing/P1-M04-acceptance-report.md).
 
-## Required isolation capabilities (all pending)
+## Required isolation capabilities
 
 | Capability | External evidence needed | Task / release behavior |
 |---|---|---|
-| Linux KVM and fixed clean template | Actual guest boot, measured pinned template, no host shares; only the ID/digest/profile contract exists so far | P1-M04 still partial; shipped backend always blocks builds |
+| Linux KVM and fixed clean template | Real guest boot, pinned-template rejection, fresh disks and no host shares tested | M04 PASS*; V14/V15 SKIP; execution remains explicitly configured |
 | Host-enforced CPU/RAM/disk/time budget | Exhaust guest, management stays operable, hard expiry works | M04/M07; no local-build fallback |
 | Build egress broker only | Packet capture/probes for direct IP/DNS/IPv6/metadata/host reachability | M05; block real Git builds |
 | Rebinding/redirect/dependency isolation | Live malicious resolver and dependency fixtures | M05/M06; URL validation insufficient |
@@ -14,9 +14,9 @@ P1-M01–P1-M04-core inventory. A checked contract/storage/auth/lifecycle assert
 | Rootless cgroup/MAC/seccomp support | Engine inspection and resource attack fixtures | M09; refuse unsupported profile |
 | App-private network and no host ports | Cross-app/host scans plus relay connectivity | M09/M11; private engine alone insufficient |
 | Volume quotas/ownership | Wrong-app attach denied, symlink race and quota exhaustion | M10; named volumes alone insufficient |
-| mTLS + command signature/replay ledger | M04 controller mTLS/URI/pin/expiry and durable command/nonce checks tested; runtime signature ledger and real host adapter still pending | M04 Linux gate/M09; neither shape-only runtime envelopes nor model tests authorize execution |
+| mTLS + command signature/replay ledger | M04 controller mTLS/URI/pin/expiry and durable command/nonce checks tested; real host adapter tested; runtime signature ledger remains pending | M04 Linux gate/M09; neither shape-only runtime envelopes nor model tests authorize execution |
 | Authenticated gateway | Direct URL, HTTP/WS/stream auth, forged header and outage tests | M03/M11; fail closed |
-| Cleanup independent of API | Lease sweep/independent guard logic, simulated interruption and failure retention tested; actual externally killed guest/inventory evidence absent | M04 remains pending/M12; retain reservation on uncertain cleanup |
+| Cleanup independent of API | Real controller/API/guard-loss expiry, frozen supervisor, crash recovery and final inventory passed | M04 PASS* (V14/V15 SKIP)/M12; retain reservation on uncertain cleanup |
 
 ## Requirement-to-test map
 

@@ -1,28 +1,28 @@
-# P1-M04 acceptance record — NOT PASSED
+# P1-M04 acceptance record — PASS*
 
-Copy this file into the private evidence directory. Do not change status to PASS
-until the complete Linux checklist and real-host procedure have been executed.
-Cross-compilation, a skipped host test or simulated lifecycle test cannot pass it.
+**Decision: PASS\*.**
 
-| Required evidence | Result / log / measured value |
+\* V14 and V15 marked as SKIP.
+
+Qualified status recorded at the operator's explicit request on 2026-10-27.
+The skipped cases retain SKIP results; neither is counted as a passed check.
+
+| Required evidence | Recorded result |
 |---|---|
-| Tester, reviewer and UTC date | NOT RUN |
-| Exact commit and source diff | NOT RUN |
-| Debian, kernel, systemd, QEMU, CPU/hypervisor versions | NOT RUN |
-| Nested KVM, cgroup v2, alarm timers, local ext4/XFS | NOT RUN |
-| Approved image SHA-256 and credential-free image review | NOT RUN |
-| S01–S05 and P01–P03 | NOT RUN |
-| S06 fuzz smoke | NOT RUN |
-| Real-host test binary SHA-256; no skipped host tests | NOT RUN |
-| Real creation/release, kernel envelope, tombstone replay | NOT RUN |
-| Frozen supervisor hard expiry, empty cgroup and observed lateness | NOT RUN |
-| Foreign canary unchanged; slot held during cleanup failures | NOT RUN |
-| V01–V16, each evidence path and measured result | NOT RUN |
-| Source/kernel/hypervisor security review | NOT RUN |
-| Baseline versus final exact owned-resource inventory | NOT RUN |
-| Residual risks and operator/reviewer sign-off | NOT RUN |
+| Software tests, vet, race detection and builds | PASS |
+| Repeated concurrency cases, fuzz smoke and permission probes | PASS |
+| Four automated real-host cases | PASS; exit 0, no SKIP |
+| V01–V13 | PASS; rerun after the filesystem-identity fix |
+| V14 — Time/ledger faults | SKIP; operator-requested deferral |
+| V15 — Network/patch posture | SKIP; operator-requested deferral; security findings retained |
+| V16 — Final inventory | PASS; historical disk recovered with its original audit record preserved; final inventory clean |
+| Aggregate M04 status | PASS*; qualification above remains part of the status |
 
-**Decision: NOT PASSED.** Any mandatory FAIL, BLOCKED, SKIP or NOT RUN keeps
-M04 unpassed. The release owner must review the evidence, not merely check that a
-command ran. A changed implementation/image/policy invalidates relevant results;
-repeat affected cases. This record is not permission to enable M05 egress/builds.
+Evidence is retained privately outside this repository:
+
+- Current fix, binary hashes, verification and final inventory: `/home/mitchel/v16-fix.cTsJqG/report.md`.
+- Original matrix execution and skip decisions: `/home/mitchel/m04-acceptance.U8l1UP/report.md`.
+- Pre-recovery investigation: `/home/mitchel/v16-investigation.1DzvUv/report.md`.
+
+No ownership proofs, private test keys or raw evidence are copied into this record.
+This status update does not enable services, M05 networking or untrusted builds.

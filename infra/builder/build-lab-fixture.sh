@@ -57,7 +57,7 @@ MOUNTED=1
 mkdir -p "$MNT/boot/grub" "$ROOT/bin" "$ROOT/sbin" "$ROOT/proc" "$ROOT/sys" "$ROOT/dev" "$ROOT/run" "$ROOT/lib/modules/$KERNEL"
 cp /boot/vmlinuz-"$KERNEL" "$MNT/boot/vmlinuz"
 cp -L /usr/bin/busybox "$ROOT/bin/busybox"
-for name in sh mount mkdir sleep yes kill dd cat awk sync wc; do ln -s busybox "$ROOT/bin/$name"; done
+for name in sh mount mkdir sleep yes kill dd cat awk sync wc timeout; do ln -s busybox "$ROOT/bin/$name"; done
 copy_binary() {
   local src=$1 dest=$2 lib
   cp -L "$src" "$ROOT/$dest"
@@ -81,6 +81,7 @@ mount -t devtmpfs devtmpfs /dev
 mount -t tmpfs tmpfs /run
 mkdir -p /sys/fs/cgroup
 mount -t cgroup2 none /sys/fs/cgroup
+echo +pids > /sys/fs/cgroup/cgroup.subtree_control
 mkdir /sys/fs/cgroup/runner
 echo 512 > /sys/fs/cgroup/runner/pids.max
 modprobe virtio_pci
@@ -96,13 +97,16 @@ case "$MODE" in
     sleep 60; kill "$a" "$b" "$c" "$d"; result CPU-DONE ;;
   memory)
     # Fixed maximum allocation attempt, no unbounded host stress.
-    awk 'BEGIN{s="0123456789abcdef";for(i=0;i<29;i++)s=s s;print length(s)}' >/run/memory-result
+    timeout 30 awk 'BEGIN{s="0123456789abcdef";for(i=0;i<29;i++)s=s s;print length(s)}' >/run/memory-result
     result "MEMORY-DONE status=$?" ;;
   io)
     fio --name=m04 --filename=/dev/vda --offset=1G --size=1G --rw=randwrite --bs=4k --direct=1 --ioengine=libaio --iodepth=32 --runtime=30 --time_based --output=/run/fio.json --output-format=json
     # Full result kept in a fixed 64 KiB tail region; sector marker is separate.
     dd if=/run/fio.json of=/dev/vda bs=512 seek=20971390 count=128 conv=notrunc,fsync
-    result IO-DONE ;;
+    # A write immediately beyond the fixed raw device must fail.
+    dd if=/dev/zero of=/dev/vda bs=512 seek=20971520 count=1 conv=notrunc,fsync
+    end_status=$?
+    result "IO-DONE beyond_end_status=$end_status sectors=$(cat /sys/block/vda/size)" ;;
   pids)
     sh -c 'echo $$ > /sys/fs/cgroup/runner/cgroup.procs; n=0; while [ "$n" -lt 520 ]; do sleep 60 & n=$((n+1)); done; sleep 60' &
     sleep 3

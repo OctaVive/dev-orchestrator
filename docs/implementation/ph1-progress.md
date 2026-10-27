@@ -1,5 +1,15 @@
 # PH1 implementation progress
 
+| Milestone | Status |
+|---|---|
+| P1-M01 — Contracts and domain foundation | Implemented/tested |
+| P1-M02 — SQLite persistence | Implemented/tested |
+| P1-M03 — Authentication API | Implemented/tested |
+| P1-M04 — KVM provisioner and lifecycle | Implemented/tested* |
+| P1-M05–P1-M14 | Planned |
+
+\* V14 and V15 marked as SKIP. V01–V13 and V16 passed; the skipped checks are not passes.
+
 ## P1-M01 — contract and test foundation
 
 Status: foundation implemented and unit/contract checks passing; ready for review. This increment deliberately implements no listener, deployment runner or infrastructure changes. The existing 39 architecture/plan documents are preserved, with their index updated for implementation status.
@@ -113,7 +123,7 @@ No Linux runtime/permission/race-detector result, comprehensive breached-passwor
 
 Credentials decoder fuzz smoke: PASS, 22,042 executions with a 10-second budget and two workers. This is bounded regression evidence, not proof of complete parser/DoS correctness.
 
-## P1-M04 — provisioner lease/mTLS core (PARTIAL)
+## P1-M04 — provisioner lease/mTLS core (historical increment)
 
 Historical foundation status (superseded by the Linux implementation increment below): core implemented; real Linux backend and guest-create/destroy/expiry acceptance not completed at this point. No VM, service installation, image download, hypervisor command or network change was performed.
 
@@ -147,23 +157,21 @@ Executed with portable Go 1.27.3 on Windows:
 
 No actual KVM, host firewall/quota, independent kernel timer, Linux permissions or race-detector result is claimed. No VM image, production credential, service installation or host network setting was created/changed.
 
-## P1-M04 — Linux execution increment
+## P1-M04 — Linux implementation and testing
 
-Status: **Linux backend code implemented; mandatory real-host acceptance NOT RUN / NOT PASSED.**
+Status: **Implemented/tested\*.**
 
-- Explicit `linux-kvm` backend, fail-closed on non-Linux/unsupported/unconfigured hosts; default disabled, no simulator/TCG/container fallback.
-- Direct QEMU under systemd instead of libvirt: fixed non-root QEMU command, no NIC/control socket/host mount, inherited raw-disk FD set and seccomp sandbox.
-- Pinned credential-free operator-supplied raw boot image (<=1 GiB), copied and measured into a preallocated 10 GiB private disk, file-size bound and total 1000 IOPS throttle; systemd CPU/RAM/swap/tasks envelope.
-- Durable root-private ownership/boot-time journals, immutable boot-ID/deadline, system-wide flock/start fencing, PID-1 absolute BOOTTIME alarm expiry plus timerfd supervisor and unit runtime cap.
-- Ownership description, file inode/device/link and empty-cgroup checks before confirmed cleanup; foreign/unknown files quarantine capacity; fences retained permanently.
-- Host example configuration and reviewed service assets/runbook in `infra/builder/`; no install/enable/image download performed by development work.
-- Opt-in real-host tests for VM lifecycle, kernel envelope, independent expiry with SIGSTOPed supervisor and foreign-disk preservation. Ordinary tests explicitly skip privileged host cases.
-- **Mandatory acceptance:** [Linux checklist](../testing/P1-M04-linux-checklist.md) + [real-host procedure](../testing/P1-M04-real-host.md) + [signed report](../testing/P1-M04-acceptance-report.md). Every required real workload/fault case must actually pass before M04 PASS. Model tests and cross-compilation are not substitutes.
+\* V14 and V15 marked as SKIP. V01–V13 and V16 passed; neither skipped case is counted as passed. The separate qualified acceptance decision remains PASS* in the [acceptance record](../testing/P1-M04-acceptance-report.md).
 
-The Windows suite passes and Linux provisioner tests cross-compile. Linux/KVM runtime, race detector, boot-image review and real enforcement evidence remain pending. M05–M14 remain unimplemented.
+- Real QEMU/KVM/systemd backend with fixed pinned images, non-root guests, no NIC, resource limits and independent immutable expiry.
+- Real lifecycle, boot, image tampering, CPU/memory/IO/PID limits, controller/API/guard loss, delayed-start fencing, crash recovery and foreign-resource checks executed successfully.
+- Disk and ready-marker ownership uses stable filesystem UUID/inode identity; storage-controller changes no longer invalidate UUID-aware records. Legacy recovery preserved the original audit record and cleaned the historical disk.
+- Final inventory verified: no owned guest, active timer, populated cgroup, guest disk/ready marker or active test lease remains.
+- Software tests, vet, race detection and deployed-binary verification passed. Private logs, hashes and recovery evidence remain outside the repository.
+- V14 time/ledger fault acceptance and V15 network/patch-posture acceptance remain SKIP at operator request; their findings and deferred work are retained.
 
-Verification for this increment: full uncached `go test -p 1 -count=1 ./...`, Windows and Linux-targeted `go vet ./...`, `go mod verify`, Linux amd64 production build/test-binary cross-compilation, Bash fixture syntax and documentation links passed. The initial full-suite invocation hit its 120-second tool timeout; a complete rerun with a 300-second tool budget passed without changing test/policy deadlines. No privileged Linux fixture build or host acceptance test was executed.
+See the [provisioner implementation](build-provisioner.md), [host procedure](../testing/P1-M04-real-host.md), and [acceptance record](../testing/P1-M04-acceptance-report.md) for details. The earlier core-increment sections document historical implementation stages rather than current M04 limitations.
 
-### Next work: finish P1-M04 on an approved Linux lab
+### Next work: P1-M05 — controlled build egress
 
-Resolve Q01/Q05 (Linux host, virtualization, resources and quota/network mechanisms), then implement/review the fixed Linux backend and independent host deadline/fence. Record actual guest create/destroy, resource exhaustion, controller/provisioner/guard loss and expired-lease inventory evidence before linking it into the executable. Start with no-NIC test guests; M05 must separately prove controlled egress before M06/M07 real repository cloning/building. P1-M08 policy work remains independently implementable without enabling execution.
+Implement and verify the external build egress broker and firewall isolation before M06 repository cloning and M07 builds. M05–M14 remain unimplemented. P1-M08 policy work can proceed independently after M01.

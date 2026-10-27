@@ -1,6 +1,6 @@
 # Mandatory M04 real-host execution procedure
 
-**Acceptance status: NOT RUN / NOT PASSED.** This is a required continuation of
+**Recorded acceptance status: PASS\*.** \* V14 and V15 marked as SKIP. V01–V13 and V16 passed. See the [acceptance record](P1-M04-acceptance-report.md); skipped cases remain SKIP. The full procedure below retains the requirements for an unqualified PASS. This is a required continuation of
 [the Linux checklist](P1-M04-linux-checklist.md), not an optional smoke test.
 All V01–V16 must have actual evidence before M04 PASS. The automated real-host
 tests cover a subset; they do not replace the workload/fault matrix below.
