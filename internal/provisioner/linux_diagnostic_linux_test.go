@@ -2,8 +2,18 @@ package provisioner
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 )
+
+func TestQEMUFDSetIncludesBothAccessModes(t *testing.T) {
+	args := strings.Join(qemuArgs(), " ")
+	for _, required := range []string{"-add-fd fd=3,set=1", "-add-fd fd=4,set=1", "file=/dev/fdset/1,format=raw", "accel=kvm", "-nic none", "throttling.iops-total=1000"} {
+		if !strings.Contains(args, required) {
+			t.Fatalf("missing fixed QEMU argument %q", required)
+		}
+	}
+}
 
 func TestLaunchDiagnosticIsBoundedAndDrains(t *testing.T) {
 	var d launchDiagnostic

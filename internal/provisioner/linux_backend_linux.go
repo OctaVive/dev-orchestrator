@@ -645,11 +645,23 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 	if st.Ino != s.DiskIno || uint64(st.Dev) != s.DiskDev {
 		return ErrConflict
 	}
+	// QEMU may open an fdset read-only during block initialization even for a
+	// writable raw drive. fdset lookup requires an exact access-mode match.
+	// Supply both modes, verifying they refer to the same already-owned inode.
+	readDisk, err := os.OpenFile(filepath.Join(c.Root, job+".raw"), os.O_RDONLY|unix.O_NOFOLLOW, 0)
+	if err != nil {
+		return err
+	}
+	defer readDisk.Close()
+	readInfo, err := readDisk.Stat()
+	if err != nil || !os.SameFile(i, readInfo) {
+		return ErrConflict
+	}
 	q := exec.Command(c.QEMU, qemuArgs()...)
 	var diagnostic launchDiagnostic
 	q.Stderr = &diagnostic
 	q.Env = []string{"PATH=/usr/bin", "LANG=C"}
-	q.ExtraFiles = []*os.File{disk}
+	q.ExtraFiles = []*os.File{disk, readDisk}
 	q.SysProcAttr = &syscall.SysProcAttr{Credential: &syscall.Credential{Uid: c.UID, Gid: c.GID, Groups: []uint32{c.KVMGID}}, Pdeathsig: syscall.SIGKILL}
 	if err = q.Start(); err != nil {
 		return err
@@ -702,7 +714,7 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 func qemuArgs() []string {
 	return []string{"-no-user-config", "-nodefaults", "-machine", "q35,accel=kvm", "-cpu", "host", "-smp", "2", "-m", "4096", "-display", "none", "-serial", "none", "-monitor", "none", "-nic", "none", "-no-reboot",
 		"-sandbox", "on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny",
-		"-add-fd", "fd=3,set=1", "-drive", "file=/dev/fdset/1,format=raw,if=virtio,cache=writeback,aio=threads,throttling.iops-total=1000"}
+		"-add-fd", "fd=3,set=1", "-add-fd", "fd=4,set=1", "-drive", "file=/dev/fdset/1,format=raw,if=virtio,cache=writeback,aio=threads,throttling.iops-total=1000"}
 }
 
 func expireLinuxGuest(ctx context.Context, config, job string) error {
