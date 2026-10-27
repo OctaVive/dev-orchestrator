@@ -65,7 +65,8 @@ Only PH1 currently has implementation milestone folders. PH2-PH5 remain phase pl
 | `requirements.md` | Scope, constraints and requirement definitions | A requirement changes |
 | `requirement-milestones.md` | Requirement-to-milestone assignments | Delivery ownership or dependencies change |
 | `requirement-evidence.md` | Requirement-level evidence and unresolved gaps | Validation provides new evidence |
-| `progress.md` | Overall status and next milestone | A milestone's status changes |
+| `PROJECT-STATUS.md` | Overall project status, current phase/milestone, blockers and next work | Project status or priorities change |
+| `progress.md` | Existing delivery progress records, linked from `PROJECT-STATUS.md` when retained | Delivery progress changes |
 | `plans/` | Phase scope, sequence and acceptance rules | The delivery plan changes |
 | `PH1/README.md` | Phase milestone index | Milestones are added or change status |
 | `PH1/P1M01/README.md` | Milestone scope, dependencies, acceptance and handoff | That milestone progresses |
@@ -81,7 +82,7 @@ Keep one authoritative definition of each requirement or shared contract. Other 
 - Phase folders: `PH1`, `PH2`, `PH3`.
 - Milestone folders: `P1M01`, `P1M02`, `P2M01`.
 - Canonical task IDs in prose, tables and commits: `P1-M01`, `P1-M02`, `P2-M01`.
-- Document filenames: lowercase words separated by hyphens.
+- Document filenames: lowercase words separated by hyphens, except standard entry points such as `README.md` and `PROJECT-STATUS.md`.
 - Every phase and milestone folder has a `README.md` entry point.
 - Use relative Markdown links so copied documentation works in another repository.
 
@@ -105,7 +106,7 @@ docs/
     |-- requirements.md
     |-- requirement-milestones.md
     |-- requirement-evidence.md
-    |-- progress.md
+    |-- PROJECT-STATUS.md            # Overall project status and next work
     |-- specifications/
     |   |-- README.md
     |-- PH1/
@@ -175,6 +176,8 @@ Record unresolved issues, skipped checks and the next dependent milestone.
 
 ## Status and evidence rules
 
+Use `docs/project/PROJECT-STATUS.md` in every project as the authoritative overview of overall project status. Include the last updated date, current phase and milestone, completed work, work in progress, blockers or risks, and next steps. Link to milestone details and acceptance evidence rather than duplicating them. This repository currently uses `progress.md`; when applying this guide to an existing project, consolidate its overall status into `PROJECT-STATUS.md` and update incoming links, retaining useful historical progress records as needed.
+
 Use explicit statuses such as `Planned`, `In progress`, `Implemented; acceptance pending`, `Accepted`, or `Blocked` with the blocking condition. Preserve qualified outcomes such as this repository's M04 status with skipped checks.
 
 Record PASS, FAIL, SKIP and Not run separately. A passing unit test establishes only what it exercises; deployment or infrastructure requirements need evidence from the applicable environment. Link detailed reports from the milestone README and summarize requirement coverage in `requirement-evidence.md`.
@@ -187,14 +190,17 @@ Record PASS, FAIL, SKIP and Not run separately. A passing unit test establishes 
 4. Create phase indexes and milestone READMEs using the template above.
 5. Link shared specifications; keep milestone-specific notes and tests with their milestone.
 6. As implementation progresses, record behavior, validation, limitations and next work.
-7. Update milestone status, the phase index, overall progress and requirement evidence together.
+7. Update milestone status, the phase index, `PROJECT-STATUS.md` and requirement evidence together.
 8. Check relative links after moving documents and remove obsolete duplicate copies.
 
 ## Copyable instruction for a project assistant
 
 ```text
 Organize this project's documentation under docs/project/ using a requirement-to-milestone structure.
-Create requirements.md, requirement-milestones.md, requirement-evidence.md and progress.md.
+Create requirements.md, requirement-milestones.md, requirement-evidence.md and PROJECT-STATUS.md.
+Use docs/project/PROJECT-STATUS.md for overall project status, including the last updated
+date, current phase/milestone, completed and ongoing work, blockers or risks, and next steps.
+Keep it current as project status changes and link to detailed milestone evidence.
 Group milestones by phase: PH1/P1M01/, PH1/P1M02/, then PH2/P2M01/ when needed.
 Give each phase and milestone a README.md.
 Each milestone must identify its requirements, prerequisites, acceptance gate,
