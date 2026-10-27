@@ -1,14 +1,16 @@
 # Trusted Application PLatform
 
+Project delivery: [requirements -> milestones -> implementation and evidence](docs/project/README.md).
+
 Security-first, self-hosted Git-to-container application portal. Administrators deploy Dockerfile or supported Compose applications; application access must pass through an authenticated, authorized gateway.
 
 ## Implementation status
 
 **PH1 in progress: P1-M01 contracts, P1-M02 SQLite persistence and P1-M03 authentication API.** A TLS-only JSON API can now be run explicitly; there is no GUI or working deployment platform yet. No Docker integration, repository execution or Git cloning exists.
 
-**P1-M04: Implemented/tested\*.** \* V14 and V15 marked as SKIP. V01–V13 and V16 passed the real-host checks; the skipped cases are not passes. Explicit QEMU/KVM/systemd backend includes pinned raw images, resource limits, no-NIC guests, independent deadlines and ownership-safe cleanup. Execution defaults to disabled; no simulator or unsafe fallback. See the [acceptance record](docs/testing/P1-M04-acceptance-report.md) and [real-host procedure](docs/testing/P1-M04-real-host.md) for results and the qualified status. See [implementation status](docs/implementation/build-provisioner.md).
+**P1-M04: Implemented/tested\*.** \* V14 and V15 marked as SKIP. V01–V13 and V16 passed the real-host checks; the skipped cases are not passes. Explicit QEMU/KVM/systemd backend includes pinned raw images, resource limits, no-NIC guests, independent deadlines and ownership-safe cleanup. Execution defaults to disabled; no simulator or unsafe fallback. See the [acceptance record](docs/project/PH1/P1M04/testing/acceptance-report.md) and [real-host procedure](docs/project/PH1/P1M04/testing/real-host.md) for results and the qualified status. See [implementation status](docs/project/PH1/P1M04/build-provisioner.md).
 
-Testing after cloning onto a Debian-based Linux VM: [M04 check-off test plan](docs/testing/P1-M04-linux-checklist.md).
+Testing after cloning onto a Debian-based Linux VM: [M04 check-off test plan](docs/project/PH1/P1M04/testing/linux-checklist.md).
 
 Implemented:
 
@@ -39,6 +41,6 @@ go test -cover ./...
 
 No Docker or infrastructure is needed for these tests. They use temporary SQLite files, fixed test-binary subprocesses, real Argon2id (64 MiB per operation) and temporary localhost TLS listeners, never repository commands. Dependencies are pinned; schemas/migrations are embedded and tests never fetch schema URLs at runtime.
 
-API configuration and secure first-admin setup: [auth-core runbook](docs/implementation/auth-core.md). It requires explicit TLS files, a private metadata directory and an expiring out-of-band setup token; no insecure/default login is provided.
+API configuration and secure first-admin setup: [auth-core runbook](docs/project/PH1/P1M03/auth-core.md). It requires explicit TLS files, a private metadata directory and an expiring out-of-band setup token; no insecure/default login is provided.
 
-Architecture: [docs/README.md](docs/README.md). Implementation evidence and next steps: [docs/implementation/ph1-progress.md](docs/implementation/ph1-progress.md). Real execution requires approved Linux KVM infrastructure and external isolation tests first.
+Architecture: [docs/README.md](docs/README.md). Implementation evidence and next steps: [docs/project/progress.md](docs/project/progress.md). Real execution requires approved Linux KVM infrastructure and external isolation tests first.

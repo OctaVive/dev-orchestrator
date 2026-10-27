@@ -1,6 +1,8 @@
 # Secure-by-default embedded container orchestrator
 
-Status: architecture proposal with PH1 implementation started. [Implementation progress](implementation/ph1-progress.md) distinguishes implemented contracts from pending security gates. These plans do not authorize infrastructure changes by themselves.
+Project delivery: [requirements -> milestones -> implementation and evidence](project/README.md).
+
+Status: architecture proposal with PH1 implementation started. [Implementation progress](project/progress.md) distinguishes implemented contracts from pending security gates. These plans do not authorize infrastructure changes by themselves.
 
 ## Location and evidence
 
@@ -18,7 +20,7 @@ The initial planning tree was staged under `C:\Users\mitchel\.opencode\plan` whi
 
 ### Architecture
 
-- [Requirements and assumptions](architecture/requirements.md)
+- [Requirements and assumptions](project/requirements.md)
 - [Five architecture alternatives](architecture/architecture-options.md)
 - [Weighted comparison](architecture/architecture-comparison.md)
 - [Recommended architecture and boundaries](architecture/recommended-architecture.md)
@@ -43,24 +45,24 @@ The initial planning tree was staged under `C:\Users\mitchel\.opencode\plan` whi
 
 ### Implementation specifications
 
-- [Project structure](implementation/project-structure.md)
-- [API](implementation/api-design.md)
-- [Frontend](implementation/frontend-design.md)
-- [Agent and VM lifecycle](implementation/deployment-agent.md)
-- [Reverse proxy](implementation/reverse-proxy.md)
-- [Testing](implementation/testing-strategy.md)
-- [Development environment](implementation/development-environment.md)
-- [PH1 implementation progress](implementation/ph1-progress.md)
-- [PH1 capability and evidence checklist](implementation/ph1-capability-checklist.md)
-- [SQLite storage and migration contract](implementation/sqlite-storage.md)
-- [Authentication API and operator setup](implementation/auth-core.md)
-- [Build provisioner core and remaining Linux gates](implementation/build-provisioner.md)
-- [M04 Debian-based Linux VM check-off test plan](testing/P1-M04-linux-checklist.md)
-- [M04 mandatory real-host execution](testing/P1-M04-real-host.md)
-- [M04 acceptance record — must execute before PASS](testing/P1-M04-acceptance-report.md)
+- [Project structure](project/specifications/project-structure.md)
+- [API](project/specifications/api-design.md)
+- [Frontend](project/specifications/frontend-design.md)
+- [Agent and VM lifecycle](project/specifications/deployment-agent.md)
+- [Reverse proxy](project/specifications/reverse-proxy.md)
+- [Testing](project/specifications/testing-strategy.md)
+- [Development environment](project/specifications/development-environment.md)
+- [PH1 implementation progress](project/progress.md)
+- [PH1 capability and evidence checklist](project/requirement-evidence.md)
+- [SQLite storage and migration contract](project/PH1/P1M02/sqlite-storage.md)
+- [Authentication API and operator setup](project/PH1/P1M03/auth-core.md)
+- [Build provisioner core and remaining Linux gates](project/PH1/P1M04/build-provisioner.md)
+- [M04 Debian-based Linux VM check-off test plan](project/PH1/P1M04/testing/linux-checklist.md)
+- [M04 mandatory real-host execution](project/PH1/P1M04/testing/real-host.md)
+- [M04 acceptance record — must execute before PASS](project/PH1/P1M04/testing/acceptance-report.md)
 - [Open questions](decisions/open-questions.md)
 - [Exception policy](decisions/security-exceptions.md)
 
 **P1-M01–P1-M03: Implemented/tested. P1-M04: Implemented/tested\*.**
 
-\* V14 and V15 marked as SKIP; V01–V13 and V16 passed. The qualified acceptance decision is recorded separately in the [acceptance record](testing/P1-M04-acceptance-report.md). M05 egress isolation and the later clone/build/runtime milestones remain to be implemented.
+\* V14 and V15 marked as SKIP; V01–V13 and V16 passed. The qualified acceptance decision is recorded separately in the [acceptance record](project/PH1/P1M04/testing/acceptance-report.md). M05 egress isolation and the later clone/build/runtime milestones remain to be implemented.

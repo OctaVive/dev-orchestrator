@@ -1,7 +1,7 @@
 # Mandatory M04 real-host execution procedure
 
-**Recorded acceptance status: PASS\*.** \* V14 and V15 marked as SKIP. V01–V13 and V16 passed. See the [acceptance record](P1-M04-acceptance-report.md); skipped cases remain SKIP. The full procedure below retains the requirements for an unqualified PASS. This is a required continuation of
-[the Linux checklist](P1-M04-linux-checklist.md), not an optional smoke test.
+**Recorded acceptance status: PASS\*.** \* V14 and V15 marked as SKIP. V01–V13 and V16 passed. See the [acceptance record](acceptance-report.md); skipped cases remain SKIP. The full procedure below retains the requirements for an unqualified PASS. This is a required continuation of
+[the Linux checklist](linux-checklist.md), not an optional smoke test.
 All V01–V16 must have actual evidence before M04 PASS. The automated real-host
 tests cover a subset; they do not replace the workload/fault matrix below.
 
@@ -12,7 +12,7 @@ systemd PID 1, unified cgroup v2, and private local ext4/XFS storage. Allocate a
 least 8 GiB RAM, 4 vCPUs, and 30 GiB free local disk. No production resources,
 keys or repositories. QEMU/systemd/kernel must be maintained and patched.
 
-Read [the host runbook](../../infra/builder/README.md) and install the reviewed
+Read [the host runbook](../../../../../infra/builder/README.md) and install the reviewed
 binary/config/image there. **Do not start the API or guard yet.** PID-1 alarm
 timers (`WakeSystem=yes`, CLOCK_BOOTTIME) must work in the outer VM: failure is
 BLOCKED, never permission to remove this property or use TCG.
@@ -173,7 +173,7 @@ sudo systemctl list-units --all 'orchestrator-build-*' 'orchestrator-expiry-*' |
 sudo find /var/lib/orchestrator-builder/host -maxdepth 1 -type f -printf '%f %s\n' | tee "$EVIDENCE/artifacts-after.txt"
 ```
 
-Fill [the acceptance report](P1-M04-acceptance-report.md), including every V01–V16
+Fill [the acceptance report](acceptance-report.md), including every V01–V16
 log, observed timing and review/sign-off. **M04 MUST NOT be marked PASS unless
 this procedure has actually run successfully on Linux and every mandatory case
 has passed.** No Linux runtime acceptance has been performed on the Windows

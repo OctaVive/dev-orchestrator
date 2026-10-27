@@ -53,7 +53,7 @@ installed executable/config paths. VM detection is not proof the lab is safe:
 the operator must still approve its isolation. It does not automate or waive the
 remaining V01–V16 workload/fault matrix or acceptance sign-off.
 
-Read [the mandatory procedure](../../docs/testing/P1-M04-real-host.md) first.
+Read [the mandatory procedure](../../docs/project/PH1/P1M04/testing/real-host.md) first.
 Commands below install files/services and reserve real disk/RAM. Run only after
 approving a dedicated Debian-family lab. Nothing is installed automatically.
 Use maintained systemd/QEMU packages; nested KVM, alarm timers and cgroup v2 must

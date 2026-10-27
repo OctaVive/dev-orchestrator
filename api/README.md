@@ -4,7 +4,7 @@
 
 ## Data boundaries
 
-P1-M04 adds `build-lease.schema.json` and a **separate** `provisioner.openapi.yaml`. Controller authority is mTLS URI SAN + explicit CA/leaf pin, never the portal session or a JSON identity field. The shipped command has no executable VM backend. Read [the remaining Linux gates](../docs/implementation/build-provisioner.md) before treating any lease test as isolation evidence.
+P1-M04 adds `build-lease.schema.json` and a **separate** `provisioner.openapi.yaml`. Controller authority is mTLS URI SAN + explicit CA/leaf pin, never the portal session or a JSON identity field. The shipped command has no executable VM backend. Read [the remaining Linux gates](../docs/project/PH1/P1M04/build-provisioner.md) before treating any lease test as isolation evidence.
 
 - Browser deployment intent never contains image approvals, raw Compose, Docker options, proxy config or host paths. Admin/CSRF/app ownership/allowed origin checks must precede enqueue in future handlers.
 - A trusted controller produces normalized agent specs only after clone/build/scan/approval. The agent independently applies current policy. `restricted-v1` is immutable in meaning: private namespaces/network, no host publication, non-root, dropped capabilities, no-new-privileges, read-only root, bounded writable mounts/resources/logs and required seccomp. Do not add a caller-controlled opt-out field.

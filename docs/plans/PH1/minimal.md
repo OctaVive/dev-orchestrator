@@ -33,9 +33,9 @@ Parallelism: M02/M04/M08 after M01; M03 alongside M05/M06; M09 and M07 after own
 
 ## Security and testing
 
-Implementation note: P1-M04 currently has a lease/mTLS/lifecycle core only. Its real guest-create/destroy/expiry acceptance gate is still open; see [current provisioner status](../../implementation/build-provisioner.md). Model tests do not count as KVM or hard-timeout evidence.
+Implementation note: P1-M04 is implemented/tested with qualified PASS*: V14 and V15 remain SKIP. See the [milestone evidence](../../project/PH1/P1M04/README.md) and [acceptance record](../../project/PH1/P1M04/testing/acceptance-report.md). Skipped checks are not passes; model tests alone do not establish host isolation.
 
-mTLS roles and command expiry in M04/M09; no service tokens in untrusted builds. Baseline vulnerability gate blocks known exploited/fixable critical images; fail closed on missing scan. Test secret fixture redaction and escaped log output. Full role deny tests even though user UI is deferred. Use [test strategy](../../implementation/testing-strategy.md), not fake-network tests alone.
+mTLS roles and command expiry in M04/M09; no service tokens in untrusted builds. Baseline vulnerability gate blocks known exploited/fixable critical images; fail closed on missing scan. Test secret fixture redaction and escaped log output. Full role deny tests even though user UI is deferred. Use [test strategy](../../project/specifications/testing-strategy.md), not fake-network tests alone.
 
 ## Risks / complexity / definition of done
 

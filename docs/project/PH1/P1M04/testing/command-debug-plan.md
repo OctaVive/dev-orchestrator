@@ -77,7 +77,7 @@ Read:
 - `internal/provisioner/linux_backend_linux.go`
 - `internal/provisioner/linux_backend_linux_test.go`
 - Relevant manager/ledger code and tests, `cmd/provisioner/main.go`
-- `infra/builder/README.md` and `docs/testing/P1-M04-real-host.md`
+- `infra/builder/README.md` and `docs/project/PH1/P1M04/testing/real-host.md`
 
 Do not overwrite unrelated source changes. Start a private run directory:
 

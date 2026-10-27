@@ -1,6 +1,6 @@
 # PH1 capability and security evidence checklist
 
-P1-M01–P1-M04-core inventory. A checked contract/storage/auth/lifecycle assertion is not an infrastructure guarantee. Credential-free real KVM fixtures and test-only API/guard processes have been executed; no real repositories or application containers were used. P1-M04 is recorded as PASS*: V14 and V15 marked as SKIP. Skips are not passes; see the [acceptance record](../testing/P1-M04-acceptance-report.md).
+P1-M01–P1-M04-core inventory. A checked contract/storage/auth/lifecycle assertion is not an infrastructure guarantee. Credential-free real KVM fixtures and test-only API/guard processes have been executed; no real repositories or application containers were used. P1-M04 is recorded as PASS*: V14 and V15 marked as SKIP. Skips are not passes; see the [acceptance record](PH1/P1M04/testing/acceptance-report.md).
 
 ## Required isolation capabilities
 

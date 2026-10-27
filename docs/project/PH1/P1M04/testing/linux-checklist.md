@@ -1,6 +1,6 @@
 # P1-M04 — Debian-based Linux VM test checklist
 
-**Current M04 status: PASS\*.** \* V14 and V15 marked as SKIP. V01–V13 and V16 passed; neither skipped case is counted as passed. See the [acceptance record](P1-M04-acceptance-report.md). The procedure below describes complete, unqualified acceptance. The explicit Linux QEMU/KVM/systemd backend is implemented; default execution remains disabled. Complete this checklist AND [the mandatory real-host procedure](P1-M04-real-host.md), then sign [the acceptance record](P1-M04-acceptance-report.md). All mandatory tests MUST actually execute successfully before M04 PASS.
+**Current M04 status: PASS\*.** \* V14 and V15 marked as SKIP. V01–V13 and V16 passed; neither skipped case is counted as passed. See the [acceptance record](acceptance-report.md). The procedure below describes complete, unqualified acceptance. The explicit Linux QEMU/KVM/systemd backend is implemented; default execution remains disabled. Complete this checklist AND [the mandatory real-host procedure](real-host.md), then sign [the acceptance record](acceptance-report.md). All mandatory tests MUST actually execute successfully before M04 PASS.
 
 Use `[x]` only after recording evidence. Record **FAIL**, **BLOCKED** or **NOT RUN** rather than ticking an unavailable test. Passing every software test does **not** complete the real-guest acceptance section.
 
@@ -37,7 +37,7 @@ EVIDENCE="$(mktemp -d "$HOME/m04-evidence.XXXXXX")"
 export EVIDENCE
 mkdir -m 700 "$EVIDENCE/tmp"
 export TMPDIR="$EVIDENCE/tmp"
-cp docs/testing/P1-M04-linux-checklist.md "$EVIDENCE/checklist.md"
+cp docs/project/PH1/P1M04/testing/linux-checklist.md "$EVIDENCE/checklist.md"
 printf '%s\n' "$EVIDENCE"
 ```
 
@@ -276,7 +276,7 @@ Send back `checklist.md`, `commit.txt`, distro/kernel/Go details, the relevant f
 
 ## 5. Real nested-KVM acceptance — mandatory, execution pending
 
-Do **not** check these off using software-model logs, an arbitrary manually started VM, libvirt demo, TCG, DinD or a different program. Execute [the real-host procedure](P1-M04-real-host.md): it provides opt-in real backend test commands, workload/fault evidence requirements and mandatory sign-off. Moving the repo to Linux alone is insufficient.
+Do **not** check these off using software-model logs, an arbitrary manually started VM, libvirt demo, TCG, DinD or a different program. Execute [the real-host procedure](real-host.md): it provides opt-in real backend test commands, workload/fault evidence requirements and mandatory sign-off. Moving the repo to Linux alone is insufficient.
 
 Use an **explicitly approved disposable lab** with a pinned credential-free image, dedicated storage/IDs and recorded baseline inventory. Guests have no NIC. Confirm the intended service identity and record backend/kernel/QEMU/systemd/image/policy versions. Do not run resource-exhaustion, process-kill, clock-change or storage-fault tests on production infrastructure.
 
@@ -307,4 +307,4 @@ Use the linked backend-specific procedure; do not improvise dangerous production
 
 **M04 can be accepted only when:** required core checks pass, the actual backend is reviewed, every applicable V01–V16 case passes with evidence, and unsupported patterns/residual risks remain documented. Only then proceed to enabling M05 controlled egress and later real cloning/building. No production repositories or application deployment are authorized by this checklist.
 
-References: [M04 implementation/remaining gates](../implementation/build-provisioner.md), [security evidence checklist](../implementation/ph1-capability-checklist.md), [general test strategy](../implementation/testing-strategy.md).
+References: [M04 implementation/remaining gates](../build-provisioner.md), [security evidence checklist](../../../requirement-evidence.md), [general test strategy](../../../specifications/testing-strategy.md).

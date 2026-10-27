@@ -2,13 +2,13 @@
 
 ## Status: Implemented/tested*
 
-\* V14 and V15 marked as SKIP. V01–V13 and V16 passed; skipped cases are not passes. See the [acceptance record](../testing/P1-M04-acceptance-report.md).
+\* V14 and V15 marked as SKIP. V01–V13 and V16 passed; skipped cases are not passes. See the [acceptance record](testing/acceptance-report.md).
 
-Mandatory gate: [Linux checklist](../testing/P1-M04-linux-checklist.md), [real-host execution](../testing/P1-M04-real-host.md), and [acceptance record](../testing/P1-M04-acceptance-report.md). All required tests MUST actually execute successfully before M04 is marked PASS. Cross-compilation or skipped host tests do not count.
+Mandatory gate: [Linux checklist](testing/linux-checklist.md), [real-host execution](testing/real-host.md), and [acceptance record](testing/acceptance-report.md). All required tests MUST actually execute successfully before M04 is marked PASS. Cross-compilation or skipped host tests do not count.
 
 Implemented: fixed-template/mTLS/ledger lifecycle plus a Debian/Linux QEMU/KVM backend, pinned raw-image copy, preallocated bounded disks, systemd CPU/memory/task limits, QEMU IO throttle, disconnected unprivileged guests, independent boot-time deadlines, durable fences, ownership/inode-checked cleanup and opt-in real-host tests. **Not proven on the Windows development host:** real Linux boot/enforcement/failure behavior. The operator supplies and reviews the credential-free boot image; no opaque image artifact is shipped. The current recorded aggregate is the qualified PASS* above.
 
-The default backend remains `disabled`: create returns 503 and guard refuses readiness. Explicit `-backend linux-kvm -linux-config /var/lib/orchestrator-builder/host/backend.json` selects real execution only on a configured root-owned Linux/KVM host. Unsupported hosts/backends fail closed; no simulator/TCG/container fallback. See the [host runbook](../../infra/builder/README.md). No automatic installer or service enablement runs.
+The default backend remains `disabled`: create returns 503 and guard refuses readiness. Explicit `-backend linux-kvm -linux-config /var/lib/orchestrator-builder/host/backend.json` selects real execution only on a configured root-owned Linux/KVM host. Unsupported hosts/backends fail closed; no simulator/TCG/container fallback. See the [host runbook](../../../../infra/builder/README.md). No automatic installer or service enablement runs.
 
 ## Boundary / implemented components
 
