@@ -2,6 +2,8 @@
 
 Project delivery: [requirements -> milestones -> implementation and evidence](docs/project/README.md).
 
+All phases and completion percentages: [master project status](PROJECT-STATUS.md).
+
 Security-first, self-hosted Git-to-container application portal. Administrators deploy Dockerfile or supported Compose applications; application access must pass through an authenticated, authorized gateway.
 
 ## Implementation status
