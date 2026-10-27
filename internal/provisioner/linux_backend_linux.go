@@ -24,6 +24,21 @@ import (
 )
 
 type linuxBackend struct{ c LinuxConfig }
+
+// Retain only a bounded diagnostic prefix; continue draining child output so
+// excess stderr cannot grow memory or block QEMU. Read only after q.Wait.
+type launchDiagnostic struct{ bytes.Buffer }
+
+func (d *launchDiagnostic) Write(p []byte) (int, error) {
+	n := len(p)
+	if remaining := 4096 - d.Len(); remaining > 0 {
+		if len(p) > remaining {
+			p = p[:remaining]
+		}
+		_, _ = d.Buffer.Write(p)
+	}
+	return n, nil
+}
 type hostMachine struct {
 	Machine  Machine
 	BootID   string
@@ -631,6 +646,8 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 		return ErrConflict
 	}
 	q := exec.Command(c.QEMU, qemuArgs()...)
+	var diagnostic launchDiagnostic
+	q.Stderr = &diagnostic
 	q.Env = []string{"PATH=/usr/bin", "LANG=C"}
 	q.ExtraFiles = []*os.File{disk}
 	q.SysProcAttr = &syscall.SysProcAttr{Credential: &syscall.Credential{Uid: c.UID, Gid: c.GID, Groups: []uint32{c.KVMGID}}, Pdeathsig: syscall.SIGKILL}
@@ -644,7 +661,7 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 	// Ensure QEMU did not immediately reject KVM or a required control.
 	select {
 	case err = <-done:
-		return fmt.Errorf("guest exited during launch: %w", err)
+		return fmt.Errorf("guest exited during launch: %w; qemu stderr: %q", err, diagnostic.String())
 	case <-time.After(300 * time.Millisecond):
 	}
 	ready, err := os.OpenFile(filepath.Join(c.Root, job+".ready"), os.O_CREATE|os.O_EXCL|os.O_WRONLY|unix.O_NOFOLLOW, 0600)
