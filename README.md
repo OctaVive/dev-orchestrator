@@ -1,4 +1,4 @@
-# Trusted Application PLatform
+# Trusted Application Platform
 
 Project delivery: [requirements -> milestones -> implementation and evidence](docs/project/README.md).
 
