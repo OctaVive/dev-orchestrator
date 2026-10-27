@@ -79,8 +79,15 @@ case $1 in
     [[ -n $virt && $virt != none ]] || {
       echo 'Refusing fault tests outside a detected VM. Use a disposable lab VM.' >&2; exit 1;
     }
-    [[ $(cat /proc/1/comm) == systemd && $(stat -fc %T /sys/fs/cgroup) == cgroup2fs ]]
-    [[ -c /dev/kvm && -r /dev/kvm && -w /dev/kvm ]]
+    [[ $(cat /proc/1/comm) == systemd && $(stat -fc %T /sys/fs/cgroup) == cgroup2fs ]] || {
+      echo 'BLOCKED: requires systemd PID 1 and cgroup v2.' >&2; exit 1;
+    }
+    [[ -c /dev/kvm && -r /dev/kvm && -w /dev/kvm ]] || {
+      echo 'BLOCKED: /dev/kvm must exist and be readable/writable by the current user.' >&2
+      id
+      ls -l /dev/kvm || true
+      exit 1
+    }
     # Validate root ownership and non-writability of every installed path component.
     sudo python3 - <<'PY'
 import os, pathlib, stat
