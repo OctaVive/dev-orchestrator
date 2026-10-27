@@ -1,4 +1,4 @@
-# Dev Orchestrator
+# Trusted Application PLatform
 
 Security-first, self-hosted Git-to-container application portal. Administrators deploy Dockerfile or supported Compose applications; application access must pass through an authenticated, authorized gateway.
 
