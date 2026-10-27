@@ -2,6 +2,8 @@
 
 Project delivery: [requirements -> milestones -> implementation and evidence](project/README.md).
 
+Milestone explanations: [low-level design documents by phase](../LLD-documents/README.md), including functional descriptions, technical boundaries, architecture drawings and flowcharts for all delivery tracks.
+
 Status: architecture proposal with PH1 implementation started. [Implementation progress](project/progress.md) distinguishes implemented contracts from pending security gates. These plans do not authorize infrastructure changes by themselves.
 
 ## Location and evidence
