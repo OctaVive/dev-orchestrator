@@ -2,7 +2,7 @@
 
 An administrator submits an approved repository, follows an isolated build, and opens a healthy application through authenticated private ingress.
 
-These documents explain planned design and acceptance. Current implementation and test results remain in the [project status](../../PROJECT-STATUS.md) and linked milestone evidence.
+These documents explain design and acceptance; implemented milestones include concrete interfaces and validation links. Current implementation and test results remain in the [project status](../../PROJECT-STATUS.md) and linked milestone evidence.
 
 ```mermaid
 flowchart LR

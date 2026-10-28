@@ -15,11 +15,26 @@ type LinuxConfig struct {
 	UID        uint32 `json:"uid"`
 	GID        uint32 `json:"gid"`
 	KVMGID     uint32 `json:"kvm_gid"`
+	// Empty/none preserves M04's no-NIC mode. broker-v1 is explicit opt-in.
+	NetworkMode      string `json:"network_mode,omitempty"`
+	EgressPolicy     string `json:"egress_policy,omitempty"`
+	EgressPolicyHash string `json:"egress_policy_hash,omitempty"`
+	EgressCA         string `json:"egress_ca,omitempty"`
+	EgressKey        string `json:"egress_key,omitempty"`
+	EgressCAHash     string `json:"egress_ca_hash,omitempty"`
+	EgressResolver   string `json:"egress_resolver,omitempty"`
+	BrokerExecutable string `json:"broker_executable,omitempty"`
+	BrokerUID        uint32 `json:"broker_uid,omitempty"`
+	BrokerGID        uint32 `json:"broker_gid,omitempty"`
 }
 
 // NewLinuxBackend fails closed on unsupported hosts. There is no emulation or
 // container fallback. Controls report implementation assertions, NOT acceptance.
 func NewLinuxBackend(c LinuxConfig) (Backend, error) { return newLinuxBackend(c) }
+
+// NewLinuxGuardBackend does not require live egress policy/CA health to recover
+// old leases. Create still performs the full admission preflight on every call.
+func NewLinuxGuardBackend(c LinuxConfig) (Backend, error) { return newLinuxGuardBackend(c) }
 
 // RunLinuxGuest is an internal systemd service entry point, not an RPC action.
 func RunLinuxGuest(ctx context.Context, config, job string) error {
@@ -31,3 +46,7 @@ func ExpireLinuxGuest(ctx context.Context, config, job string) error {
 }
 
 func LoadLinuxConfig(path string) (LinuxConfig, error) { return loadLinuxConfig(path) }
+
+func RunLinuxBroker(ctx context.Context, config, job string) error {
+	return runLinuxBroker(ctx, config, job)
+}

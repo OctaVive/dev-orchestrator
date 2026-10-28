@@ -1,12 +1,12 @@
 # P1-M05 test plan — controlled build egress
 
-Status: **Planned; tests not executed**.
+Status: **Executed: software checks and controlled N01–N13 KVM acceptance PASS**. See [implementation evidence](implementation-evidence.md) and the [acceptance report](testing/acceptance-report.md) for actual results.
 
 ## Objective and prerequisites
 
 Prove SEC-07 at the external network boundary: approved HTTPS works through the broker while guest-root attempts cannot reach direct internet, host/management, metadata or other jobs. Application URL validation and mock tests alone are insufficient.
 
-Use an approved disposable Linux KVM host with nftables, packet capture, a dedicated resolver, controlled HTTPS destinations and a credential-free pinned test guest. Keep captures and private CA material outside the repository. Record the baseline host firewall and foreign-resource canaries before testing. Do not run hostile workloads on this Windows development host or shared CI.
+Use an approved disposable Linux KVM host with nftables, packet capture, a dedicated resolver, controlled HTTPS destinations and a credential-free pinned test guest. Keep captures and private CA material outside the repository. Record the baseline host firewall and foreign-resource canaries before testing. Do not run hostile workloads on an unapproved/shared host or shared CI.
 
 Preserve M04 V14/V15 SKIP in all reports. Inspect actual lab network/patch posture before execution; unresolved prerequisites block the affected tests without changing historical M04 results.
 

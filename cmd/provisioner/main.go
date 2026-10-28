@@ -60,6 +60,9 @@ func run(ctx context.Context, args []string) error {
 	if *mode == "host-expire" {
 		return provisioner.ExpireLinuxGuest(ctx, *linuxConfig, *hostJob)
 	}
+	if *mode == "host-broker" {
+		return provisioner.RunLinuxBroker(ctx, *linuxConfig, *hostJob)
+	}
 	var backend provisioner.Backend = provisioner.UnconfiguredBackend{}
 	switch *backendName {
 	case "disabled":
@@ -71,7 +74,11 @@ func run(ctx context.Context, args []string) error {
 		if err != nil {
 			return err
 		}
-		backend, err = provisioner.NewLinuxBackend(c)
+		if *mode == "guard" {
+			backend, err = provisioner.NewLinuxGuardBackend(c)
+		} else {
+			backend, err = provisioner.NewLinuxBackend(c)
+		}
 		if err != nil {
 			return err
 		}

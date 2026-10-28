@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "hosts": [],
+  "deny": [],
+  "max_connections": 4,
+  "max_bytes": 16777216,
+  "duration_seconds": 300
+}

@@ -24,7 +24,12 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-type linuxBackend struct{ c LinuxConfig }
+type linuxBackend struct {
+	c LinuxConfig
+	// Package-local fault injection, absent in production constructors and
+	// unavailable through configuration, CLI or the provisioner RPC.
+	networkStage func(string) error
+}
 
 // Retain only a bounded diagnostic prefix; continue draining child output so
 // excess stderr cannot grow memory or block QEMU. Read only after q.Wait.
@@ -42,6 +47,8 @@ func (d *launchDiagnostic) Write(p []byte) (int, error) {
 }
 
 type hostMachine struct {
+	Version     int          `json:",omitempty"`
+	Network     *hostNetwork `json:",omitempty"`
 	Machine     Machine
 	BootID      string
 	Deadline    int64 // absolute CLOCK_BOOTTIME nanoseconds; never renewed
@@ -161,10 +168,16 @@ func validateLinuxConfig(c LinuxConfig) error {
 			return ErrInvalid
 		}
 	}
-	return nil
+	return validateNetworkConfig(c)
 }
 
 func newLinuxBackend(c LinuxConfig) (Backend, error) {
+	return linuxBackendPreflight(c, true)
+}
+func newLinuxGuardBackend(c LinuxConfig) (Backend, error) {
+	return linuxBackendPreflight(c, false)
+}
+func linuxBackendPreflight(c LinuxConfig, egressHealth bool) (Backend, error) {
 	if os.Geteuid() != 0 || runtime.GOARCH != "amd64" || validateLinuxConfig(c) != nil {
 		return nil, ErrUnavailable
 	}
@@ -219,7 +232,12 @@ func newLinuxBackend(c LinuxConfig) (Backend, error) {
 	if errno != 0 || version != 12 {
 		return nil, ErrUnavailable
 	}
-	return &linuxBackend{c}, nil
+	if egressHealth {
+		if err := preflightNetwork(c); err != nil {
+			return nil, err
+		}
+	}
+	return &linuxBackend{c: c}, nil
 }
 
 func (b *linuxBackend) Controls() Controls {
@@ -287,13 +305,20 @@ func (b *linuxBackend) read(job string) (hostMachine, error) {
 		return hostMachine{}, err
 	}
 	defer f.Close()
+	return decodeHostMachine(f)
+}
+
+func decodeHostMachine(r io.Reader) (hostMachine, error) {
 	var s diskState
-	d := json.NewDecoder(io.LimitReader(f, 16385))
+	d := json.NewDecoder(io.LimitReader(r, 16385))
 	d.DisallowUnknownFields()
 	if d.Decode(&s) != nil || d.Decode(new(any)) != io.EOF {
 		return hostMachine{}, ErrInvalid
 	}
 	s.Value.Machine.OwnershipProof = s.Proof
+	if err := validateNetworkState(s.Value); err != nil {
+		return hostMachine{}, err
+	}
 	return s.Value, nil
 }
 func (b *linuxBackend) write(s hostMachine) error {
@@ -387,6 +412,9 @@ func (b *linuxBackend) Create(ctx context.Context, m Machine) error {
 	if !validMachine(m, b.c) {
 		return ErrInvalid
 	}
+	if err := preflightNetwork(b.c); err != nil {
+		return err
+	}
 	l, err := b.lock(ctx)
 	if err != nil {
 		return err
@@ -439,12 +467,42 @@ func (b *linuxBackend) Create(ctx context.Context, m Machine) error {
 	if _, active, e := b.namedUnit(ctx, m, expiryName(m.Lease.JobID)+".timer"); e != nil || !active {
 		return ErrUnavailable
 	}
+	if b.c.NetworkMode == "broker-v1" {
+		if err = b.prepareNetwork(ctx, &s); err != nil {
+			return err
+		}
+	}
+	if s.Network != nil {
+		if err = b.startBroker(ctx, s); err != nil {
+			return err
+		}
+		if err = b.checkpointNetwork("broker-started"); err != nil {
+			return err
+		}
+		// The broker helper validates the durable fence under this same lock.
+		unlock(l)
+		l = nil
+		if err = waitBrokerReady(ctx, b, m); err != nil {
+			return err
+		}
+		l, err = b.lock(ctx)
+		if err != nil {
+			return err
+		}
+		current, e := b.read(m.Lease.JobID)
+		if e != nil || current.Fenced || !sameMachine(current.Machine, m) {
+			return ErrConflict
+		}
+		if _, active, e := b.namedUnit(ctx, m, brokerUnit(m.Lease.JobID)); e != nil || !active {
+			return ErrUnavailable
+		}
+	}
 	remaining = time.Until(m.Lease.ExpiresAt)
 	if remaining <= 0 {
 		return ErrUnavailable
 	}
 	args := []string{"--quiet", "--no-block", "--unit=" + unitName(m.Lease.JobID), "--description=" + ownerDescription(m)}
-	for _, p := range serviceProperties(remaining) {
+	for _, p := range guestServiceProperties(remaining, s.Network != nil) {
 		args = append(args, "--property="+p)
 	}
 	args = append(args, "--property=ReadWritePaths="+b.c.Root)
@@ -605,6 +663,9 @@ func (b *linuxBackend) Cleanup(ctx context.Context, m Machine) (CleanupResult, e
 	if err = confirmGuestGroupEmpty(m.Lease.JobID); err != nil {
 		return CleanupResult{}, err
 	}
+	if err = b.cleanupNetwork(ctx, s); err != nil {
+		return CleanupResult{}, err
+	}
 	for _, suffix := range []string{".timer", ".service"} {
 		name := expiryName(m.Lease.JobID) + suffix
 		exists, active, e := b.namedUnit(ctx, m, name)
@@ -759,6 +820,20 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 		return ErrConflict
 	}
 	q := guestCommand(c, disk, readDisk)
+	if s.Network != nil {
+		if c.NetworkMode != "broker-v1" || s.Network.PolicyHash != c.EgressPolicyHash {
+			return ErrConflict
+		}
+		if _, active, e := b.namedUnit(ctx, s.Machine, brokerUnit(job)); e != nil || !active {
+			return ErrUnavailable
+		}
+		tap, e := openGuestTAP(s)
+		if e != nil {
+			return e
+		}
+		defer tap.Close()
+		attachGuestTAP(q, tap)
+	}
 	var diagnostic launchDiagnostic
 	q.Stderr = &diagnostic
 	if err = q.Start(); err != nil {
@@ -849,7 +924,7 @@ func expireLinuxGuest(ctx context.Context, config, job string) error {
 	if os.Geteuid() != 0 || validateLinuxConfig(c) != nil || config != filepath.Join(c.Root, "backend.json") {
 		return ErrUnavailable
 	}
-	b := &linuxBackend{c}
+	b := &linuxBackend{c: c}
 	s, err := b.read(job)
 	if err != nil {
 		return err
@@ -878,6 +953,11 @@ func expireLinuxGuest(ctx context.Context, config, job string) error {
 			return e
 		}
 	}
+	// Stop sessions independently of the host-state lock. A paused launcher
+	// holding that lock must not keep an already-admitted broker alive.
+	if err = b.stopBroker(ctx, s); err != nil {
+		return err
+	}
 	l, err := b.lock(ctx)
 	if err != nil {
 		return err
@@ -888,5 +968,14 @@ func expireLinuxGuest(ctx context.Context, config, job string) error {
 		return ErrConflict
 	}
 	current.Fenced = true
-	return b.write(current)
+	if err = b.write(current); err != nil {
+		return err
+	}
+	if err = b.stopBroker(ctx, current); err != nil {
+		return err
+	}
+	if err = confirmGuestGroupEmpty(job); err != nil {
+		return err
+	}
+	return b.cleanupNetwork(ctx, current)
 }

@@ -7,7 +7,7 @@ umask 077
   echo 'Requires root and M04_IMAGE_BUILD=YES-I-AUTHORIZE-LOOP-IMAGE' >&2; exit 1;
 }
 MODE=${1:-idle}
-case "$MODE" in idle|cpu|memory|io|pids) ;; *) exit 1;; esac
+case "$MODE" in idle|cpu|memory|io|pids|egress) ;; *) exit 1;; esac
 for tool in busybox grub-install sfdisk losetup mkfs.ext4 mount umount cpio gzip modprobe ldd; do
   command -v "$tool" >/dev/null
 done
@@ -57,7 +57,7 @@ MOUNTED=1
 mkdir -p "$MNT/boot/grub" "$ROOT/bin" "$ROOT/sbin" "$ROOT/proc" "$ROOT/sys" "$ROOT/dev" "$ROOT/run" "$ROOT/lib/modules/$KERNEL"
 cp /boot/vmlinuz-"$KERNEL" "$MNT/boot/vmlinuz"
 cp -L /usr/bin/busybox "$ROOT/bin/busybox"
-for name in sh mount mkdir sleep yes kill dd cat awk sync wc timeout; do ln -s busybox "$ROOT/bin/$name"; done
+for name in sh mount mkdir sleep yes kill dd cat awk sync wc timeout nc; do ln -s busybox "$ROOT/bin/$name"; done
 copy_binary() {
   local src=$1 dest=$2 lib
   cp -L "$src" "$ROOT/$dest"
@@ -71,6 +71,22 @@ copy_binary "$(command -v modprobe)" sbin/modprobe
 cp -a /lib/modules/"$KERNEL"/kernel "$ROOT/lib/modules/$KERNEL/"
 cp /lib/modules/"$KERNEL"/modules.* "$ROOT/lib/modules/$KERNEL/"
 if [[ $MODE == io ]]; then copy_binary /usr/bin/fio bin/fio; fi
+if [[ $MODE == egress ]]; then
+  [[ -f ${M05_CA_CERT:-} && ${M05_PROBE_HOST:-} =~ ^[a-z0-9][a-z0-9.-]+[a-z0-9]$ && ${M05_CONTROL_IP:-} =~ ^[0-9.]+$ ]]
+  # Only the public build CA is installed. Never copy its private signing key.
+  openssl x509 -in "$M05_CA_CERT" -noout -text >/dev/null
+  if grep -q 'PRIVATE KEY' "$M05_CA_CERT"; then exit 1; fi
+  cp "$M05_CA_CERT" "$ROOT/build-ca.pem"
+  printf '%s\n' "$M05_PROBE_HOST" > "$ROOT/egress-host"
+  printf '%s\n' "$M05_CONTROL_IP" > "$ROOT/egress-control-ip"
+  copy_binary /usr/bin/curl bin/curl
+  copy_binary /usr/bin/ip bin/ip
+  cp "$(dirname "$0")/../egress/guest-probes.sh" "$ROOT/bin/m05-probes"
+  chmod 0755 "$ROOT/bin/m05-probes"
+  if [[ ${M05_CONTROLLED:-} == YES ]]; then printf 'yes\n' > "$ROOT/egress-controlled"; fi
+  if [[ -n ${M05_RAW_PROBE:-} ]]; then cp "$M05_RAW_PROBE" "$ROOT/bin/m05-raw-probe"; chmod 0755 "$ROOT/bin/m05-raw-probe"; fi
+fi
+
 printf '%s\n' "$MODE" > "$ROOT/fixture-mode"
 cat > "$ROOT/init" <<'INIT'
 #!/bin/sh
@@ -91,6 +107,7 @@ for n in 1 2 3 4 5; do [ -b /dev/vda ] && break; sleep 1; done
 result() { printf 'M04-FIXTURE %s\n' "$*" | dd of=/dev/vda bs=512 seek=20971519 count=1 conv=notrunc,fsync; }
 result "BOOT mode=$MODE runner_pids=$(cat /sys/fs/cgroup/runner/pids.max)"
 case "$MODE" in
+  egress) /bin/m05-probes ;;
   cpu)
     yes >/dev/null & a=$!; yes >/dev/null & b=$!
     yes >/dev/null & c=$!; yes >/dev/null & d=$!

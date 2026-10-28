@@ -1,0 +1,21 @@
+# Reference rules installed atomically inside the owned per-lease namespace.
+# This namespace has no uplink. Never load this file in the host namespace.
+# The authoritative generated version is guestFirewall() in linux_network_linux.go.
+table netdev tap_ingress {
+ chain ingress {
+  type filter hook ingress device "tap0" priority -500; policy drop;
+  ether saddr 02:00:00:00:00:02 ether type arp arp saddr ip 192.0.2.2 arp daddr ip 192.0.2.1 accept
+  ether saddr 02:00:00:00:00:02 ether type ip ip saddr 192.0.2.2 ip daddr 192.0.2.1 ip frag-off & 0x3fff == 0 tcp dport 8443 accept
+ }
+}
+table inet tap_build {
+ chain input {
+  type filter hook input priority -200; policy drop;
+  iifname "tap0" ip saddr 192.0.2.2 ip daddr 192.0.2.1 tcp dport 8443 ct state new,established accept
+ }
+ chain forward { type filter hook forward priority -200; policy drop; }
+ chain output {
+  type filter hook output priority -200; policy drop;
+  oifname "tap0" ip saddr 192.0.2.1 ip daddr 192.0.2.2 tcp sport 8443 ct state established accept
+ }
+}

@@ -12,6 +12,8 @@ Security-first, self-hosted Git-to-container application portal. Administrators 
 
 **P1-M04: Implemented/tested\*.** \* V14 and V15 marked as SKIP. V01–V13 and V16 passed the real-host checks; the skipped cases are not passes. Explicit QEMU/KVM/systemd backend includes pinned raw images, resource limits, no-NIC guests, independent deadlines and ownership-safe cleanup. Execution defaults to disabled; no simulator or unsafe fallback. See the [acceptance record](docs/project/PH1/P1M04/testing/acceptance-report.md) and [real-host procedure](docs/project/PH1/P1M04/testing/real-host.md) for results and the qualified status. See [implementation status](docs/project/PH1/P1M04/build-provisioner.md).
 
+**P1-M05: Implemented/tested; isolated-KVM acceptance PASS.** External inspecting HTTPS broker, pinned policy/CA, isolated namespace/TAP, QEMU descriptors, cancellation, independent expiry and recovery are present. Controlled N01–N13 KVM tests passed with packet captures and destination canaries. No-NIC mode stays the default. See the [LLD](LLD-documents/PH1/p1-m05.md) and [validation evidence](docs/project/PH1/P1M05/implementation-evidence.md).
+
 Testing after cloning onto a Debian-based Linux VM: [M04 check-off test plan](docs/project/PH1/P1M04/testing/linux-checklist.md).
 
 Implemented:
@@ -28,7 +30,7 @@ Implemented:
 - TLS-only API entrypoint (`cmd/api`) and real local HTTPS authentication tests.
 - Independent fixed-template build-lease contract, replay/idempotency ledger, expiry/cleanup state machine, mTLS boundary and tested real QEMU/KVM/systemd backend.
 
-Not implemented: full TOTP/user/ACL administration, existing-data migration upgrades/backup workflow, agent signature verification/replay storage, Compose parsing, Git/network isolation, image scanning, Docker execution, UI and application proxy. API authentication is **not application gateway authorization, SSRF protection or proof of runtime isolation**. No real deployment is enabled.
+Not implemented: full TOTP/user/ACL administration, existing-data migration upgrades/backup workflow, agent signature verification/replay storage, Compose parsing, Git cloning, image scanning, Docker execution, UI and application proxy. API authentication is **not application gateway authorization, SSRF protection or proof of runtime isolation**. No real deployment is enabled.
 
 ## Development
 

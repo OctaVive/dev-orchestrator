@@ -1,6 +1,6 @@
 # P1-M05 implementation plan — controlled build egress
 
-Status: **Planned; implementation not started**. This document is for review.
+Status: **Implemented/tested; isolated-KVM acceptance PASS**. Implementation and actual software/KVM validation are recorded in [implementation evidence](implementation-evidence.md). This document retains the target contract.
 
 ## Outcome and boundaries
 
@@ -30,7 +30,7 @@ Preserve [M04's qualified PASS](../P1M04/testing/acceptance-report.md), includin
 
 - Add explicit broker-network mode to the Linux backend; preserve no-NIC mode and disabled execution defaults.
 - Create an owned per-job network namespace and TAP. Pass an already-open TAP descriptor to unprivileged QEMU without network-administration capability.
-- Use routed isolation and atomic nftables rules allowing only the assigned guest identity to the broker's exact listener. Deny host services, other guests, direct forwarding, DNS, UDP/QUIC and guest IPv6 traffic.
+- Use an uplink-free per-lease namespace and atomic nftables rules allowing only the assigned guest identity to the broker's exact listener. The host-opened listener FD is passed to a broker process whose upstream sockets use the host namespace; no guest forwarding or host firewall changes are needed. Deny host services, other guests, direct forwarding, DNS, UDP/QUIC and guest IPv6 traffic.
 - Use fixed addressing without DHCP or guest DNS. The broker can reach validated public IPv4/IPv6 destinations; native guest IPv6 stays disabled and filtered.
 - Install enforcement before QEMU starts. Persist ownership before creation, fence delayed starts and include all network resources and broker sessions in cancellation, independent expiry and crash reconciliation.
 - Confirm network cleanup before releasing capacity. Preserve foreign resources; retain reservations on uncertain ownership or removal.
