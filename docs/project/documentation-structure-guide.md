@@ -90,7 +90,10 @@ The [LLD collection](../../LLD-documents/README.md) contains 87 milestone docume
 | `LLD-documents/PH1/p1-m01.md` | Functional explanation, technical design, diagrams and linked acceptance gate for one milestone | Its scope, dependencies or design changes |
 | `PH1/README.md` | Phase milestone index | Milestones are added or change status |
 | `PH1/P1M01/README.md` | Milestone scope, dependencies, acceptance and handoff | That milestone progresses |
-| `PH1/P1M01/testing/` | Milestone test procedures and acceptance records | Checks are defined or executed |
+| `PH1/P1M01/implementation-plan.md` | Target behavior, implementation sequence and delivery boundaries | The implementation approach changes |
+| `PH1/P1M01/test-plan.md` | Required test cases, expected results and acceptance criteria | Coverage or validation requirements change |
+| `PH1/P1M01/implementation-evidence.md` | Delivered behavior, executed checks and development history | Implementation or validation produces new evidence |
+| `PH1/P1M01/testing/` | Reproducible execution procedures and acceptance records | Checks are defined or executed |
 | `specifications/` | Contracts used across milestones | A shared interface or convention changes |
 | `architecture/` | System design and rationale | Architectural decisions change |
 | `decisions/` | Unresolved choices and explicit exceptions | A decision is raised or resolved |
@@ -211,6 +214,143 @@ Keep private logs and credentials outside the repository.
 Record unresolved issues, skipped checks and the next dependent milestone.
 ```
 
+## Planning, building, testing and accepting a milestone
+
+Use [P1-M05](PH1/P1M05/README.md) as a worked example of this lifecycle. Its phase plan defines the outcome and prerequisite; its LLD explains the design; separate plans describe implementation and required tests; execution records establish what was actually built and observed. Apply the same separation at a scale appropriate to the milestone.
+
+```text
+Requirement + phase acceptance gate + shared contracts
+    -> LLD + implementation plan + test plan
+    -> implementation + software validation
+    -> applicable environment acceptance + cleanup verification
+    -> implementation evidence + acceptance decision
+    -> milestone, phase and project status + requirement evidence
+```
+
+### Document set and responsibilities
+
+For a milestone needing detailed implementation and environment validation, use:
+
+```text
+docs/project/PH1/P1M01/
+|-- README.md                       # Contract, status and links to every record
+|-- implementation-plan.md          # Target behavior and delivery sequence
+|-- test-plan.md                    # Required cases and expected results
+|-- implementation-evidence.md       # Delivered behavior and actual validation
+|-- testing/
+    |-- real-host.md                # Reproducible environment procedure, if needed
+    |-- acceptance-report.md        # Observed results and bounded acceptance decision
+```
+
+Keep the LLD at `LLD-documents/PH1/p1-m01.md`. Use an appropriate procedure filename when validation does not involve a real host. Small milestones may keep these sections in their README; retain the distinction between planned checks, execution evidence and acceptance.
+
+P1-M05 demonstrates each responsibility:
+
+| Record | What to learn from it |
+|---|---|
+| [Implementation plan](PH1/P1M05/implementation-plan.md) | Outcome, boundaries, policy/interfaces, component work, lifecycle, packaging order and acceptance assumptions |
+| [LLD](../../LLD-documents/PH1/p1-m05.md) | Functional and technical explanation, topology, source responsibilities, startup/cleanup ordering and design tradeoffs |
+| [Test plan](PH1/P1M05/test-plan.md) | SEC-07 objective, prerequisites, U01–U10 software cases, N01–N13 real-host cases and explicit evidence requirements |
+| [Execution procedure](PH1/P1M05/testing/real-host.md) | Preflight, reproducible harness commands, controlled fixtures, capture points, fault injection, cleanup and result mapping |
+| [Implementation evidence](PH1/P1M05/implementation-evidence.md) | Delivered components, commands, actual results, artifact identities, failures and corrected reruns |
+| [Acceptance report](PH1/P1M05/testing/acceptance-report.md) | Dated decision, tested environment, hashes, results by ID, cleanup evidence, qualifications and handoff |
+
+### 1. Establish the contract and implementation plan
+
+Start with the requirement IDs, phase-plan acceptance gate, prerequisite milestones and shared specifications. State the observable outcome, included work, excluded work and later milestone dependencies. Preserve prerequisite qualifications: P1-M05 explicitly retains P1-M04 V14/V15 as SKIP.
+
+Write `implementation-plan.md` before building. Describe the interfaces and configuration, component responsibilities, failure handling, lifecycle/cleanup obligations, compatibility, packaging and ordered delivery steps. Link the LLD for detailed mechanisms and diagrams. As the design evolves, align these documents with authoritative contracts. After execution, retain the target contract and link actual results rather than turning planned statements into evidence.
+
+### 2. Derive the test plan before execution
+
+Create `test-plan.md` from the requirements, acceptance gate and design risks:
+
+1. Turn each required outcome into an observable assertion and map it to its requirement or gate.
+2. Cover normal behavior, invalid inputs, boundary conditions, dependency failures, resource limits and applicable security threats.
+3. Include lifecycle cases such as cancellation, expiry, interrupted setup, recovery, concurrent operations and cleanup where the feature owns resources.
+4. Choose the validation layer that can prove each assertion: unit/integration checks for software behavior, and actual environment checks for infrastructure or deployment behavior. Specify fixtures and observation points.
+5. Assign stable case IDs. For each case define prerequisites, procedure, expected result and required evidence before recording an actual result.
+6. Define the acceptance rule, blocking prerequisites, allowed qualifications and residual limits. Missing required evidence leaves acceptance pending.
+
+P1-M05 separates U01–U10 software checks from N01–N13 real-host checks. Its network-denial assertions require simultaneous captures and destination canaries: a timeout alone cannot establish that traffic never reached a protected destination. Generalize this principle by choosing independent observations at the boundary where the requirement must hold. Include a successful control so a broken fixture cannot make every denial appear to pass.
+
+Use this copyable test-plan outline:
+
+```markdown
+# P1-M01 test plan — Milestone title
+
+Status: Planned; link execution evidence when available.
+
+## Objective and traceability
+
+- Requirements and source acceptance gate: links and IDs.
+- Outcomes to prove, scope boundaries and inherited qualifications.
+
+## Prerequisites and environment
+
+- Required tools, versions/capabilities, fixtures, data and topology.
+- Environment authorization where applicable; conditions blocking execution.
+- Baseline inventory, evidence storage and cleanup/restoration requirements.
+
+## Required checks
+
+| ID | Requirement/gate | Layer | Scenario/procedure | Expected result | Required evidence |
+|---|---|---|---|---|---|
+| T01 | REQ-001 | Integration | Exercise the normal operation | Observable success | Command output and resulting state |
+| T02 | REQ-001 | Integration | Exercise an invalid input | Defined rejection; protected state preserved | Response and state observation |
+
+Link detailed procedures and list applicable software validation commands.
+
+## Acceptance rule and limits
+
+Identify every required case and the evidence needed for acceptance.
+Record PASS, FAIL, SKIP and Not run separately in execution records.
+State known limits, deferred gates and the next milestone handoff.
+```
+
+### 3. Build and maintain reproducible execution procedures
+
+Implement in the planned dependency order, adding the checks needed to exercise the contract. Record delivered behavior and relevant source paths in `implementation-evidence.md`; update the LLD when implementation changes the design. Run applicable software checks, including platform-specific integration checks, builds, static analysis, race checks or fuzzing when justified by the feature.
+
+For environment acceptance, write a procedure under `testing/` with exact commands or harness entry points, preflight, fixture setup, observation points, case-ID mapping, fault injection and cleanup. Identify temporary configuration/trust changes and how their restoration is verified. Keep test-only overrides or fault hooks isolated from production behavior. Record source revision (and content hashes for uncommitted changes), binary/configuration/template identities, tool versions, operator, execution times and topology so the tested artifacts can be identified.
+
+### 4. Record execution evidence and issue an acceptance report
+
+For each case record its ID, PASS/FAIL/SKIP/Not run, command or probe identifier, expected and observed results, and evidence location. Keep raw logs, captures, keys and sensitive ownership records in an appropriate private location; commit sanitized summaries and evidence references. Preserve failed runs and corrections, giving reruns distinct identities. P1-M05 records a failed slow-header harness assertion, its correction and the final rerun rather than relabeling the earlier failure.
+
+Use this acceptance-report outline:
+
+```markdown
+# P1-M01 acceptance report
+
+Decision: Pending / PASS / qualified PASS / FAIL; execution date.
+Scope: Exact environment, artifacts and acceptance gate covered.
+
+## Environment and evidence
+
+Record revision/content and binary/configuration hashes, versions, topology,
+operator, execution interval and raw evidence locations.
+
+## Results
+
+| Case ID | Expected result | Observed result | Result | Evidence |
+|---|---|---|---|---|
+| T01 | Defined success | Actual observation | Not run | Pending |
+
+## Cleanup and restoration
+
+Record final resource inventory and comparison with the baseline, if applicable.
+
+## Qualifications and handoff
+
+Record failures, skips, missing evidence, residual limits, deferred gates
+and the next milestone. Explain how these affect the acceptance decision.
+```
+
+Accept only when required checks have the required evidence; any exception must follow the project's explicit exception policy and remain visible in the decision. Software PASS alone does not establish environment acceptance. P1-M05's PASS applies to its isolated KVM lab and tested template; it does not pass historical M04 skips, authorize repository execution or establish production rollout or phase release approval.
+
+After recording the decision, update the milestone README, LLD status, phase indexes, `PROJECT-STATUS.md` (or this repository's retained `progress.md`) and `requirement-evidence.md` consistently. Link detailed evidence instead of duplicating it, and preserve remaining downstream gates.
+
 ## Status and evidence rules
 
 Use `docs/project/PROJECT-STATUS.md` in every project as the authoritative overview of overall project status. Include the last updated date, current phase and milestone, completed work, work in progress, blockers or risks, and next steps. Link to milestone details and acceptance evidence rather than duplicating them. This repository currently uses `progress.md`; when applying this guide to an existing project, consolidate its overall status into `PROJECT-STATUS.md` and update incoming links, retaining useful historical progress records as needed.
@@ -226,8 +366,8 @@ Record PASS, FAIL, SKIP and Not run separately. A passing unit test establishes 
 3. Map each requirement to its delivery milestone and acceptance gate.
 4. Create phase indexes and milestone READMEs using the template above.
    Create the repository-root `LLD-documents/` collection with phase indexes and one design document per milestone, including architecture drawings and flowcharts.
-5. Link shared specifications; keep milestone-specific notes and tests with their milestone.
-6. As implementation progresses, record behavior, validation, limitations and next work.
+5. Link shared specifications; write milestone implementation and test plans, deriving stable test cases and evidence requirements from the acceptance gate. Keep milestone-specific notes and tests with their milestone.
+6. Implement, run software checks and applicable environment procedures, then record implementation evidence and an acceptance report with actual case results, cleanup, limitations and next work.
 7. Update milestone status, the phase index, `PROJECT-STATUS.md` and requirement evidence together.
 8. Check relative links after moving documents and remove obsolete duplicate copies.
 
@@ -250,6 +390,13 @@ failure handling, acceptance gates and links to authoritative contracts and evid
 Keep these design explanations aligned with plans and implementation records.
 Each milestone must identify its requirements, prerequisites, acceptance gate,
 relevant specifications, implementation status, evidence and remaining work.
+For milestones needing detailed validation, create implementation-plan.md, test-plan.md,
+implementation-evidence.md and testing/acceptance-report.md, plus reproducible execution
+procedures under testing/. Derive stable test IDs from requirements and acceptance gates;
+define prerequisites, procedures, expected results and required evidence before execution.
+Record actual PASS/FAIL/SKIP/Not run results, artifact identities, evidence locations,
+cleanup, qualifications and handoff. Preserve failed runs and distinguish software checks
+from environment acceptance. Update status only after recording the acceptance decision.
 Keep shared contracts in specifications/ and milestone-specific documents inside
 their milestone folder. Retain architecture and phase plans as linked sources.
 Preserve existing requirement/task IDs, historical evidence and skipped-check qualifications.
