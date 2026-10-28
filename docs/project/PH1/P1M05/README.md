@@ -13,6 +13,8 @@ Status: **Planned**.
 
 ## Documents
 
+- [Implementation plan](implementation-plan.md)
+- [Test plan](test-plan.md)
 - [deployment agent](../../specifications/deployment-agent.md)
 
 Implementation and validation evidence have not been recorded. Add milestone-specific design, implementation notes and acceptance evidence here as work proceeds. Shared contracts stay in `../../specifications/`.
