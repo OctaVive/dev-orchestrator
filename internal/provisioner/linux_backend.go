@@ -16,6 +16,7 @@ type LinuxConfig struct {
 	GID        uint32 `json:"gid"`
 	KVMGID     uint32 `json:"kvm_gid"`
 	// Empty/none preserves M04's no-NIC mode. broker-v1 is explicit opt-in.
+	CloneEnabled     bool   `json:"clone_enabled,omitempty"`
 	NetworkMode      string `json:"network_mode,omitempty"`
 	EgressPolicy     string `json:"egress_policy,omitempty"`
 	EgressPolicyHash string `json:"egress_policy_hash,omitempty"`

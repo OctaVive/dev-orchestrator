@@ -75,6 +75,12 @@ func validateNetworkConfig(c LinuxConfig) error {
 	return nil
 }
 func validateNetworkState(s hostMachine) error {
+	if s.CloneVersion != 0 && s.CloneVersion != 1 {
+		return ErrVersion
+	}
+	if (s.CloneVersion == 0) != (s.Machine.Clone == nil) {
+		return ErrInvalid
+	}
 	if s.Version != 0 && s.Version != 1 {
 		return ErrVersion
 	}

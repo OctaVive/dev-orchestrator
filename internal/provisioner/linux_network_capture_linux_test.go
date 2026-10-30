@@ -118,7 +118,7 @@ func startLabCapture(t *testing.T, n *hostNetwork, path string, host bool) *labC
 			}
 			guestMAC := string(data[6:12]) == string([]byte{2, 0, 0, 0, 0, 2}) || string(data[6:12]) == string([]byte{2, 0, 0, 0, 0, 3})
 			escaped := guestMAC || strings.HasPrefix(src, "192.0.2.")
-			selected := !host || escaped || strings.HasPrefix(src, "11.0.0.") || strings.HasPrefix(dst, "11.0.0.") || src == "2003::11" || dst == "2003::11" || src == "127.0.0.55" || dst == "127.0.0.55" || src == "127.0.0.77" || dst == "127.0.0.77" || dst == "169.254.169.254"
+			selected := !host || escaped || strings.HasPrefix(src, "11.0.0.") || strings.HasPrefix(dst, "11.0.0.") || src == "2003::11" || dst == "2003::11" || src == "127.0.0.55" || dst == "127.0.0.55" || src == "127.0.0.56" || dst == "127.0.0.56" || src == "127.0.0.77" || dst == "127.0.0.77" || dst == "169.254.169.254"
 			if !selected {
 				continue
 			}
@@ -126,7 +126,7 @@ func startLabCapture(t *testing.T, n *hostNetwork, path string, host bool) *labC
 			if host && escaped {
 				c.summary["guest_frames_on_host"]++
 			}
-			if host && (dst == "127.0.0.77" || dst == "11.0.0.3") {
+			if host && (dst == "127.0.0.77" || dst == "11.0.0.3" || dst == "169.254.169.254") {
 				c.summary["protected_destination_frames"]++
 			}
 			if protocol == 0x86dd {

@@ -57,6 +57,9 @@ func readMigrations(files fs.FS) ([]migration, error) {
 }
 
 func (s *Store) migrate(ctx context.Context, list []migration) error {
+	return s.migrateMode(ctx, list, false)
+}
+func (s *Store) migrateMode(ctx context.Context, list []migration, upgrade bool) error {
 	if len(list) == 0 {
 		return ErrSchemaMismatch
 	}
@@ -99,7 +102,7 @@ func (s *Store) migrate(ctx context.Context, list []migration) error {
 		if err := conn.QueryRowContext(ctx, "PRAGMA user_version").Scan(&userVersion); err != nil || userVersion != applied {
 			return ErrSchemaMismatch
 		}
-		if applied > 0 && applied < len(list) {
+		if applied > 0 && applied < len(list) && !upgrade {
 			// Initial schema bootstrap is automatic. Future existing-data upgrades
 			// deliberately stop until a verified-backup workflow is implemented.
 			return ErrUpgradeRequired

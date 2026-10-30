@@ -33,7 +33,10 @@ type linuxBackend struct {
 
 // Retain only a bounded diagnostic prefix; continue draining child output so
 // excess stderr cannot grow memory or block QEMU. Read only after q.Wait.
-type launchDiagnostic struct{ bytes.Buffer }
+type launchDiagnostic struct{ buffer bytes.Buffer }
+
+func (d *launchDiagnostic) Len() int       { return d.buffer.Len() }
+func (d *launchDiagnostic) String() string { return d.buffer.String() }
 
 func (d *launchDiagnostic) Write(p []byte) (int, error) {
 	n := len(p)
@@ -41,24 +44,25 @@ func (d *launchDiagnostic) Write(p []byte) (int, error) {
 		if len(p) > remaining {
 			p = p[:remaining]
 		}
-		_, _ = d.Buffer.Write(p)
+		_, _ = d.buffer.Write(p)
 	}
 	return n, nil
 }
 
 type hostMachine struct {
-	Version     int          `json:",omitempty"`
-	Network     *hostNetwork `json:",omitempty"`
-	Machine     Machine
-	BootID      string
-	Deadline    int64 // absolute CLOCK_BOOTTIME nanoseconds; never renewed
-	Fenced      bool
-	DiskDev     uint64
-	DiskIno     uint64
-	DiskFSUUID  string `json:",omitempty"`
-	ReadyDev    uint64
-	ReadyIno    uint64
-	ReadyFSUUID string `json:",omitempty"`
+	Version      int          `json:",omitempty"`
+	CloneVersion int          `json:",omitempty"`
+	Network      *hostNetwork `json:",omitempty"`
+	Machine      Machine
+	BootID       string
+	Deadline     int64 // absolute CLOCK_BOOTTIME nanoseconds; never renewed
+	Fenced       bool
+	DiskDev      uint64
+	DiskIno      uint64
+	DiskFSUUID   string `json:",omitempty"`
+	ReadyDev     uint64
+	ReadyIno     uint64
+	ReadyFSUUID  string `json:",omitempty"`
 }
 
 // FS_IOC_GETFSUUID reads the filesystem's UUID through an existing file FD.
@@ -159,6 +163,9 @@ func loadLinuxConfig(path string) (LinuxConfig, error) {
 }
 
 func validateLinuxConfig(c LinuxConfig) error {
+	if c.CloneEnabled && c.NetworkMode != "broker-v1" {
+		return ErrInvalid
+	}
 	if !templateName.MatchString(c.TemplateID) || !templateDigest.MatchString(c.Digest) || c.UID < 100 || c.GID < 100 || c.KVMGID == 0 {
 		return ErrInvalid
 	}
@@ -310,7 +317,7 @@ func (b *linuxBackend) read(job string) (hostMachine, error) {
 
 func decodeHostMachine(r io.Reader) (hostMachine, error) {
 	var s diskState
-	d := json.NewDecoder(io.LimitReader(r, 16385))
+	d := json.NewDecoder(io.LimitReader(r, 65537))
 	d.DisallowUnknownFields()
 	if d.Decode(&s) != nil || d.Decode(new(any)) != io.EOF {
 		return hostMachine{}, ErrInvalid
@@ -354,7 +361,7 @@ func validMachine(m Machine, c LinuxConfig) bool {
 	return identifier.MatchString(m.Lease.JobID) && len(m.OwnershipProof) == 64 && err == nil && m.Budget == SmallBudget() && m.Lease.ProfileID == "build-small-v1" && m.Lease.Template == (Template{c.TemplateID, c.Digest})
 }
 func sameMachine(a, b Machine) bool {
-	return a.Lease.JobID == b.Lease.JobID && a.OwnershipProof == b.OwnershipProof && a.Lease.Template == b.Lease.Template && a.Lease.ExpiresAt.Equal(b.Lease.ExpiresAt)
+	return a.Lease.JobID == b.Lease.JobID && a.OwnershipProof == b.OwnershipProof && a.Lease.Template == b.Lease.Template && a.Lease.ExpiresAt.Equal(b.Lease.ExpiresAt) && cloneEqual(a.Clone, b.Clone)
 }
 
 func hostCommand(ctx context.Context, path string, args ...string) (string, error) {
@@ -367,12 +374,15 @@ func hostCommand(ctx context.Context, path string, args ...string) (string, erro
 	return out.String(), err
 }
 
-type limitedOutput struct{ bytes.Buffer }
+type limitedOutput struct{ buffer bytes.Buffer }
+
+func (o *limitedOutput) Len() int       { return o.buffer.Len() }
+func (o *limitedOutput) String() string { return o.buffer.String() }
 
 func (o *limitedOutput) Write(p []byte) (int, error) {
 	n := len(p)
 	if o.Len() < 32768 {
-		_, _ = o.Buffer.Write(p[:min(len(p), 32768-o.Len())])
+		_, _ = o.buffer.Write(p[:min(len(p), 32768-o.Len())])
 	}
 	return n, nil
 }
@@ -412,6 +422,9 @@ func (b *linuxBackend) Create(ctx context.Context, m Machine) error {
 	if !validMachine(m, b.c) {
 		return ErrInvalid
 	}
+	if err := validateCloneMachine(m, b.c, time.Now()); err != nil {
+		return err
+	}
 	if err := preflightNetwork(b.c); err != nil {
 		return err
 	}
@@ -447,6 +460,9 @@ func (b *linuxBackend) Create(ctx context.Context, m Machine) error {
 		return ErrInvalid
 	}
 	s := hostMachine{Machine: m, BootID: boot, Deadline: now + int64(remaining)}
+	if m.Clone != nil {
+		s.CloneVersion = 1
+	}
 	if err = b.write(s); err != nil {
 		return err
 	}
@@ -640,6 +656,9 @@ func (b *linuxBackend) Cleanup(ctx context.Context, m Machine) (CleanupResult, e
 	s, err := b.read(m.Lease.JobID)
 	if os.IsNotExist(err) {
 		s = hostMachine{Machine: m, Fenced: true}
+		if m.Clone != nil {
+			s.CloneVersion = 1
+		}
 	} else if err != nil || !sameMachine(s.Machine, m) {
 		return CleanupResult{}, ErrConflict
 	}
@@ -834,6 +853,17 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 		defer tap.Close()
 		attachGuestTAP(q, tap)
 	}
+	var serial *cloneSerial
+	if s.Machine.Clone != nil {
+		input, e := cloneInputFD(*s.Machine.Clone)
+		if e != nil {
+			return e
+		}
+		defer input.Close()
+		attachClone(q, input)
+		serial = &cloneSerial{}
+		q.Stdout = serial
+	}
 	var diagnostic launchDiagnostic
 	q.Stderr = &diagnostic
 	if err = q.Start(); err != nil {
@@ -841,6 +871,31 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 	}
 	done := make(chan error, 1)
 	go func() { done <- q.Wait() }()
+	serialStop := make(chan struct{})
+	defer close(serialStop)
+	if serial != nil {
+		go func() {
+			ticker := time.NewTicker(100 * time.Millisecond)
+			defer ticker.Stop()
+			for {
+				select {
+				case <-serialStop:
+					return
+				case <-ctx.Done():
+					return
+				case <-ticker.C:
+					serial.mu.Lock()
+					overflow := serial.overflow
+					serial.mu.Unlock()
+					if overflow {
+						_ = q.Process.Kill()
+						return
+					}
+
+				}
+			}
+		}()
+	}
 	deadline := make(chan struct{})
 	go func() { var data [8]byte; _, _ = unix.Read(timer, data[:]); close(deadline) }()
 	// Ensure QEMU did not immediately reject KVM or a required control.
@@ -870,7 +925,14 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 	if e == nil {
 		e = ready.Sync()
 	}
-	_ = ready.Close()
+	if e == nil && serial != nil {
+		e = serial.publish(ready)
+	}
+	if serial != nil {
+		defer ready.Close()
+	} else {
+		_ = ready.Close()
+	}
 	if e != nil {
 		_ = q.Process.Kill()
 		<-done

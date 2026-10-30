@@ -108,7 +108,7 @@ func run(args []string) error {
 	defer stop()
 	ctx, cancel := context.WithDeadline(ctx, end)
 	defer cancel()
-	r := &net.Resolver{PreferGo: true, Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
+	r := &net.Resolver{PreferGo: true, StrictErrors: true, Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
 		return (&net.Dialer{Timeout: 5 * time.Second}).DialContext(ctx, "tcp", dns.String())
 	}}
 	b, err := egress.NewObserved(p, ca, r, func(peer netip.Addr) (egress.Lease, bool) {

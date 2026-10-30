@@ -50,6 +50,7 @@ The initial planning tree was staged under `C:\Users\mitchel\.opencode\plan` whi
 - [Project structure](project/specifications/project-structure.md)
 - [API](project/specifications/api-design.md)
 - [Frontend](project/specifications/frontend-design.md)
+- [Restricted clone-worker contract](project/specifications/clone-runner.md)
 - [Agent and VM lifecycle](project/specifications/deployment-agent.md)
 - [Reverse proxy](project/specifications/reverse-proxy.md)
 - [Testing](project/specifications/testing-strategy.md)
@@ -65,6 +66,6 @@ The initial planning tree was staged under `C:\Users\mitchel\.opencode\plan` whi
 - [Open questions](decisions/open-questions.md)
 - [Exception policy](decisions/security-exceptions.md)
 
-**P1-M01–P1-M03: Implemented/tested. P1-M04: Implemented/tested\*.**
+**P1-M01–P1-M03 and P1-M05–P1-M06: Implemented/tested. P1-M04: Implemented/tested\*.**
 
-\* V14 and V15 marked as SKIP; V01–V13 and V16 passed. The qualified acceptance decision is recorded separately in the [acceptance record](project/PH1/P1M04/testing/acceptance-report.md). M05 egress isolation and the later clone/build/runtime milestones remain to be implemented.
+\* V14 and V15 marked as SKIP; V01–V13 and V16 passed. The qualified acceptance decision is recorded separately in the [acceptance record](project/PH1/P1M04/testing/acceptance-report.md). M05 egress and [M06 clone acceptance](project/PH1/P1M06/testing/acceptance-report.md) passed on the tested isolated KVM lab; M07 build/ingest and later runtime/controller milestones remain.

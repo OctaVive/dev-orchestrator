@@ -9,7 +9,7 @@ Folder names use `P1M01` through `P1M14`; canonical task IDs remain `P1-M01` thr
 | [P1-M03](P1M03/README.md) | Bootstrap admin, Argon2id, sessions, CSRF and role middleware | Implemented/tested |
 | [P1-M04](P1M04/README.md) | Fixed VM template/provisioner contract and hard-expiry lifecycle | Implemented/tested*; V14 and V15 SKIP |
 | [P1-M05](P1M05/README.md) | External build egress broker and firewall template | Implemented/tested; controlled isolated-KVM N01–N13 PASS |
-| [P1-M06](P1M06/README.md) | Clone runner with HTTPS/ref/context limits and malicious Git fixtures | Planned |
+| [P1-M06](P1M06/README.md) | Clone runner with HTTPS/ref/context limits and malicious Git fixtures | Implemented/tested; isolated-KVM M06 acceptance PASS |
 | [P1-M07](P1M07/README.md) | Rootless BuildKit export and isolated ingest/scanner adapter | Planned |
 | [P1-M08](P1M08/README.md) | Strict Compose/Dockerfile normalization and agent policy contract | Planned |
 | [P1-M09](P1M09/README.md) | Runtime capability probe and typed agent create/inspect/stop | Planned |

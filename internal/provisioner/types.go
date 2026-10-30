@@ -6,6 +6,8 @@ import (
 	"context"
 	"errors"
 	"time"
+
+	"dev-orchestrator/internal/contracts"
 )
 
 var (
@@ -84,6 +86,8 @@ type Machine struct {
 	Lease          Lease
 	Budget         Budget
 	OwnershipProof string `json:"-"`
+	// Host-internal, already-authorized clone intent; never a generic command.
+	Clone *contracts.CloneJob `json:",omitempty"`
 }
 
 // Controls describe obligations, not proof. A future real backend must have
@@ -128,4 +132,10 @@ func (UnconfiguredBackend) Controls() Controls                    { return Contr
 func (UnconfiguredBackend) Create(context.Context, Machine) error { return ErrUnavailable }
 func (UnconfiguredBackend) Cleanup(context.Context, Machine) (CleanupResult, error) {
 	return CleanupResult{}, ErrUnavailable
+}
+
+// CloneBackend extends the owned VM lifecycle with bounded clone results.
+type CloneBackend interface {
+	Backend
+	CloneResults(context.Context, Machine) ([]contracts.CloneResult, error)
 }

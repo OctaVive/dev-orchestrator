@@ -167,7 +167,7 @@ func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req.Header.Del("Proxy-Authorization")
 	req.Header.Del("Proxy-Connection")
 	tr := &http.Transport{Proxy: nil, DisableKeepAlives: true, DisableCompression: true, MaxResponseHeaderBytes: 32768, TLSHandshakeTimeout: 10 * time.Second, ResponseHeaderTimeout: 15 * time.Second, TLSClientConfig: &tls.Config{MinVersion: tls.VersionTLS12, ServerName: host, RootCAs: b.upstreamRoots}, DialContext: func(ctx context.Context, network, address string) (net.Conn, error) {
-		answers, err := b.lookupIP(ctx, "ip", host)
+		answers, err := b.lookupIP(ctx, "ip", host+".")
 		if err != nil || len(answers) == 0 || len(answers) > 64 {
 			return nil, ErrDenied
 		}

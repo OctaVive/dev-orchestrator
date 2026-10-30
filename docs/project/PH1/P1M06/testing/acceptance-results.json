@@ -1,0 +1,533 @@
+{
+  "milestone": "P1-M06",
+  "date_utc": "2026-10-30",
+  "status": "PASS",
+  "cases": [
+    {
+      "id": "U01",
+      "case": "`contracts.TestCloneContractAndImmutableInput`",
+      "status": "PASS"
+    },
+    {
+      "id": "U02",
+      "case": "`contracts.TestCloneResultBinding`",
+      "status": "PASS"
+    },
+    {
+      "id": "U03",
+      "case": "`cloner.TestRefResolutionRejectsAmbiguityAndMovementInputs`",
+      "status": "PASS"
+    },
+    {
+      "id": "U04",
+      "case": "`cloner.TestObjectAndTreeBudgets`",
+      "status": "PASS"
+    },
+    {
+      "id": "U05",
+      "case": "`cloner.TestSymlinkGraph`",
+      "status": "PASS"
+    },
+    {
+      "id": "U06",
+      "case": "`cloner.TestOutputCapCancels`",
+      "status": "PASS"
+    },
+    {
+      "id": "U07",
+      "case": "`cloner.TestRunnerRefusesHost`",
+      "status": "PASS"
+    },
+    {
+      "id": "U08",
+      "case": "`provisioner.TestCloneDeviceSealsFramingAndBounds`",
+      "status": "PASS"
+    },
+    {
+      "id": "U09",
+      "case": "`provisioner.TestLaunchDiagnosticIsBoundedAndDrains`",
+      "status": "PASS"
+    },
+    {
+      "id": "U10",
+      "case": "`storage.TestCloneDurableResolutionHandoffAndReplay`",
+      "status": "PASS"
+    },
+    {
+      "id": "U11",
+      "case": "`storage.TestCloneTransactionRollbackAndLateResults`",
+      "status": "PASS"
+    },
+    {
+      "id": "U12",
+      "case": "`storage.TestCloneSchemaUpgradeRequiresVerifiedBackup`",
+      "status": "PASS"
+    },
+    {
+      "id": "U13",
+      "case": "`clonejob.TestDriverFencesHandoffAndConfirmsCleanup`",
+      "status": "PASS"
+    },
+    {
+      "id": "U14",
+      "case": "`go test -race ./...`",
+      "status": "PASS"
+    },
+    {
+      "id": "U15",
+      "case": "`go vet ./...` and builds",
+      "status": "PASS"
+    },
+    {
+      "id": "U16",
+      "case": "`contracts.FuzzCloneInput`, `cloner.FuzzTree`",
+      "status": "PASS"
+    },
+    {
+      "id": "U17",
+      "case": "Shell/Python syntax, Markdown links and `git diff --check`",
+      "status": "PASS"
+    },
+    {
+      "id": "U18",
+      "case": "`cloner.TestExportCancellationBeforeBlob`",
+      "status": "PASS"
+    },
+    {
+      "id": "U19",
+      "case": "`egress.TestInspectedUpstreamAndPinnedAddress` and DNS-denial tests",
+      "status": "PASS"
+    },
+    {
+      "id": "G01",
+      "case": "good",
+      "status": "PASS",
+      "outcome": "success",
+      "sha": "95dea08ca22a28a2b315fa166b59f28aa1f5d995"
+    },
+    {
+      "id": "G02",
+      "case": "executable",
+      "status": "PASS",
+      "outcome": "success",
+      "sha": "4860caf0b19abdeb03f699e44b684dfc968da6b0"
+    },
+    {
+      "id": "G03",
+      "case": "symlink",
+      "status": "PASS",
+      "outcome": "success",
+      "sha": "a7dd4b2020099dea0be63054d64050c842d1dfc7"
+    },
+    {
+      "id": "G04",
+      "case": "moving",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "95dea08ca22a28a2b315fa166b59f28aa1f5d995"
+    },
+    {
+      "id": "G05",
+      "case": "mismatch",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "95dea08ca22a28a2b315fa166b59f28aa1f5d995"
+    },
+    {
+      "id": "G06",
+      "case": "submodule",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "1b5b2314e5fdc33e24f0ab8a110acaceb3691b81"
+    },
+    {
+      "id": "G07",
+      "case": "modules",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "de9d0d5b458bc0fbb187fd19d24df3c0ad9d24c6"
+    },
+    {
+      "id": "G08",
+      "case": "attributes",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "c24d09c382a8805d3cb62570f7a2835219d99cdd"
+    },
+    {
+      "id": "G09",
+      "case": "lfs",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "48ad2fe100504c048d75be09bfaf383068557807"
+    },
+    {
+      "id": "G10",
+      "case": "escape",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "99ee87794a677174ba2899cd4f1012f2f9249f0c"
+    },
+    {
+      "id": "G11",
+      "case": "cycle",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "993faf167dd48a860777b0f231e8fdce352cf658"
+    },
+    {
+      "id": "G12",
+      "case": "collision",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "3d69725a572476f9cd35facff46a5213cb66ed82"
+    },
+    {
+      "id": "G13",
+      "case": "metadata-path",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "16bc3c8cf490ae200ed2f5be7573623b5e52d355"
+    },
+    {
+      "id": "G14",
+      "case": "malformed",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G15",
+      "case": "sha256",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G16",
+      "case": "redirect",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G17",
+      "case": "redirect-same",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G18",
+      "case": "timeout",
+      "status": "PASS",
+      "outcome": "timeout",
+      "sha": ""
+    },
+    {
+      "id": "G19",
+      "case": "object-limit",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": "9aa70f38fb53b230a1b4c147ee2c0f5cb4805a68"
+    },
+    {
+      "id": "G20",
+      "case": "context-limit",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": "112e940d8273ef90006acd068bd208ba17143652"
+    },
+    {
+      "id": "G21",
+      "case": "entry-limit",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": "8a39cd2edff091ac5b42a06d1aa2692a0f35f367"
+    },
+    {
+      "id": "G22",
+      "case": "ref-limit",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": ""
+    },
+    {
+      "id": "G23",
+      "case": "transfer-limit",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": "31d42a774484de2abebbc3d7e86a5d753e92f6b3"
+    },
+    {
+      "id": "G24",
+      "case": "adv-limit",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": ""
+    },
+    {
+      "id": "G25",
+      "case": "corrupt",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "67f75d6907e7584b5f05a7e27203f65b4aca81fd"
+    },
+    {
+      "id": "G26",
+      "case": "rebind",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "95dea08ca22a28a2b315fa166b59f28aa1f5d995"
+    },
+    {
+      "id": "G27",
+      "case": "private",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G28",
+      "case": "metadata",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G29",
+      "case": "infra",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G30",
+      "case": "mixed",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G31",
+      "case": "mapped",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G32",
+      "case": "v6",
+      "status": "PASS",
+      "outcome": "success",
+      "sha": "95dea08ca22a28a2b315fa166b59f28aa1f5d995"
+    },
+    {
+      "id": "G33",
+      "case": "badcert",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G34",
+      "case": "dnsfail",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G35",
+      "case": "nested",
+      "status": "PASS",
+      "outcome": "success",
+      "sha": "3ce7474ed765231275984aeebd321b5afd8e6bc6"
+    },
+    {
+      "id": "G36",
+      "case": "context-escape",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "b330e3934a116d55e9351216fc7b448abbf12efc"
+    },
+    {
+      "id": "G37",
+      "case": "config-symlink",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "de1f74895725e2e8b06eac054d578b5360b948d1"
+    },
+    {
+      "id": "G38",
+      "case": "deep-tree",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": "38ec186c26d01f7532f861c63a0758f895a3bda3"
+    },
+    {
+      "id": "G39",
+      "case": "long-path",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": "1880a8940b251564d1b169cc1e8badba77d63674"
+    },
+    {
+      "id": "G40",
+      "case": "object-count",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": "d5508932a8b9dd330ef9637433ba0751058fb98e"
+    },
+    {
+      "id": "G41",
+      "case": "expanded-limit",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": "371d33e0e590784f5506ebd06c6729775cd430a6"
+    },
+    {
+      "id": "G42",
+      "case": "huge-object",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": "8eddb7f838e7dadbced068f5a8a1b954e938315d"
+    },
+    {
+      "id": "G43",
+      "case": "huge-ref-list",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": ""
+    },
+    {
+      "id": "G44",
+      "case": "log-flood",
+      "status": "PASS",
+      "outcome": "limit",
+      "sha": "18dc7a5226b741242c3c7c2f60eb90aaddf846ee"
+    },
+    {
+      "id": "G45",
+      "case": "redirect-301",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G46",
+      "case": "redirect-303",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G47",
+      "case": "redirect-307",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G48",
+      "case": "redirect-308",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": ""
+    },
+    {
+      "id": "G49",
+      "case": "directory-link",
+      "status": "PASS",
+      "outcome": "success",
+      "sha": "2da5fcf9299f6081b887da96fec280d18ea6fc97"
+    },
+    {
+      "id": "G50",
+      "case": "directory-cycle",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "0dd311e5b7de5a684a170483daea50ec13e54dd0"
+    },
+    {
+      "id": "G51",
+      "case": "context-return",
+      "status": "PASS",
+      "outcome": "denied",
+      "sha": "477a80ef9fc6aa1c998d426525c40c9b35546d57"
+    },
+    {
+      "id": "H01",
+      "case": "`TestRealCloneLifecycle/cancel-resolve`",
+      "status": "PASS"
+    },
+    {
+      "id": "H02",
+      "case": "`TestRealCloneLifecycle/cancel-fetch`",
+      "status": "PASS"
+    },
+    {
+      "id": "H03",
+      "case": "`TestRealCloneLifecycle/expiry-controller-loss`",
+      "status": "PASS"
+    },
+    {
+      "id": "H04",
+      "case": "`TestRealCloneLifecycle/worker-loss`",
+      "status": "PASS"
+    },
+    {
+      "id": "H05",
+      "case": "`TestRealCloneLifecycle/cancel-export`",
+      "status": "PASS"
+    },
+    {
+      "id": "H06",
+      "case": "`TestRealBrokerSetupCrashRecovery`",
+      "status": "PASS"
+    },
+    {
+      "id": "H07",
+      "case": "`TestRealBrokerForeignNetworkPreserved`",
+      "status": "PASS"
+    },
+    {
+      "id": "H08",
+      "case": "`TestRealBrokerCreateCancellationRace`",
+      "status": "PASS"
+    },
+    {
+      "id": "H09",
+      "case": "`TestRealCloneDurableAdapter/good`",
+      "status": "PASS"
+    },
+    {
+      "id": "H10",
+      "case": "`TestRealCloneDurableAdapter/attributes`",
+      "status": "PASS"
+    },
+    {
+      "id": "H11",
+      "case": "Guest/host captures and destination observations",
+      "status": "PASS"
+    },
+    {
+      "id": "H12",
+      "case": "Final isolated-lab cleanup",
+      "status": "PASS"
+    },
+    {
+      "id": "H13",
+      "case": "M05 controlled KVM regression on final backend",
+      "status": "PASS"
+    }
+  ],
+  "private_evidence": {
+    "m06": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m06.1793358439686004579",
+    "software": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m06-software.1793358514384227456",
+    "m05_regression": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/controlled.1793357364025456883"
+  },
+  "template_digest": "sha256:b20c58b9925e2716040b12bf1584237df6595ce30fa991d64021d994b1efec5f",
+  "source_unchanged_since_build": true,
+  "jobs_inventoried": 67,
+  "unconfirmed_resources": 0
+}

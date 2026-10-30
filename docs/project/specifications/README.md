@@ -3,6 +3,7 @@
 Contracts used by multiple milestones. See the [project index](../README.md) for milestone ownership and evidence.
 
 - [api design](api-design.md)
+- [restricted clone runner](clone-runner.md)
 - [deployment agent](deployment-agent.md)
 - [development environment](development-environment.md)
 - [frontend design](frontend-design.md)

@@ -106,8 +106,7 @@ func (v *Validator) DecodeDeployment(r io.Reader) (DeploymentRequest, error) {
 	if err != nil {
 		return zero, err
 	}
-	if !validRepositoryURL(request.RepositoryURL) || !validBranch(request.Branch) ||
-		!validRepoPath(request.ConfigPath, false) || !validRepoPath(request.BuildContext, true) ||
+	if !ValidCloneInput(request.RepositoryURL, request.Branch, request.ConfigPath, request.BuildContext) ||
 		!validMounts(request.Volumes) || !validEnvironment(request.Environment) {
 		return zero, ErrInvalidRequest
 	}
@@ -216,18 +215,6 @@ func validBranch(branch string) bool {
 	}
 	for _, part := range strings.Split(branch, "/") {
 		if part == "" || strings.HasPrefix(part, ".") || strings.HasSuffix(part, ".lock") {
-			return false
-		}
-	}
-	return true
-}
-
-func validRepoPath(p string, allowRoot bool) bool {
-	if p == "." {
-		return allowRoot
-	}
-	for _, part := range strings.Split(p, "/") {
-		if part == "" || part == "." || part == ".." || strings.EqualFold(part, ".git") {
 			return false
 		}
 	}

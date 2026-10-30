@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"golang.org/x/sys/unix"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -32,6 +33,16 @@ func TestLaunchDiagnosticIsBoundedAndDrains(t *testing.T) {
 	}
 	if d.Len() != 4096 || d.String() != string(bytes.Repeat([]byte("x"), 4096)) {
 		t.Fatal("diagnostic prefix not bounded")
+	}
+	// io.Copy must not discover a promoted bytes.Buffer.ReadFrom and bypass
+	// Write's limit, as it would with an embedded bytes.Buffer.
+	var streamed launchDiagnostic
+	if n, e := io.Copy(&streamed, io.LimitReader(strings.NewReader(strings.Repeat("y", 128<<10)), 128<<10)); e != nil || n != 128<<10 || streamed.Len() != 4096 {
+		t.Fatal("streamed diagnostic cap", n, e, streamed.Len())
+	}
+	var output limitedOutput
+	if n, e := io.Copy(&output, io.LimitReader(strings.NewReader(strings.Repeat("z", 128<<10)), 128<<10)); e != nil || n != 128<<10 || output.Len() != 32768 {
+		t.Fatal("streamed host output cap", n, e, output.Len())
 	}
 }
 

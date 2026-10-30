@@ -83,7 +83,11 @@ func upstreamFixture(t *testing.T, b *Broker, h http.Handler) (*httptest.Server,
 	roots.AddCert(ca.Leaf)
 	b.upstreamRoots = roots
 	count := &atomic.Int32{}
-	b.lookupIP = func(context.Context, string, string) ([]netip.Addr, error) {
+	b.lookupIP = func(_ context.Context, network, host string) ([]netip.Addr, error) {
+		if network != "ip" || host != "example.com." {
+			t.Error("DNS lookup was not absolute", network, host)
+			return nil, ErrDenied
+		}
 		return []netip.Addr{netip.MustParseAddr("8.8.8.8")}, nil
 	}
 	b.dial = func(ctx context.Context, network, address string) (net.Conn, error) {

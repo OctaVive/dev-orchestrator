@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -98,10 +99,10 @@ func TestBootstrapReopenAndPragmas(t *testing.T) {
 	s, path := testStore(t)
 	seed(t, s)
 	submit(t, s)
-	if got := scalar(t, s, "SELECT count(*) FROM schema_migrations"); got != 1 {
-		t.Fatal("expected exactly one migration")
+	if got := scalar(t, s, "SELECT count(*) FROM schema_migrations"); got != 2 {
+		t.Fatal("expected both embedded migrations")
 	}
-	if got := scalar(t, s, "PRAGMA user_version"); got != 1 {
+	if got := scalar(t, s, "PRAGMA user_version"); got != 2 {
 		t.Fatal("wrong schema version")
 	}
 	for query, want := range map[string]int64{"PRAGMA foreign_keys": 1, "PRAGMA synchronous": 2, "PRAGMA busy_timeout": 5000, "PRAGMA trusted_schema": 0} {
@@ -466,14 +467,14 @@ func TestMigrationHistoryFailsClosed(t *testing.T) {
 			case "checksum":
 				execSQL(t, s, "UPDATE schema_migrations SET checksum=?", strings.Repeat("0", 64))
 			case "future":
-				execSQL(t, s, "INSERT INTO schema_migrations(version,name,checksum,applied_at) VALUES (2,'002_future.sql',?,0)", strings.Repeat("0", 64))
-				execSQL(t, s, "PRAGMA user_version=2")
+				execSQL(t, s, "INSERT INTO schema_migrations(version,name,checksum,applied_at) VALUES (3,'003_future.sql',?,0)", strings.Repeat("0", 64))
+				execSQL(t, s, "PRAGMA user_version=3")
 			case "user-version":
 				execSQL(t, s, "PRAGMA user_version=9")
 			case "missing":
 				execSQL(t, s, "DELETE FROM schema_migrations")
 			case "name":
-				execSQL(t, s, "UPDATE schema_migrations SET name='001_changed.sql'")
+				execSQL(t, s, "UPDATE schema_migrations SET name='001_changed.sql' WHERE version=1")
 			}
 			_ = s.Close()
 			opened, err := Open(context.Background(), path)
@@ -509,11 +510,11 @@ func TestMigrationRollbackAndUpgradeGate(t *testing.T) {
 	if err := s.migrate(ctx, good); err != nil {
 		t.Fatal("migration retry failed", err)
 	}
-	future := append(append([]migration{}, good...), migration{version: 2, name: "002_next.sql", checksum: strings.Repeat("0", 64), sql: "CREATE TABLE next(id INTEGER);"})
+	future := append(append([]migration{}, good...), migration{version: len(good) + 1, name: fmt.Sprintf("%03d_next.sql", len(good)+1), checksum: strings.Repeat("0", 64), sql: "CREATE TABLE next(id INTEGER);"})
 	if err := s.migrate(ctx, future); !errors.Is(err, ErrUpgradeRequired) {
 		t.Fatal("existing-data upgrade did not require verified backup", err)
 	}
-	if scalar(t, s, "PRAGMA user_version") != 1 || scalar(t, s, "SELECT count(*) FROM sqlite_schema WHERE name='next'") != 0 {
+	if scalar(t, s, "PRAGMA user_version") != int64(len(good)) || scalar(t, s, "SELECT count(*) FROM sqlite_schema WHERE name='next'") != 0 {
 		t.Fatal("blocked upgrade changed schema")
 	}
 }
