@@ -1,0 +1,540 @@
+-----
+-----
+-----
+Certificate request self-signature ok
+subject=CN=ok.m06.example
+Certificate request self-signature ok
+subject=CN=ok.m06.example
+Checking that no-one is using this disk right now ... OK
+
+Disk /var/lib/orchestrator-builder/image-build/fixture.Wklm6QLb/fixture.raw: 768 MiB, 805306368 bytes, 1572864 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+>>> Script header accepted.
+>>> Created a new DOS (MBR) disklabel with disk identifier 0xbae5a0e7.
+/var/lib/orchestrator-builder/image-build/fixture.Wklm6QLb/fixture.raw1: Created a new partition 1 of type 'Linux' and of size 767 MiB.
+/var/lib/orchestrator-builder/image-build/fixture.Wklm6QLb/fixture.raw2: Done.
+
+New situation:
+Disklabel type: dos
+Disk identifier: 0xbae5a0e7
+
+Device                                                                  Boot Start     End Sectors  Size Id Type
+/var/lib/orchestrator-builder/image-build/fixture.Wklm6QLb/fixture.raw1 *     2048 1572863 1570816  767M 83 Linux
+
+The partition table has been altered.
+mke2fs 1.47.2 (1-Jan-2025)
+Discarding device blocks:      0/196352             done                            
+Creating filesystem with 196352 4k blocks and 49152 inodes
+Filesystem UUID: e6a3fa55-0cc4-4020-b879-32c25c3d6dd5
+Superblock backups stored on blocks: 
+	32768, 98304, 163840
+
+Allocating group tables: 0/6   done                            
+Writing inode tables: 0/6   done                            
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: 0/6   done
+
+395183 blocks
+Installing for i386-pc platform.
+Installation finished. No error reported.
+990fa250924e57ce1bbcd33c5b7615b503ab158b38f99781b6a2ea6a075d313c  /var/lib/orchestrator-builder/image-build/fixture.Wklm6QLb/fixture.raw
+Fixture mode=build kernel=6.12.113+deb13-amd64 image=/var/lib/orchestrator-builder/image-build/fixture.Wklm6QLb/fixture.raw
+Review/hash/install this never-booted image; never mount its guest-modified copies.
+Build directory retained: /var/lib/orchestrator-builder/image-build/fixture.Wklm6QLb (exit 0)
+Updating certificates in /etc/ssl/certs...
+rehash: warning: skipping ca-certificates.crt, it does not contain exactly one certificate or CRL
+1 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d...
+done.
+=== RUN   TestRealM07Pipeline
+=== RUN   TestRealM07Pipeline/success
+tcpdump: WARNING: any: That device doesn't support promiscuous mode
+(Promiscuous mode not supported on the "any" device)
+tcpdump: listening on any, link-type LINUX_SLL2 (Linux cooked v2), snapshot length 262144 bytes
+    linux_test.go:378: build stage <nil>
+    linux_test.go:395: ingest stage admitted <nil>
+    linux_test.go:334: commit=8c409639d3259998fce6c0ac51476c666cda1561 context=51bb68d0f55fb7ff60bcdef5e2e80327282115537ccee2bba805073d9a6bf94b archive=sha256:4cdfafa6c85d7d45001f8927e2779d7714d6be6d8d8740a9bce0ee96f51b1bb9 image=sha256:ba17a7d132a3a743448a8cc7751fc553e52e1e76dc76aafa39a90e6da6f4ecc5 report=sha256:85f676bd3a1f0eb5b75d00dc9070394cc78a2ee8956974bae9aa3bf8a4590bfe sbom=sha256:943858101f867fb31c6ec6c0136a7bf842c61114245ddc38459b425b94639e16
+=== RUN   TestRealM07Pipeline/build-timeout
+    linux_test.go:378: build stage context deadline exceeded
+    linux_test.go:387: fixture diagnostics 
+    linux_test.go:320: bounded failure with durable state build-timeout FAILED
+=== RUN   TestRealM07Pipeline/cancelled
+    linux_test.go:378: build stage context canceled
+    linux_test.go:387: fixture diagnostics 
+    linux_test.go:320: bounded failure with durable state cancelled CANCELLED
+=== RUN   TestRealM07Pipeline/controller-loss
+    linux_test.go:299: external build deadline terminated guest; metadata remained available; recovery recorded timeout
+=== RUN   TestRealM07Pipeline/scanner-timeout
+    linux_test.go:378: build stage <nil>
+    linux_test.go:395: ingest stage  build isolation or watchdog unavailable
+    linux_test.go:320: bounded failure with durable state scanner-timeout FAILED
+=== RUN   TestRealM07Pipeline/log-flood
+    linux_test.go:378: build stage build or artifact admission failed: build
+    linux_test.go:387: fixture diagnostics 
+    linux_test.go:320: bounded failure with durable state log-flood FAILED
+=== RUN   TestRealM07Pipeline/disk-exhaustion
+    linux_test.go:378: build stage context deadline exceeded
+    linux_test.go:387: fixture diagnostics 
+    linux_test.go:320: bounded failure with durable state disk-exhaustion FAILED
+=== RUN   TestRealM07Pipeline/memory-exhaustion
+    linux_test.go:378: build stage context deadline exceeded
+    linux_test.go:387: fixture diagnostics 
+    linux_test.go:320: bounded failure with durable state memory-exhaustion FAILED
+=== RUN   TestRealM07Pipeline/pid-exhaustion
+    linux_test.go:378: build stage build or artifact admission failed: build
+    linux_test.go:387: fixture diagnostics 
+    linux_test.go:320: bounded failure with durable state pid-exhaustion FAILED
+=== RUN   TestRealM07Pipeline/remote-source
+    linux_test.go:378: build stage build or artifact admission failed: build
+    linux_test.go:387: fixture diagnostics 
+    linux_test.go:320: bounded failure with durable state remote-source FAILED
+--- PASS: TestRealM07Pipeline (255.88s)
+    --- PASS: TestRealM07Pipeline/success (76.66s)
+    --- PASS: TestRealM07Pipeline/build-timeout (15.32s)
+    --- PASS: TestRealM07Pipeline/cancelled (13.20s)
+    --- PASS: TestRealM07Pipeline/controller-loss (17.95s)
+    --- PASS: TestRealM07Pipeline/scanner-timeout (23.90s)
+    --- PASS: TestRealM07Pipeline/log-flood (16.30s)
+    --- PASS: TestRealM07Pipeline/disk-exhaustion (32.89s)
+    --- PASS: TestRealM07Pipeline/memory-exhaustion (33.03s)
+    --- PASS: TestRealM07Pipeline/pid-exhaustion (13.58s)
+    --- PASS: TestRealM07Pipeline/remote-source (13.04s)
+=== RUN   TestRealM08Pipeline
+=== RUN   TestRealM08Pipeline/m08-dockerfile
+    linux_test.go:204: guest configuration tests === RUN   TestGuestComposeAccepted
+        --- PASS: TestGuestComposeAccepted (0.00s)
+        === RUN   TestGuestComposeDenials
+        === RUN   TestGuestComposeDenials/runtime
+        === RUN   TestGuestComposeDenials/duplicate
+        === RUN   TestGuestComposeDenials/alias
+        === RUN   TestGuestComposeDenials/anchor
+        === RUN   TestGuestComposeDenials/cap_add
+        === RUN   TestGuestComposeDenials/pid
+        === RUN   TestGuestComposeDenials/networks
+        === RUN   TestGuestComposeDenials/logging
+        === RUN   TestGuestComposeDenials/pre_stop
+        === RUN   TestGuestComposeDenials/merge
+        === RUN   TestGuestComposeDenials/missing-dependency
+        === RUN   TestGuestComposeDenials/shell-health
+        === RUN   TestGuestComposeDenials/device_cgroup_rules
+        === RUN   TestGuestComposeDenials/extends
+        === RUN   TestGuestComposeDenials/post_start
+        === RUN   TestGuestComposeDenials/top-include
+        === RUN   TestGuestComposeDenials/top-name
+        === RUN   TestGuestComposeDenials/scalar-type
+        === RUN   TestGuestComposeDenials/null
+        === RUN   TestGuestComposeDenials/second-build
+        === RUN   TestGuestComposeDenials/ipc
+        === RUN   TestGuestComposeDenials/configs
+        === RUN   TestGuestComposeDenials/secrets
+        === RUN   TestGuestComposeDenials/top-version
+        === RUN   TestGuestComposeDenials/multiple
+        === RUN   TestGuestComposeDenials/key-type
+        === RUN   TestGuestComposeDenials/ambiguous
+        === RUN   TestGuestComposeDenials/cycle
+        === RUN   TestGuestComposeDenials/ports
+        === RUN   TestGuestComposeDenials/env_file
+        === RUN   TestGuestComposeDenials/sysctls
+        === RUN   TestGuestComposeDenials/x-custom
+        === RUN   TestGuestComposeDenials/nested-duplicate
+        === RUN   TestGuestComposeDenials/nodes
+        === RUN   TestGuestComposeDenials/uts
+        === RUN   TestGuestComposeDenials/top-networks
+        === RUN   TestGuestComposeDenials/tag-image
+        === RUN   TestGuestComposeDenials/shell-command
+        === RUN   TestGuestComposeDenials/host-env
+        === RUN   TestGuestComposeDenials/privileged
+        === RUN   TestGuestComposeDenials/container_name
+        === RUN   TestGuestComposeDenials/nul
+        === RUN   TestGuestComposeDenials/invalid-utf8
+        === RUN   TestGuestComposeDenials/resource-overflow
+        === RUN   TestGuestComposeDenials/depth
+        === RUN   TestGuestComposeDenials/size
+        === RUN   TestGuestComposeDenials/security_opt
+        === RUN   TestGuestComposeDenials/profiles
+        === RUN   TestGuestComposeDenials/top-x-custom
+        === RUN   TestGuestComposeDenials/tag
+        === RUN   TestGuestComposeDenials/interpolation
+        === RUN   TestGuestComposeDenials/bind
+        === RUN   TestGuestComposeDenials/devices
+        === RUN   TestGuestComposeDenials/userns_mode
+        === RUN   TestGuestComposeDenials/network_mode
+        === RUN   TestGuestComposeDenials/volumes_from
+        --- PASS: TestGuestComposeDenials (0.03s)
+            --- PASS: TestGuestComposeDenials/runtime (0.00s)
+            --- PASS: TestGuestComposeDenials/duplicate (0.00s)
+            --- PASS: TestGuestComposeDenials/alias (0.00s)
+            --- PASS: TestGuestComposeDenials/anchor (0.00s)
+            --- PASS: TestGuestComposeDenials/cap_add (0.00s)
+            --- PASS: TestGuestComposeDenials/pid (0.00s)
+            --- PASS: TestGuestComposeDenials/networks (0.00s)
+            --- PASS: TestGuestComposeDenials/logging (0.00s)
+            --- PASS: TestGuestComposeDenials/pre_stop (0.00s)
+            --- PASS: TestGuestComposeDenials/merge (0.00s)
+            --- PASS: TestGuestComposeDenials/missing-dependency (0.00s)
+            --- PASS: TestGuestComposeDenials/shell-health (0.00s)
+            --- PASS: TestGuestComposeDenials/device_cgroup_rules (0.00s)
+            --- PASS: TestGuestComposeDenials/extends (0.00s)
+            --- PASS: TestGuestComposeDenials/post_start (0.00s)
+            --- PASS: TestGuestComposeDenials/top-include (0.00s)
+            --- PASS: TestGuestComposeDenials/top-name (0.00s)
+            --- PASS: TestGuestComposeDenials/scalar-type (0.00s)
+            --- PASS: TestGuestComposeDenials/null (0.00s)
+            --- PASS: TestGuestComposeDenials/second-build (0.00s)
+            --- PASS: TestGuestComposeDenials/ipc (0.00s)
+            --- PASS: TestGuestComposeDenials/configs (0.00s)
+            --- PASS: TestGuestComposeDenials/secrets (0.00s)
+            --- PASS: TestGuestComposeDenials/top-version (0.00s)
+            --- PASS: TestGuestComposeDenials/multiple (0.00s)
+            --- PASS: TestGuestComposeDenials/key-type (0.00s)
+            --- PASS: TestGuestComposeDenials/ambiguous (0.00s)
+            --- PASS: TestGuestComposeDenials/cycle (0.00s)
+            --- PASS: TestGuestComposeDenials/ports (0.00s)
+            --- PASS: TestGuestComposeDenials/env_file (0.00s)
+            --- PASS: TestGuestComposeDenials/sysctls (0.00s)
+            --- PASS: TestGuestComposeDenials/x-custom (0.00s)
+            --- PASS: TestGuestComposeDenials/nested-duplicate (0.00s)
+            --- PASS: TestGuestComposeDenials/nodes (0.02s)
+            --- PASS: TestGuestComposeDenials/uts (0.00s)
+            --- PASS: TestGuestComposeDenials/top-networks (0.00s)
+            --- PASS: TestGuestComposeDenials/tag-image (0.00s)
+            --- PASS: TestGuestComposeDenials/shell-command (0.00s)
+            --- PASS: TestGuestComposeDenials/host-env (0.00s)
+            --- PASS: TestGuestComposeDenials/privileged (0.00s)
+            --- PASS: TestGuestComposeDenials/container_name (0.00s)
+            --- PASS: TestGuestComposeDenials/nul (0.00s)
+            --- PASS: TestGuestComposeDenials/invalid-utf8 (0.00s)
+            --- PASS: TestGuestComposeDenials/resource-overflow (0.00s)
+            --- PASS: TestGuestComposeDenials/depth (0.00s)
+            --- PASS: TestGuestComposeDenials/size (0.00s)
+            --- PASS: TestGuestComposeDenials/security_opt (0.00s)
+            --- PASS: TestGuestComposeDenials/profiles (0.00s)
+            --- PASS: TestGuestComposeDenials/top-x-custom (0.00s)
+            --- PASS: TestGuestComposeDenials/tag (0.00s)
+            --- PASS: TestGuestComposeDenials/interpolation (0.00s)
+            --- PASS: TestGuestComposeDenials/bind (0.00s)
+            --- PASS: TestGuestComposeDenials/devices (0.00s)
+            --- PASS: TestGuestComposeDenials/userns_mode (0.00s)
+            --- PASS: TestGuestComposeDenials/network_mode (0.00s)
+            --- PASS: TestGuestComposeDenials/volumes_from (0.00s)
+        === RUN   TestGuestDockerfile
+        === RUN   TestGuestDockerfile/scratch
+        === RUN   TestGuestDockerfile/multi
+        === RUN   TestGuestDockerfile/frontend-tabs
+        === RUN   TestGuestDockerfile/frontend-bom
+        === RUN   TestGuestDockerfile/remote-add
+        === RUN   TestGuestDockerfile/escape
+        === RUN   TestGuestDockerfile/onbuild
+        === RUN   TestGuestDockerfile/shell-entrypoint
+        === RUN   TestGuestDockerfile/empty
+        === RUN   TestGuestDockerfile/size
+        === RUN   TestGuestDockerfile/frontend-spaces
+        === RUN   TestGuestDockerfile/frontend-c
+        === RUN   TestGuestDockerfile/tag
+        === RUN   TestGuestDockerfile/network
+        === RUN   TestGuestDockerfile/external-copy
+        === RUN   TestGuestDockerfile/ssh
+        === RUN   TestGuestDockerfile/security
+        === RUN   TestGuestDockerfile/arg
+        === RUN   TestGuestDockerfile/volume
+        === RUN   TestGuestDockerfile/frontend-json
+        === RUN   TestGuestDockerfile/frontend-shebang
+        === RUN   TestGuestDockerfile/frontend
+        === RUN   TestGuestDockerfile/device
+        === RUN   TestGuestDockerfile/heredoc
+        --- PASS: TestGuestDockerfile (0.00s)
+            --- PASS: TestGuestDockerfile/scratch (0.00s)
+            --- PASS: TestGuestDockerfile/multi (0.00s)
+            --- PASS: TestGuestDockerfile/frontend-tabs (0.00s)
+            --- PASS: TestGuestDockerfile/frontend-bom (0.00s)
+            --- PASS: TestGuestDockerfile/remote-add (0.00s)
+            --- PASS: TestGuestDockerfile/escape (0.00s)
+            --- PASS: TestGuestDockerfile/onbuild (0.00s)
+            --- PASS: TestGuestDockerfile/shell-entrypoint (0.00s)
+            --- PASS: TestGuestDockerfile/empty (0.00s)
+            --- PASS: TestGuestDockerfile/size (0.00s)
+            --- PASS: TestGuestDockerfile/frontend-spaces (0.00s)
+            --- PASS: TestGuestDockerfile/frontend-c (0.00s)
+            --- PASS: TestGuestDockerfile/tag (0.00s)
+            --- PASS: TestGuestDockerfile/network (0.00s)
+            --- PASS: TestGuestDockerfile/external-copy (0.00s)
+            --- PASS: TestGuestDockerfile/ssh (0.00s)
+            --- PASS: TestGuestDockerfile/security (0.00s)
+            --- PASS: TestGuestDockerfile/arg (0.00s)
+            --- PASS: TestGuestDockerfile/volume (0.00s)
+            --- PASS: TestGuestDockerfile/frontend-json (0.00s)
+            --- PASS: TestGuestDockerfile/frontend-shebang (0.00s)
+            --- PASS: TestGuestDockerfile/frontend (0.00s)
+            --- PASS: TestGuestDockerfile/device (0.00s)
+            --- PASS: TestGuestDockerfile/heredoc (0.00s)
+        === RUN   TestGuestRepositoryPaths
+        --- PASS: TestGuestRepositoryPaths (0.00s)
+        === RUN   TestGuestServiceCount
+        --- PASS: TestGuestServiceCount (0.00s)
+        === RUN   TestGuestParserBudgetAndDiagnostics
+        --- PASS: TestGuestParserBudgetAndDiagnostics (0.04s)
+        === RUN   TestGuestRepositoryCorpus
+        === RUN   TestGuestRepositoryCorpus/compose-accepted-two-service.yaml
+        === RUN   TestGuestRepositoryCorpus/compose-deny-ambiguous.yaml
+        === RUN   TestGuestRepositoryCorpus/compose-deny-host-access.yaml
+        === RUN   TestGuestRepositoryCorpus/compose-deny-privileged.yaml
+        === RUN   TestGuestRepositoryCorpus/compose-review-candidate.yaml
+        === RUN   TestGuestRepositoryCorpus/dockerfile-accepted.dockerfile
+        === RUN   TestGuestRepositoryCorpus/dockerfile-deny-remote.dockerfile
+        --- PASS: TestGuestRepositoryCorpus (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/compose-accepted-two-service.yaml (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/compose-deny-ambiguous.yaml (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/compose-deny-host-access.yaml (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/compose-deny-privileged.yaml (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/compose-review-candidate.yaml (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/dockerfile-accepted.dockerfile (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/dockerfile-deny-remote.dockerfile (0.00s)
+        === RUN   TestGuestPathRace
+        --- PASS: TestGuestPathRace (0.01s)
+        === RUN   TestGuestNestedComposeContext
+        --- PASS: TestGuestNestedComposeContext (0.00s)
+        PASS
+        fuzz: elapsed: 0s, gathering baseline coverage: 0/1 completed
+        fuzz: elapsed: 0s, gathering baseline coverage: 1/1 completed, now fuzzing with 1 workers
+        fuzz: elapsed: 3s, execs: 2 (1/sec), new interesting: 0 (total: 1)
+        fuzz: elapsed: 4s, execs: 2 (0/sec), new interesting: 0 (total: 1)
+        PASS
+        fuzz: elapsed: 0s, gathering baseline coverage: 0/1 completed
+        fuzz: elapsed: 0s, gathering baseline coverage: 1/1 completed, now fuzzing with 1 workers
+        fuzz: elapsed: 3s, execs: 10065 (3354/sec), new interesting: 60 (total: 61)
+        fuzz: elapsed: 4s, execs: 10065 (0/sec), new interesting: 60 (total: 61)
+        PASS
+        M08-GUEST-EXIT tests=0 yaml=0 dockerfile=0
+        
+    linux_test.go:378: build stage <nil>
+    linux_test.go:395: ingest stage admitted <nil>
+    linux_test.go:334: commit=91ba47b5655037a450397264c9cfee3c6131e7ef context=a141daa272d91038f514ce1641fef5bacfbbd7674d06ad7c10e28b0a4563031b archive=sha256:efb1c8aa8a46f73e061e5c09e601a0a502262229c4c848add2de004af01f212c image=sha256:97e1abeb2e84704fb8cddcdd558bf8d87ade9e5e2993ef65988ad6b239eb3025 report=sha256:66760cf0a91cf030208b775ed81c3605dd50c09868763cec38d19a3df0322a4e sbom=sha256:2587cda3c474b76640409d8390de48d88bb12eb0e90c5db8028f518b60e9d3c9
+    linux_test.go:367: M08 normalized spec sha256:12327b351a500c2cd246f2c674b533785335cb58e4e354d39bae7454e8e44b77 services 1
+=== RUN   TestRealM08Pipeline/m08-compose
+    linux_test.go:204: guest configuration tests === RUN   TestGuestComposeAccepted
+        --- PASS: TestGuestComposeAccepted (0.00s)
+        === RUN   TestGuestComposeDenials
+        === RUN   TestGuestComposeDenials/anchor
+        === RUN   TestGuestComposeDenials/cycle
+        === RUN   TestGuestComposeDenials/missing-dependency
+        === RUN   TestGuestComposeDenials/resource-overflow
+        === RUN   TestGuestComposeDenials/size
+        === RUN   TestGuestComposeDenials/device_cgroup_rules
+        === RUN   TestGuestComposeDenials/ipc
+        === RUN   TestGuestComposeDenials/extends
+        === RUN   TestGuestComposeDenials/nested-duplicate
+        === RUN   TestGuestComposeDenials/key-type
+        === RUN   TestGuestComposeDenials/second-build
+        === RUN   TestGuestComposeDenials/tag-image
+        === RUN   TestGuestComposeDenials/ambiguous
+        === RUN   TestGuestComposeDenials/volumes_from
+        === RUN   TestGuestComposeDenials/x-custom
+        === RUN   TestGuestComposeDenials/top-version
+        === RUN   TestGuestComposeDenials/merge
+        === RUN   TestGuestComposeDenials/nul
+        === RUN   TestGuestComposeDenials/shell-health
+        === RUN   TestGuestComposeDenials/privileged
+        === RUN   TestGuestComposeDenials/runtime
+        === RUN   TestGuestComposeDenials/env_file
+        === RUN   TestGuestComposeDenials/logging
+        === RUN   TestGuestComposeDenials/sysctls
+        === RUN   TestGuestComposeDenials/duplicate
+        === RUN   TestGuestComposeDenials/null
+        === RUN   TestGuestComposeDenials/devices
+        === RUN   TestGuestComposeDenials/security_opt
+        === RUN   TestGuestComposeDenials/pre_stop
+        === RUN   TestGuestComposeDenials/top-include
+        === RUN   TestGuestComposeDenials/top-networks
+        === RUN   TestGuestComposeDenials/alias
+        === RUN   TestGuestComposeDenials/invalid-utf8
+        === RUN   TestGuestComposeDenials/interpolation
+        === RUN   TestGuestComposeDenials/depth
+        === RUN   TestGuestComposeDenials/uts
+        === RUN   TestGuestComposeDenials/network_mode
+        === RUN   TestGuestComposeDenials/ports
+        === RUN   TestGuestComposeDenials/post_start
+        === RUN   TestGuestComposeDenials/tag
+        === RUN   TestGuestComposeDenials/nodes
+        === RUN   TestGuestComposeDenials/profiles
+        === RUN   TestGuestComposeDenials/configs
+        === RUN   TestGuestComposeDenials/secrets
+        === RUN   TestGuestComposeDenials/top-name
+        === RUN   TestGuestComposeDenials/top-x-custom
+        === RUN   TestGuestComposeDenials/userns_mode
+        === RUN   TestGuestComposeDenials/networks
+        === RUN   TestGuestComposeDenials/multiple
+        === RUN   TestGuestComposeDenials/scalar-type
+        === RUN   TestGuestComposeDenials/shell-command
+        === RUN   TestGuestComposeDenials/bind
+        === RUN   TestGuestComposeDenials/host-env
+        === RUN   TestGuestComposeDenials/cap_add
+        === RUN   TestGuestComposeDenials/pid
+        === RUN   TestGuestComposeDenials/container_name
+        --- PASS: TestGuestComposeDenials (0.03s)
+            --- PASS: TestGuestComposeDenials/anchor (0.00s)
+            --- PASS: TestGuestComposeDenials/cycle (0.00s)
+            --- PASS: TestGuestComposeDenials/missing-dependency (0.00s)
+            --- PASS: TestGuestComposeDenials/resource-overflow (0.00s)
+            --- PASS: TestGuestComposeDenials/size (0.00s)
+            --- PASS: TestGuestComposeDenials/device_cgroup_rules (0.00s)
+            --- PASS: TestGuestComposeDenials/ipc (0.00s)
+            --- PASS: TestGuestComposeDenials/extends (0.00s)
+            --- PASS: TestGuestComposeDenials/nested-duplicate (0.00s)
+            --- PASS: TestGuestComposeDenials/key-type (0.00s)
+            --- PASS: TestGuestComposeDenials/second-build (0.00s)
+            --- PASS: TestGuestComposeDenials/tag-image (0.00s)
+            --- PASS: TestGuestComposeDenials/ambiguous (0.00s)
+            --- PASS: TestGuestComposeDenials/volumes_from (0.00s)
+            --- PASS: TestGuestComposeDenials/x-custom (0.00s)
+            --- PASS: TestGuestComposeDenials/top-version (0.00s)
+            --- PASS: TestGuestComposeDenials/merge (0.00s)
+            --- PASS: TestGuestComposeDenials/nul (0.00s)
+            --- PASS: TestGuestComposeDenials/shell-health (0.00s)
+            --- PASS: TestGuestComposeDenials/privileged (0.00s)
+            --- PASS: TestGuestComposeDenials/runtime (0.00s)
+            --- PASS: TestGuestComposeDenials/env_file (0.00s)
+            --- PASS: TestGuestComposeDenials/logging (0.00s)
+            --- PASS: TestGuestComposeDenials/sysctls (0.00s)
+            --- PASS: TestGuestComposeDenials/duplicate (0.00s)
+            --- PASS: TestGuestComposeDenials/null (0.00s)
+            --- PASS: TestGuestComposeDenials/devices (0.00s)
+            --- PASS: TestGuestComposeDenials/security_opt (0.00s)
+            --- PASS: TestGuestComposeDenials/pre_stop (0.00s)
+            --- PASS: TestGuestComposeDenials/top-include (0.00s)
+            --- PASS: TestGuestComposeDenials/top-networks (0.00s)
+            --- PASS: TestGuestComposeDenials/alias (0.00s)
+            --- PASS: TestGuestComposeDenials/invalid-utf8 (0.00s)
+            --- PASS: TestGuestComposeDenials/interpolation (0.00s)
+            --- PASS: TestGuestComposeDenials/depth (0.00s)
+            --- PASS: TestGuestComposeDenials/uts (0.00s)
+            --- PASS: TestGuestComposeDenials/network_mode (0.00s)
+            --- PASS: TestGuestComposeDenials/ports (0.00s)
+            --- PASS: TestGuestComposeDenials/post_start (0.00s)
+            --- PASS: TestGuestComposeDenials/tag (0.00s)
+            --- PASS: TestGuestComposeDenials/nodes (0.02s)
+            --- PASS: TestGuestComposeDenials/profiles (0.00s)
+            --- PASS: TestGuestComposeDenials/configs (0.00s)
+            --- PASS: TestGuestComposeDenials/secrets (0.00s)
+            --- PASS: TestGuestComposeDenials/top-name (0.00s)
+            --- PASS: TestGuestComposeDenials/top-x-custom (0.00s)
+            --- PASS: TestGuestComposeDenials/userns_mode (0.00s)
+            --- PASS: TestGuestComposeDenials/networks (0.00s)
+            --- PASS: TestGuestComposeDenials/multiple (0.00s)
+            --- PASS: TestGuestComposeDenials/scalar-type (0.00s)
+            --- PASS: TestGuestComposeDenials/shell-command (0.00s)
+            --- PASS: TestGuestComposeDenials/bind (0.00s)
+            --- PASS: TestGuestComposeDenials/host-env (0.00s)
+            --- PASS: TestGuestComposeDenials/cap_add (0.00s)
+            --- PASS: TestGuestComposeDenials/pid (0.00s)
+            --- PASS: TestGuestComposeDenials/container_name (0.00s)
+        === RUN   TestGuestDockerfile
+        === RUN   TestGuestDockerfile/scratch
+        === RUN   TestGuestDockerfile/multi
+        === RUN   TestGuestDockerfile/frontend-tabs
+        === RUN   TestGuestDockerfile/ssh
+        === RUN   TestGuestDockerfile/device
+        === RUN   TestGuestDockerfile/arg
+        === RUN   TestGuestDockerfile/volume
+        === RUN   TestGuestDockerfile/frontend-spaces
+        === RUN   TestGuestDockerfile/frontend-c
+        === RUN   TestGuestDockerfile/external-copy
+        === RUN   TestGuestDockerfile/heredoc
+        === RUN   TestGuestDockerfile/size
+        === RUN   TestGuestDockerfile/frontend-bom
+        === RUN   TestGuestDockerfile/tag
+        === RUN   TestGuestDockerfile/security
+        === RUN   TestGuestDockerfile/empty
+        === RUN   TestGuestDockerfile/frontend-json
+        === RUN   TestGuestDockerfile/frontend-shebang
+        === RUN   TestGuestDockerfile/remote-add
+        === RUN   TestGuestDockerfile/frontend
+        === RUN   TestGuestDockerfile/escape
+        === RUN   TestGuestDockerfile/network
+        === RUN   TestGuestDockerfile/onbuild
+        === RUN   TestGuestDockerfile/shell-entrypoint
+        --- PASS: TestGuestDockerfile (0.00s)
+            --- PASS: TestGuestDockerfile/scratch (0.00s)
+            --- PASS: TestGuestDockerfile/multi (0.00s)
+            --- PASS: TestGuestDockerfile/frontend-tabs (0.00s)
+            --- PASS: TestGuestDockerfile/ssh (0.00s)
+            --- PASS: TestGuestDockerfile/device (0.00s)
+            --- PASS: TestGuestDockerfile/arg (0.00s)
+            --- PASS: TestGuestDockerfile/volume (0.00s)
+            --- PASS: TestGuestDockerfile/frontend-spaces (0.00s)
+            --- PASS: TestGuestDockerfile/frontend-c (0.00s)
+            --- PASS: TestGuestDockerfile/external-copy (0.00s)
+            --- PASS: TestGuestDockerfile/heredoc (0.00s)
+            --- PASS: TestGuestDockerfile/size (0.00s)
+            --- PASS: TestGuestDockerfile/frontend-bom (0.00s)
+            --- PASS: TestGuestDockerfile/tag (0.00s)
+            --- PASS: TestGuestDockerfile/security (0.00s)
+            --- PASS: TestGuestDockerfile/empty (0.00s)
+            --- PASS: TestGuestDockerfile/frontend-json (0.00s)
+            --- PASS: TestGuestDockerfile/frontend-shebang (0.00s)
+            --- PASS: TestGuestDockerfile/remote-add (0.00s)
+            --- PASS: TestGuestDockerfile/frontend (0.00s)
+            --- PASS: TestGuestDockerfile/escape (0.00s)
+            --- PASS: TestGuestDockerfile/network (0.00s)
+            --- PASS: TestGuestDockerfile/onbuild (0.00s)
+            --- PASS: TestGuestDockerfile/shell-entrypoint (0.00s)
+        === RUN   TestGuestRepositoryPaths
+        --- PASS: TestGuestRepositoryPaths (0.00s)
+        === RUN   TestGuestServiceCount
+        --- PASS: TestGuestServiceCount (0.00s)
+        === RUN   TestGuestParserBudgetAndDiagnostics
+        --- PASS: TestGuestParserBudgetAndDiagnostics (0.04s)
+        === RUN   TestGuestRepositoryCorpus
+        === RUN   TestGuestRepositoryCorpus/compose-accepted-two-service.yaml
+        === RUN   TestGuestRepositoryCorpus/compose-deny-ambiguous.yaml
+        === RUN   TestGuestRepositoryCorpus/compose-deny-host-access.yaml
+        === RUN   TestGuestRepositoryCorpus/compose-deny-privileged.yaml
+        === RUN   TestGuestRepositoryCorpus/compose-review-candidate.yaml
+        === RUN   TestGuestRepositoryCorpus/dockerfile-accepted.dockerfile
+        === RUN   TestGuestRepositoryCorpus/dockerfile-deny-remote.dockerfile
+        --- PASS: TestGuestRepositoryCorpus (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/compose-accepted-two-service.yaml (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/compose-deny-ambiguous.yaml (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/compose-deny-host-access.yaml (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/compose-deny-privileged.yaml (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/compose-review-candidate.yaml (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/dockerfile-accepted.dockerfile (0.00s)
+            --- PASS: TestGuestRepositoryCorpus/dockerfile-deny-remote.dockerfile (0.00s)
+        === RUN   TestGuestPathRace
+        --- PASS: TestGuestPathRace (0.00s)
+        === RUN   TestGuestNestedComposeContext
+        --- PASS: TestGuestNestedComposeContext (0.00s)
+        PASS
+        fuzz: elapsed: 0s, gathering baseline coverage: 0/1 completed
+        fuzz: elapsed: 0s, gathering baseline coverage: 1/1 completed, now fuzzing with 1 workers
+        fuzz: elapsed: 3s, execs: 107 (36/sec), new interesting: 1 (total: 2)
+        fuzz: elapsed: 4s, execs: 107 (0/sec), new interesting: 1 (total: 2)
+        PASS
+        fuzz: elapsed: 0s, gathering baseline coverage: 0/1 completed
+        fuzz: elapsed: 0s, gathering baseline coverage: 1/1 completed, now fuzzing with 1 workers
+        fuzz: elapsed: 3s, execs: 7376 (2459/sec), new interesting: 57 (total: 58)
+        fuzz: elapsed: 4s, execs: 7376 (0/sec), new interesting: 57 (total: 58)
+        PASS
+        M08-GUEST-EXIT tests=0 yaml=0 dockerfile=0
+        
+    linux_test.go:378: build stage <nil>
+    linux_test.go:395: ingest stage admitted <nil>
+    linux_test.go:334: commit=8e8bd0c45d93dd7cb37ead07adc4f4d6fabb640a context=063a6ed51d23e2376b025d0b900af0cfd7980733b9cad6e1297ca327aca27cef archive=sha256:7d6dcbf2a420ba545a146e93de290d941eabc0d630f78b2c135118bfbea673e2 image=sha256:b83304508ff75cb1e9517f248f893dbaf31d59ed755e7415185198f54066865f report=sha256:5a262c81b21b050340a6a3bdc9dee1f8b13de54c56c9b665f10fad9df4ed62ae sbom=sha256:7ce423d23306dbcfaf54cc258ac80508f2fc7fe8cb62660d4ca88faf43009cef
+    linux_test.go:367: M08 normalized spec sha256:1dbef6092d87a2ebe96d1a3458ebd672a76f55edf0891d43e913f7ac8980fb4b services 2
+=== RUN   TestRealM08Pipeline/m08-denied
+    linux_test.go:444: fixed guest status M04-FIXTURE CLONE-EXIT status=1 helper=absent filter=absent hook=absent context_check=not-applicable diagnostic=parser_configuration_denied
+        
+--- PASS: TestRealM08Pipeline (176.71s)
+    --- PASS: TestRealM08Pipeline/m08-dockerfile (81.32s)
+    --- PASS: TestRealM08Pipeline/m08-compose (74.68s)
+    --- PASS: TestRealM08Pipeline/m08-denied (20.71s)
+PASS
+2374 packets captured
+4758 packets received by filter
+5 packets dropped by kernel
+Updating certificates in /etc/ssl/certs...
+0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d...
+done.

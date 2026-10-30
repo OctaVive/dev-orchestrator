@@ -49,9 +49,9 @@ def pack(objects):
     return result + hashlib.sha1(result).digest()
 
 
-def repository(scenario):
+def repository(scenario, external=None):
     files = [(b'100644', b'Dockerfile', b'FROM scratch\n'), (b'100644', b'app.txt', b'bounded clone fixture\n')]
-    if scenario in ('build','build-cpu','build-flood','build-disk','build-memory','build-pids','build-remote'):
+    if scenario in ('build','build-cpu','build-flood','build-disk','build-memory','build-pids','build-remote','m08-dockerfile','m08-compose','m08-denied'):
         base=registry_fixture(scenario=='build-remote')[3]
         dockerfile=('FROM ok.m06.example/base@'+base+'\nCOPY rootfs /\nRUN ["/bin/sh","-c","test ! -e /var/run/docker.sock && ! wget -T 2 -q -O /dev/null http://169.254.169.254/"]\nUSER 1000\n').encode()
         if scenario=='build-cpu':dockerfile=dockerfile.replace(b'test ! -e /var/run/docker.sock && ! wget -T 2 -q -O /dev/null http://169.254.169.254/',b'while :; do :; done')
@@ -63,6 +63,11 @@ def repository(scenario):
                  (b'100755', b'rootfs/bin/sh', Path('/usr/bin/busybox').read_bytes()),
                  (b'100644', b'rootfs/etc/os-release', b'NAME=Alpine\nID=alpine\nVERSION_ID=3.23.0\n'),
                  (b'100644', b'rootfs/lib/apk/db/installed', b'P:m07-inert\nV:1.0.0-r0\nA:x86_64\nS:0\nI:0\nT:Inert acceptance fixture\nL:MIT\no:m07-inert\nm:fixture\nt:0\nc:0000000000000000000000000000000000000000\n\n')]
+    if scenario in ('m08-compose','m08-denied'):
+        image=external or 'registry.example.org/apps/db@sha256:'+('a'*64)
+        compose='services:\n  web:\n    build: {context: ., dockerfile: Dockerfile}\n    expose: ["8080"]\n    depends_on: [db]\n  db:\n    image: '+image+'\n'
+        if scenario=='m08-denied': compose+='    privileged: false\n'
+        files.append((b'100644', b'compose.yaml', compose.encode()))
     if scenario == 'executable':
         files.append((b'100755', b'run.sh', b'#!/bin/sh\nexit 0\n'))
     if scenario == 'symlink':
@@ -132,6 +137,7 @@ def main():
     advertisements = {}
     cases = ['good','executable','symlink','moving','mismatch','submodule','modules','attributes','lfs','escape','cycle','collision','metadata-path','malformed','sha256','redirect','redirect-same','timeout','object-limit','context-limit','entry-limit','ref-limit','transfer-limit','adv-limit','corrupt','stall-fetch','nested','context-escape','config-symlink','deep-tree','long-path','object-count','expanded-limit','huge-object','huge-ref-list','log-flood','redirect-301','redirect-303','redirect-307','redirect-308','directory-link','directory-cycle','context-return']
     if (root/'m07-enabled').exists(): cases.extend(['build','build-cpu','build-flood','build-disk','build-memory','build-pids','build-remote'])
+    if (root/'m08-enabled').exists(): cases.extend(['m08-dockerfile','m08-compose','m08-denied'])
     repos = {name: repository(name if name not in ('moving','mismatch') else 'good') for name in cases}
     (root / 'expected-shas.json').write_text(json.dumps({k: v[0] for k, v in repos.items()}))
 
@@ -204,7 +210,9 @@ def main():
             self.end_headers()
             self.wfile.write(data)
         def scenario(self):
-            return self.path.split('/')[1].removesuffix('.git')
+            name=self.path.split('/')[1].removesuffix('.git')
+            if name=='m08-compose' and (root/'m08-image').exists(): repos[name]=repository(name,(root/'m08-image').read_text().strip())
+            return name
         def registry(self, head=False):
             config,cd,manifest,md=registry_fixture()
             mapping={'/v2/':(b'{}','application/json'),'/v2/base/manifests/'+md:(manifest,'application/vnd.oci.image.manifest.v1+json'),'/v2/base/blobs/'+cd:(config,'application/octet-stream')}

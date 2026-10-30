@@ -10,6 +10,7 @@ import (
 	"dev-orchestrator/internal/artifacts"
 	"dev-orchestrator/internal/contracts"
 	"dev-orchestrator/internal/domain"
+	"dev-orchestrator/internal/policy"
 )
 
 type BuildIntent struct {
@@ -45,8 +46,14 @@ func (s *Store) BeginBuild(ctx context.Context, i BuildIntent) error {
 			return databaseError(ctx, e)
 		}
 		r, e := contracts.DecodeCloneResult(strings.NewReader(payload), i.Job.Clone)
-		if e != nil || r.SHA != i.Job.SHA || r.ContextID != i.Job.ContextID {
+		if e != nil || r.SHA != i.Job.SHA || r.ContextID != i.Job.ContextID || (i.Job.Clone.Configuration != nil && (r.Plan == nil || policy.PlanHash(*r.Plan) != i.Job.PlanHash)) {
 			return ErrConflict
+		}
+		if r.Plan != nil {
+			selected, e := policy.BuildPath(*r.Plan)
+			if e != nil || selected != i.Job.Dockerfile {
+				return ErrConflict
+			}
 		}
 		now := time.Now().UnixNano()
 		job, _ := json.Marshal(i.Job)
@@ -145,6 +152,14 @@ func (s *Store) RecordArtifact(ctx context.Context, i BuildIntent, r contracts.A
 			if e != nil {
 				return databaseError(ctx, e)
 			}
+		}
+		if r.Metadata != nil {
+			sanitized := r
+			sanitized.Metadata = nil
+			b, _ = json.Marshal(struct {
+				contracts.ArtifactResult
+				MetadataHash string `json:"metadata_hash"`
+			}{sanitized, contracts.ConfigurationDigest(r.Metadata)})
 		}
 		return buildEvent(ctx, c, i, "scan."+r.Outcome, b)
 	})

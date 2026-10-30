@@ -197,3 +197,37 @@ func TestBuildBoottimeTimerRearm(t *testing.T) {
 		t.Fatal("rearmed timer did not expire")
 	}
 }
+
+func TestConfigurationSerialFrameFencing(t *testing.T) {
+	j := cloneTestJob()
+	j.Version = 2
+	j.Configuration = &contracts.ConfigurationSettings{Version: 1, Mode: "dockerfile", PolicyHash: contracts.Digest([]byte("policy"))}
+	resolved := contracts.NewCloneResult(j)
+	resolved.Outcome = "resolved"
+	resolved.SHA = strings.Repeat("b", 40)
+	success := resolved
+	success.Outcome = "success"
+	success.ContextID = strings.Repeat("c", 64)
+	success.Entries = 1
+	success.Plan = &contracts.ConfigurationPlan{Version: 1, PolicyHash: j.Configuration.PolicyHash, ConfigDigest: contracts.Digest([]byte("config"))}
+	first, _ := json.Marshal(resolved)
+	second, _ := json.Marshal(success)
+	wire := []byte("M06 " + string(first) + "\nM06 " + string(second) + "\n")
+	if got, e := parseCloneFrames(wire, j); e != nil || len(got) != 2 || got[1].Plan == nil {
+		t.Fatal("version2 frames", e)
+	}
+	for name, b := range map[string][]byte{"duplicate": append(append([]byte{}, wire...), []byte("M06 "+string(second)+"\n")...), "wrong-generation": bytes.Replace(wire, []byte(`"generation":1`), []byte(`"generation":2`), 1), "unknown-plan-field": bytes.Replace(wire, []byte(`"config_digest":`), []byte(`"privileged":false,"config_digest":`), 1), "legacy-version": bytes.Replace(wire, []byte(`"version":2`), []byte(`"version":1`), 1), "oversize-partial": []byte(strings.Repeat("x", contracts.MaxCloneResultBytes+5)), "plan-before-resolution": []byte("M06 " + string(second) + "\n")} {
+		t.Run(name, func(t *testing.T) {
+			if _, e := parseCloneFrames(b, j); e == nil {
+				t.Fatal("unfenced frame")
+			}
+		})
+	}
+	if got, e := parseCloneFrames(wire[:len(wire)-1], j); e != nil || len(got) != 1 {
+		t.Fatal("incomplete frame became terminal")
+	}
+	serial := cloneSerial{}
+	if _, e := serial.Write(make([]byte, cloneSerialLimit+1)); e == nil {
+		t.Fatal("serial overflow")
+	}
+}

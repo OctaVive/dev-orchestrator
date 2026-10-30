@@ -87,6 +87,7 @@ if [[ $MODE == clone || $MODE == build ]]; then
   mkdir -p "$ROOT/usr/bin" "$ROOT/usr/lib/git-core" "$ROOT/work" "$ROOT/etc"
   cp "$M06_CA_CERT" "$ROOT/build-ca.pem"
   cp "$M06_RUNNER" "$ROOT/bin/clone-runner"
+  if [[ -n ${M08_TESTS:-} ]]; then cp "$M08_TESTS" "$ROOT/bin/config-tests"; fi
   copy_binary /usr/bin/git usr/bin/git
   copy_binary /usr/lib/git-core/git-remote-https usr/lib/git-core/git-remote-https
   copy_binary /usr/bin/ip bin/ip
@@ -161,9 +162,18 @@ mkdir -p /dev/pts
 mount -t tmpfs tmpfs /run
 mkdir -p /sys/fs/cgroup
 mount -t cgroup2 none /sys/fs/cgroup
-echo +pids > /sys/fs/cgroup/cgroup.subtree_control
+echo +pids +memory +cpu > /sys/fs/cgroup/cgroup.subtree_control
 mkdir /sys/fs/cgroup/runner
 echo 512 > /sys/fs/cgroup/runner/pids.max
+echo +pids +memory +cpu > /sys/fs/cgroup/runner/cgroup.subtree_control
+mkdir /sys/fs/cgroup/runner/workload /sys/fs/cgroup/runner/config-parser
+echo 134217728 > /sys/fs/cgroup/runner/config-parser/memory.max
+echo 0 > /sys/fs/cgroup/runner/config-parser/memory.swap.max
+echo 32 > /sys/fs/cgroup/runner/config-parser/pids.max
+echo "100000 100000" > /sys/fs/cgroup/runner/config-parser/cpu.max
+# Delegation permits migration only within runner; its populated internal node
+# cannot accept processes while controllers are enabled.
+chown 1000:1000 /sys/fs/cgroup/runner/cgroup.procs /sys/fs/cgroup/runner/config-parser/cgroup.procs
 modprobe virtio_pci
 modprobe virtio_blk
 MODE=$(cat /fixture-mode)
@@ -200,13 +210,25 @@ case "$MODE" in
     # The job device is sealed/read-only at the host; the guest user only reads.
     chown 1000:1000 /dev/vdb /dev/ttyS1
     chmod 0600 /dev/vdb /dev/ttyS1
-    echo $$ > /sys/fs/cgroup/runner/cgroup.procs
+    echo $$ > /sys/fs/cgroup/runner/workload/cgroup.procs
     # Env injection is intentional: the runner must discard all inherited Git
     # settings, including helper/proxy/loader inputs, before invoking Git.
     mkdir -p /work/hooks
     printf '[credential]\n helper = !touch /work/helper-ran\n[core]\n hooksPath = /work/hooks\n[filter "evil"]\n smudge = touch /work/filter-ran\n[url "ext::sh -c false"]\n insteadOf = https://\n[submodule]\n recurse = true\n' > /work/poison
     printf '#!/bin/sh\ntouch /work/hook-ran\n' > /work/hooks/post-checkout
     chmod 0755 /work/hooks/post-checkout
+    if [ -x /bin/config-tests ]; then
+      (
+      M08_GUEST_TESTS=1 TMPDIR=/work /bin/runner-identity --reuid=1000 --regid=1000 --clear-groups --no-new-privs /bin/config-tests -test.v -test.run '^TestGuest' > /run/config-tests.log 2>&1
+      m08_tests=$?
+      M08_GUEST_TESTS=1 TMPDIR=/work /bin/runner-identity --reuid=1000 --regid=1000 --clear-groups --no-new-privs /bin/config-tests -test.run '^$' -test.fuzz '^FuzzGuestCompose$' -test.fuzztime 3s -test.fuzzcachedir /work/config-fuzz -test.parallel 1 >> /run/config-tests.log 2>&1
+      m08_yaml=$?
+      M08_GUEST_TESTS=1 TMPDIR=/work /bin/runner-identity --reuid=1000 --regid=1000 --clear-groups --no-new-privs /bin/config-tests -test.run '^$' -test.fuzz '^FuzzGuestDockerfile$' -test.fuzztime 3s -test.fuzzcachedir /work/dockerfile-fuzz -test.parallel 1 >> /run/config-tests.log 2>&1
+      m08_dockerfile=$?
+      echo "M08-GUEST-EXIT tests=$m08_tests yaml=$m08_yaml dockerfile=$m08_dockerfile" >> /run/config-tests.log
+      head -c 262144 /run/config-tests.log | dd of=/dev/vda bs=512 seek=20970000 conv=notrunc,fsync
+      ) &
+    fi
     result CLONE-RUNNER-START
     GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=credential.helper GIT_CONFIG_VALUE_0='!touch /work/helper-ran' \
       GIT_CONFIG_GLOBAL=/work/poison GIT_EXEC_PATH=/work HTTPS_PROXY=http://127.0.0.1:9 \
@@ -241,7 +263,7 @@ case "$MODE" in
     chown 1000:1000 /dev/vdb /dev/vdc
     chown 1001:1001 /dev/ttyS1
     chmod 0600 /dev/vdb /dev/vdc /dev/ttyS1
-    echo $$ > /sys/fs/cgroup/runner/cgroup.procs
+    echo $$ > /sys/fs/cgroup/runner/workload/cgroup.procs
     # Unit corpus and real tool policy checks execute inside this VM only.
     M07_GUEST_TESTS=1 TMPDIR=/work /bin/runner-identity --reuid=1000 --regid=1000 --clear-groups --no-new-privs /bin/ingest-tests -test.v -test.run '^TestGuest' > /run/tests.log 2>&1
     test_rc=$?
@@ -297,7 +319,7 @@ case "$MODE" in
     end_status=$?
     result "IO-DONE beyond_end_status=$end_status sectors=$(cat /sys/block/vda/size)" ;;
   pids)
-    sh -c 'echo $$ > /sys/fs/cgroup/runner/cgroup.procs; n=0; while [ "$n" -lt 520 ]; do sleep 60 & n=$((n+1)); done; sleep 60' &
+    sh -c 'echo $$ > /sys/fs/cgroup/runner/workload/cgroup.procs; n=0; while [ "$n" -lt 520 ]; do sleep 60 & n=$((n+1)); done; sleep 60' &
     sleep 3
     result "PIDS count=$(cat /sys/fs/cgroup/runner/pids.current) events=$(cat /sys/fs/cgroup/runner/pids.events)" ;;
 esac

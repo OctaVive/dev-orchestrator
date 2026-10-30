@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"dev-orchestrator/internal/contracts"
+	"dev-orchestrator/internal/policy"
 	"dev-orchestrator/internal/provisioner"
 	"dev-orchestrator/internal/storage"
 )
@@ -75,6 +76,9 @@ func (d Driver) Execute(ctx context.Context, m provisioner.Machine, i storage.Cl
 		}
 		for next < len(frames) {
 			r := frames[next]
+			if r.Plan != nil && policy.ValidatePlan(*r.Plan) != nil {
+				return cleanup(ErrClone)
+			}
 			if e = d.Store.RecordClone(ctx, i, r); e != nil {
 				return cleanup(e)
 			}

@@ -23,6 +23,7 @@ const schemaBase = "https://contracts.dev-orchestrator.invalid/v1/"
 type Validator struct {
 	deployment *jsonschema.Schema
 	agent      *jsonschema.Schema
+	agentV2    *jsonschema.Schema
 	login      *jsonschema.Schema
 	buildLease *jsonschema.Schema
 }
@@ -30,7 +31,7 @@ type Validator struct {
 func NewValidator() (*Validator, error) {
 	c := jsonschema.NewCompiler()
 	c.AssertFormat()
-	for _, name := range []string{"common.schema.json", "deployment.schema.json", "agent.schema.json", "login.schema.json", "build-lease.schema.json"} {
+	for _, name := range []string{"common.schema.json", "deployment.schema.json", "agent.schema.json", "agent-v2.schema.json", "login.schema.json", "build-lease.schema.json"} {
 		b, err := api.Schemas.ReadFile(name)
 		if err != nil {
 			return nil, fmt.Errorf("load embedded schema %s: %w", name, err)
@@ -59,7 +60,11 @@ func NewValidator() (*Validator, error) {
 	if err != nil {
 		return nil, fmt.Errorf("compile build lease schema: %w", err)
 	}
-	return &Validator{deployment: deployment, agent: agent, login: login, buildLease: buildLease}, nil
+	agentV2, err := c.Compile(schemaBase + "agent-v2.schema.json")
+	if err != nil {
+		return nil, err
+	}
+	return &Validator{deployment: deployment, agent: agent, agentV2: agentV2, login: login, buildLease: buildLease}, nil
 }
 
 const MaxCredentialsBytes = 8 << 10
@@ -243,4 +248,18 @@ func validMounts(mounts []Mount) bool {
 		}
 	}
 	return true
+}
+
+// DecodeAgentCommandV2Shape is structural only; agentpolicy performs semantic
+// checks and M09 must add signature/replay/authorization before any operation.
+func (v *Validator) DecodeAgentCommandV2Shape(r io.Reader) (AgentCommandV2, error) {
+	var z AgentCommandV2
+	b, e := readObject(r, MaxPlanBytes)
+	if e != nil {
+		return z, e
+	}
+	if e = validateSchema(v.agentV2, b); e != nil {
+		return z, e
+	}
+	return DecodeConfiguration[AgentCommandV2](bytes.NewReader(b))
 }

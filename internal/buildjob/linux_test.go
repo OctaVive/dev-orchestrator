@@ -6,12 +6,15 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"dev-orchestrator/internal/agentpolicy"
 	"dev-orchestrator/internal/artifacts"
 	"dev-orchestrator/internal/clonejob"
 	"dev-orchestrator/internal/contracts"
 	"dev-orchestrator/internal/domain"
+	configpolicy "dev-orchestrator/internal/policy"
 	"dev-orchestrator/internal/provisioner"
 	"dev-orchestrator/internal/storage"
+	"encoding/base64"
 	"encoding/json"
 	"github.com/google/uuid"
 	"os"
@@ -83,6 +86,9 @@ func runM07Pipeline(t *testing.T, scenario string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	repo := "build"
+	if strings.HasPrefix(scenario, "m08-") {
+		repo = scenario
+	}
 	if scenario == "remote-source" {
 		repo = "build-remote"
 	}
@@ -155,18 +161,69 @@ func runM07Pipeline(t *testing.T, scenario string) {
 	ci.Job.ExpiresAt = time.Now().UTC().Add(10 * time.Minute)
 	ci.Job.TemplateDigest = bc.Digest
 	ci.Job.Build = &contracts.BuildSettings{Policy: policy, Dockerfile: "Dockerfile"}
+	if strings.HasPrefix(scenario, "m08-") {
+		mode := "dockerfile"
+		if scenario != "m08-dockerfile" {
+			mode = "compose"
+			ci.Job.ConfigPath = "compose.yaml"
+		}
+		ci.Job.Version = 2
+		ci.Job.Configuration = &contracts.ConfigurationSettings{Version: 1, Mode: mode, PolicyHash: configpolicy.Hash()}
+	}
 	m := provisioner.Machine{Lease: provisioner.Lease{JobID: ci.Job.JobID, CommandID: ci.Job.LeaseID, DeploymentID: ci.Job.DeploymentID, Template: provisioner.Template{ID: bc.TemplateID, Digest: bc.Digest}, ProfileID: "build-small-v1", CreatedAt: time.Now(), ExpiresAt: ci.Job.ExpiresAt}, Budget: provisioner.SmallBudget(), OwnershipProof: strings.Repeat("a", 64), Clone: &ci.Job}
-	cloneDriver := clonejob.Driver{Store: s, Backend: backend.(provisioner.CloneBackend)}
+	cloneBackend := backend.(provisioner.CloneBackend)
+	if strings.HasPrefix(scenario, "m08-") {
+		cloneBackend = diagnosticClone{cloneBackend, t, bc.Root}
+	}
+	cloneDriver := clonejob.Driver{Store: s, Backend: cloneBackend}
 	t.Cleanup(func() {
 		if e := cloneDriver.Release(m, ci.Job); e != nil {
 			t.Error(e)
 		}
 	})
 	r, e := cloneDriver.Execute(ctx, m, ci)
+	if strings.HasPrefix(scenario, "m08-") && e == nil {
+		f, err := os.Open(filepath.Join(bc.Root, m.Lease.JobID+".raw"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		log := make([]byte, 262144)
+		deadline := time.Now().Add(40 * time.Second)
+		for time.Now().Before(deadline) {
+			_, err = f.ReadAt(log, 20970000*512)
+			if bytes.Contains(log, []byte("M08-GUEST-EXIT")) {
+				break
+			}
+			time.Sleep(200 * time.Millisecond)
+		}
+		f.Close()
+		text := strings.TrimRight(string(log), "\x00")
+		if err != nil || !strings.Contains(text, "M08-GUEST-EXIT tests=0 yaml=0 dockerfile=0") || strings.Contains(text, "--- FAIL:") || strings.Contains(text, "--- SKIP:") {
+			t.Fatal("guest corpus/fuzz failed", text, err)
+		}
+		t.Log("guest configuration tests", text)
+	}
+	if scenario == "m08-denied" {
+		if e == nil {
+			t.Fatal("forbidden Compose accepted")
+		}
+		messages, err := s.PendingCloneOutbox(context.Background(), 100)
+		if err != nil || len(messages) < 2 || messages[len(messages)-1].Result.Outcome != "denied" || !contracts.ValidSHA1(messages[len(messages)-1].Result.SHA) || messages[len(messages)-1].Result.Bytes == 0 {
+			t.Fatal("denial was not a fetched repository policy rejection", err)
+		}
+		return
+	}
 	if e != nil {
 		t.Fatal("clone", e)
 	}
 	j := contracts.BuildJob{Version: 1, Clone: ci.Job, SHA: r.SHA, ContextID: r.ContextID, Policy: policy, PolicyHash: policy.Hash(), Dockerfile: "Dockerfile", ExpiresAt: ci.Job.ExpiresAt}
+	if ci.Job.Configuration != nil {
+		if r.Plan == nil || configpolicy.ValidatePlan(*r.Plan) != nil {
+			t.Fatal("plan")
+		}
+		j.Version = 2
+		j.PlanHash = configpolicy.PlanHash(*r.Plan)
+	}
 	uploads := artifacts.NewClient(os.Getenv("M07_CONTROL"))
 	driver := Driver{Store: s, Uploads: uploads, ArtifactRoot: os.Getenv("M07_ARTIFACT_ROOT"), Backend: tracedBackend{t: t, LinuxAdapter: LinuxAdapter{Builder: backend.(provisioner.BuildBackend), Scanner: scanner.(provisioner.IngestBackend), ScannerTemplate: provisioner.Template{ID: sc.TemplateID, Digest: sc.Digest}}}}
 	i := storage.BuildIntent{Job: j, Actor: ci.Actor, CorrelationID: ci.CorrelationID}
@@ -247,7 +304,7 @@ func runM07Pipeline(t *testing.T, scenario string) {
 		defer timer.Stop()
 	}
 	result, e := driver.Execute(ctx, m, i)
-	if scenario != "success" {
+	if scenario != "success" && !strings.HasPrefix(scenario, "m08-") {
 		if e == nil {
 			t.Fatal("failure admitted", scenario)
 		}
@@ -279,6 +336,36 @@ func runM07Pipeline(t *testing.T, scenario string) {
 	if e != nil || contracts.Digest(b) != result.ArchiveDigest {
 		t.Fatal("promoted bytes", e)
 	}
+	if strings.HasPrefix(scenario, "m08-") {
+		ref := "registry.example.org/apps/fixture@" + result.ImageDigest
+		a, err := configpolicy.FromArtifact(ref, j, result)
+		if err != nil {
+			t.Fatal("metadata admission bridge", err)
+		}
+		m08Admissions[ref] = a
+		if scenario == "m08-dockerfile" {
+			if err = os.WriteFile(filepath.Join(filepath.Dir(os.Getenv("M07_CONTROL")), "m08-image"), []byte(ref), 0600); err != nil {
+				t.Fatal(err)
+			}
+		}
+		spec, err := configpolicy.Finalize(*r.Plan, configpolicy.Context{AppID: appID, DeploymentID: deploymentID, SHA: r.SHA, ContextID: r.ContextID, BuiltImages: map[string]string{"web": ref}, Ingress: contracts.Ingress{Service: "web", Port: 8080, HealthPath: "/health"}}, m08Resolver{})
+		if err != nil || configpolicy.ValidateRuntime(spec, m08Resolver{}) != nil {
+			t.Fatal("runtime finalization", err)
+		}
+		expected := 1
+		if scenario == "m08-compose" {
+			expected = 2
+		}
+		if len(spec.Services) != expected {
+			t.Fatal("service count")
+		}
+		aCommand := contracts.AgentCommandV2{SchemaVersion: 2, CommandID: ci.Job.JobID, WorkerID: ci.Job.JobID, Generation: ci.Job.Generation, ExpiresAt: time.Now().UTC().Add(time.Minute).Format(time.RFC3339Nano), Nonce: strings.Repeat("c", 64), KeyID: "fixture", Signature: base64.StdEncoding.EncodeToString(make([]byte, 64)), SpecHash: configpolicy.SpecHash(spec), Spec: spec}
+		wire, _ := json.Marshal(aCommand)
+		if _, e = agentpolicy.Decode(bytes.NewReader(wire), agentpolicy.Context{WorkerID: ci.Job.JobID, Now: time.Now(), Resolver: m08Resolver{}}); e != nil {
+			t.Fatal("independent agent validation", e)
+		}
+		t.Log("M08 normalized spec", configpolicy.SpecHash(spec), "services", len(spec.Services))
+	}
 }
 
 type tracedBackend struct {
@@ -307,4 +394,54 @@ func (b tracedBackend) Ingest(ctx context.Context, j contracts.BuildJob, r artif
 	result, e := b.LinuxAdapter.Ingest(ctx, j, r)
 	b.t.Log("ingest stage", result.Outcome, e)
 	return result, e
+}
+
+var m08Admissions = map[string]configpolicy.Admission{}
+
+type m08Resolver struct{}
+
+func (m08Resolver) Image(ref string) (configpolicy.Admission, error) {
+	a, ok := m08Admissions[ref]
+	if !ok {
+		return a, configpolicy.ErrAdmission
+	}
+	return a, nil
+}
+func (m08Resolver) Volume(app, name string) (string, error) { return "", configpolicy.ErrDenied }
+func (m08Resolver) Secret(app, id, version string) error    { return configpolicy.ErrDenied }
+func TestRealM08Pipeline(t *testing.T) {
+	if os.Getenv("M08_LAB") != "1" {
+		t.Skip("M08 isolated lab required")
+	}
+	for _, s := range []string{"m08-dockerfile", "m08-compose", "m08-denied"} {
+		t.Run(s, func(t *testing.T) { runM07Pipeline(t, s) })
+	}
+}
+
+type diagnosticClone struct {
+	provisioner.CloneBackend
+	t    *testing.T
+	root string
+}
+
+func (d diagnosticClone) Cleanup(ctx context.Context, m provisioner.Machine) (provisioner.CleanupResult, error) {
+	if f, e := os.Open(filepath.Join(d.root, m.Lease.JobID+".raw")); e == nil {
+		defer f.Close()
+		b := make([]byte, 262144)
+		deadline := time.Now().Add(20 * time.Second)
+		for time.Now().Before(deadline) {
+			_, _ = f.ReadAt(b, 20970000*512)
+			if bytes.Contains(b, []byte("M08-GUEST-EXIT")) {
+				break
+			}
+			time.Sleep(200 * time.Millisecond)
+		}
+		if bytes.Contains(b, []byte("--- FAIL:")) {
+			d.t.Log("guest failure corpus", strings.TrimRight(string(b), "\x00"))
+		}
+		b = make([]byte, 512)
+		_, _ = f.ReadAt(b, 20971519*512)
+		d.t.Log("fixed guest status", strings.TrimRight(string(b), "\x00"))
+	}
+	return d.CloneBackend.Cleanup(ctx, m)
 }

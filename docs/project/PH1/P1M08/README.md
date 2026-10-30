@@ -1,6 +1,6 @@
 # P1-M08 - Strict Compose/Dockerfile normalization and agent policy contract
 
-Status: **Planned**.
+Status: **Implemented/tested; isolated-KVM M08 acceptance PASS**.
 
 ## Requirement and acceptance contract
 
@@ -13,6 +13,12 @@ Status: **Planned**.
 
 ## Documents
 
+- [implementation plan](implementation-plan.md)
+- [implementation evidence](implementation-evidence.md)
+- [post-implementation test plan](test-plan.md)
+- [acceptance report](testing/acceptance-report.md)
+- [per-case acceptance ledger](testing/acceptance-results.json)
+- [configuration policy and contract](../../specifications/configuration-policy.md)
 - [deployment agent](../../specifications/deployment-agent.md)
 
-Implementation and validation evidence have not been recorded. Add milestone-specific design, implementation notes and acceptance evidence here as work proceeds. Shared contracts stay in `../../specifications/`.
+All **214 required acceptance ledger cases PASS**, including actual guest parsing/fuzzing, both accepted runtime-spec fixtures, policy denial and the complete M07 pipeline regression. No required cases are failed, missing or skipped. Runtime execution/authorization remain M09; normalization does not approve or deploy. Shared contracts stay in `../../specifications/`.

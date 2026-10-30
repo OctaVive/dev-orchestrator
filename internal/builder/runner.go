@@ -6,7 +6,9 @@ package builder
 import (
 	"bytes"
 	"context"
+	"dev-orchestrator/internal/configguest"
 	"dev-orchestrator/internal/contracts"
+	"dev-orchestrator/internal/policy"
 	"errors"
 	"io"
 	"os"
@@ -133,14 +135,43 @@ func Run(parent context.Context, j contracts.BuildJob) (string, error) {
 	if e != nil || resolved != contextDir {
 		return "", ErrDenied
 	}
-	dockerfile := filepath.Join(contextDir, j.Dockerfile)
+	filename := j.Dockerfile
+	if j.Clone.Configuration != nil {
+		config := j.Clone.ConfigPath
+		if j.Clone.BuildContext != "." {
+			config = strings.TrimPrefix(config, j.Clone.BuildContext+"/")
+		}
+		p, e := configguest.Analyze(parent, contextDir, j.Clone.Configuration.Mode, config)
+		if e != nil || policy.PlanHash(p) != j.PlanHash {
+			return "", ErrPolicy
+		}
+		found := false
+		for _, s := range p.Services {
+			if s.Build != nil {
+				if filepath.Join(s.Build.Context, s.Build.Dockerfile) != j.Dockerfile {
+					return "", ErrPolicy
+				}
+				contextDir = filepath.Join(contextDir, s.Build.Context)
+				filename = s.Build.Dockerfile
+				found = true
+			}
+		}
+		if !found {
+			return "", ErrPolicy
+		}
+	}
+	dockerfile := filepath.Join(contextDir, filename)
 	f, e := os.Open(dockerfile)
 	if e != nil {
 		return "", ErrDenied
 	}
 	data, e := io.ReadAll(io.LimitReader(f, (64<<10)+1))
 	f.Close()
-	if e != nil || ValidateDockerfile(data) != nil {
+	validate := ValidateDockerfile
+	if j.Clone.Configuration != nil {
+		validate = configguest.Dockerfile
+	}
+	if e != nil || validate(data) != nil {
 		return "", ErrPolicy
 	}
 	deadline := time.Now().Add(time.Duration(j.Policy.BuildSeconds) * time.Second)
@@ -189,7 +220,7 @@ func Run(parent context.Context, j contracts.BuildJob) (string, error) {
 		return "", ErrDaemon
 	}
 	dest := filepath.Join(work, "image.tar")
-	build := command(ctx, cancel, env, "/usr/bin/buildctl", "--addr", "unix://"+socket, "build", "--source-policy-file", sourcePolicy, "--frontend=dockerfile.v0", "--local", "context="+contextDir, "--local", "dockerfile="+contextDir, "--opt", "filename="+j.Dockerfile, "--opt", "cmdline=", "--opt", "platform=linux/amd64", "--opt", "force-network-mode=none", "--output", "type=oci,dest="+dest+",oci-mediatypes=true,compression=gzip")
+	build := command(ctx, cancel, env, "/usr/bin/buildctl", "--addr", "unix://"+socket, "build", "--source-policy-file", sourcePolicy, "--frontend=dockerfile.v0", "--local", "context="+contextDir, "--local", "dockerfile="+contextDir, "--opt", "filename="+filename, "--opt", "cmdline=", "--opt", "platform=linux/amd64", "--opt", "force-network-mode=none", "--output", "type=oci,dest="+dest+",oci-mediatypes=true,compression=gzip")
 	if e = build.Run(); e != nil {
 		return "", ErrExecution
 	}

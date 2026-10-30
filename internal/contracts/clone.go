@@ -1,6 +1,7 @@
 package contracts
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -13,7 +14,7 @@ import (
 )
 
 const MaxCloneJobBytes = 16 << 10
-const MaxCloneResultBytes = 4096
+const MaxCloneResultBytes = MaxPlanBytes + 4096
 
 var cloneID = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`)
 var cloneHash = regexp.MustCompile(`^[0-9a-f]{64}$`)
@@ -75,28 +76,32 @@ func (p ClonePolicy) Hash() string {
 }
 
 type CloneJob struct {
-	Build          *BuildSettings `json:"build,omitempty"`
-	Version        int            `json:"version"`
-	JobID          string         `json:"job_id"`
-	DeploymentID   string         `json:"deployment_id"`
-	LeaseID        string         `json:"lease_id"`
-	Attempt        int64          `json:"attempt"`
-	Generation     int64          `json:"generation"`
-	ExpiresAt      time.Time      `json:"expires_at"`
-	TemplateDigest string         `json:"template_digest"`
-	PolicyHash     string         `json:"policy_hash"`
-	RepositoryURL  string         `json:"repository_url"`
-	Branch         string         `json:"branch"`
-	ConfigPath     string         `json:"config_path"`
-	BuildContext   string         `json:"build_context"`
-	Policy         ClonePolicy    `json:"policy"`
+	Configuration  *ConfigurationSettings `json:"configuration,omitempty"`
+	Build          *BuildSettings         `json:"build,omitempty"`
+	Version        int                    `json:"version"`
+	JobID          string                 `json:"job_id"`
+	DeploymentID   string                 `json:"deployment_id"`
+	LeaseID        string                 `json:"lease_id"`
+	Attempt        int64                  `json:"attempt"`
+	Generation     int64                  `json:"generation"`
+	ExpiresAt      time.Time              `json:"expires_at"`
+	TemplateDigest string                 `json:"template_digest"`
+	PolicyHash     string                 `json:"policy_hash"`
+	RepositoryURL  string                 `json:"repository_url"`
+	Branch         string                 `json:"branch"`
+	ConfigPath     string                 `json:"config_path"`
+	BuildContext   string                 `json:"build_context"`
+	Policy         ClonePolicy            `json:"policy"`
 }
 
 func (j CloneJob) Validate(now time.Time) error {
+	if j.Configuration != nil && (j.Configuration.Version != 1 || (j.Configuration.Mode != "dockerfile" && j.Configuration.Mode != "compose") || !ValidDigest(j.Configuration.PolicyHash) || j.Build == nil) {
+		return ErrInvalidRequest
+	}
 	if j.Build != nil && j.Build.Validate(now) != nil {
 		return ErrInvalidRequest
 	}
-	if j.Version != 1 || !cloneID.MatchString(j.JobID) || !cloneID.MatchString(j.DeploymentID) ||
+	if ((j.Configuration == nil && j.Version != 1) || (j.Configuration != nil && j.Version != 2)) || !cloneID.MatchString(j.JobID) || !cloneID.MatchString(j.DeploymentID) ||
 		!cloneID.MatchString(j.LeaseID) || j.Attempt < 1 || j.Generation < 1 || j.Attempt > 9007199254740991 || j.Generation > 9007199254740991 ||
 		now.IsZero() || !j.ExpiresAt.After(now) || j.ExpiresAt.After(now.Add(30*time.Minute)) ||
 		!strings.HasPrefix(j.TemplateDigest, "sha256:") || !cloneHash.MatchString(strings.TrimPrefix(j.TemplateDigest, "sha256:")) ||
@@ -155,30 +160,37 @@ func DecodeCloneJob(r io.Reader, now time.Time) (CloneJob, error) {
 
 // CloneResult is untrusted guest data, even when all identity fields match.
 type CloneResult struct {
-	Version        int    `json:"version"`
-	JobID          string `json:"job_id"`
-	DeploymentID   string `json:"deployment_id"`
-	LeaseID        string `json:"lease_id"`
-	Attempt        int64  `json:"attempt"`
-	Generation     int64  `json:"generation"`
-	PolicyHash     string `json:"policy_hash"`
-	TemplateDigest string `json:"template_digest"`
-	SHA            string `json:"sha,omitempty"`
-	ObjectFormat   string `json:"object_format"`
-	Outcome        string `json:"outcome"`
-	ContextID      string `json:"context_id,omitempty"`
-	Entries        int    `json:"entries"`
-	Bytes          int64  `json:"bytes"`
+	Plan           *ConfigurationPlan `json:"plan,omitempty"`
+	Version        int                `json:"version"`
+	JobID          string             `json:"job_id"`
+	DeploymentID   string             `json:"deployment_id"`
+	LeaseID        string             `json:"lease_id"`
+	Attempt        int64              `json:"attempt"`
+	Generation     int64              `json:"generation"`
+	PolicyHash     string             `json:"policy_hash"`
+	TemplateDigest string             `json:"template_digest"`
+	SHA            string             `json:"sha,omitempty"`
+	ObjectFormat   string             `json:"object_format"`
+	Outcome        string             `json:"outcome"`
+	ContextID      string             `json:"context_id,omitempty"`
+	Entries        int                `json:"entries"`
+	Bytes          int64              `json:"bytes"`
 }
 
 func NewCloneResult(j CloneJob) CloneResult {
-	return CloneResult{Version: 1, JobID: j.JobID, DeploymentID: j.DeploymentID, LeaseID: j.LeaseID, Attempt: j.Attempt, Generation: j.Generation, PolicyHash: j.PolicyHash, TemplateDigest: j.TemplateDigest, ObjectFormat: "sha1", Outcome: "error"}
+	return CloneResult{Version: j.Version, JobID: j.JobID, DeploymentID: j.DeploymentID, LeaseID: j.LeaseID, Attempt: j.Attempt, Generation: j.Generation, PolicyHash: j.PolicyHash, TemplateDigest: j.TemplateDigest, ObjectFormat: "sha1", Outcome: "error"}
 }
 func ValidSHA1(s string) bool { return gitSHA1.MatchString(s) && s != strings.Repeat("0", 40) }
 func (r CloneResult) Validate(j CloneJob) error {
-	if r.Version != 1 || r.JobID != j.JobID || r.DeploymentID != j.DeploymentID || r.LeaseID != j.LeaseID || r.Attempt != j.Attempt || r.Generation != j.Generation ||
+	if r.Version != j.Version || r.JobID != j.JobID || r.DeploymentID != j.DeploymentID || r.LeaseID != j.LeaseID || r.Attempt != j.Attempt || r.Generation != j.Generation ||
 		r.PolicyHash != j.PolicyHash || r.TemplateDigest != j.TemplateDigest || r.ObjectFormat != "sha1" || r.Entries < 0 || r.Entries > j.Policy.Limits.Entries || r.Bytes < 0 || r.Bytes > j.Policy.Limits.ContextBytes ||
 		r.SHA != "" && !ValidSHA1(r.SHA) {
+		return ErrInvalidRequest
+	}
+	if r.Plan != nil && (j.Configuration == nil || r.Outcome != "success" || r.Plan.PolicyHash != j.Configuration.PolicyHash) {
+		return ErrInvalidRequest
+	}
+	if j.Configuration != nil && r.Outcome == "success" && r.Plan == nil {
 		return ErrInvalidRequest
 	}
 	switch r.Outcome {
@@ -217,6 +229,24 @@ func DecodeCloneResult(rd io.Reader, j CloneJob) (CloneResult, error) {
 // encoding/json matches struct names case-insensitively. The clone wire
 // contract instead requires exact JSON tags, including nested policy fields.
 func exactCloneFields(b []byte, t reflect.Type) error {
+	if t.Kind() == reflect.Pointer {
+		if bytes.Equal(bytes.TrimSpace(b), []byte("null")) {
+			return ErrSchema
+		}
+		return exactCloneFields(b, t.Elem())
+	}
+	if t.Kind() == reflect.Map {
+		var m map[string]json.RawMessage
+		if json.Unmarshal(b, &m) != nil {
+			return ErrSchema
+		}
+		for _, v := range m {
+			if e := exactCloneFields(v, t.Elem()); e != nil {
+				return e
+			}
+		}
+		return nil
+	}
 	if t == reflect.TypeOf(time.Time{}) {
 		return nil
 	}

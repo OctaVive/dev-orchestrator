@@ -1,0 +1,157 @@
+{
+  "test_passes": 471,
+  "passing_packages": 19,
+  "required_skips": 0,
+  "packages": {
+    "dev-orchestrator/api": {
+      "pass": 0,
+      "fail": 0,
+      "skip": 1
+    },
+    "dev-orchestrator/cmd/artifact-service": {
+      "pass": 0,
+      "fail": 0,
+      "skip": 1
+    },
+    "dev-orchestrator/cmd/clone-runner": {
+      "pass": 0,
+      "fail": 0,
+      "skip": 1
+    },
+    "dev-orchestrator/cmd/egress-broker": {
+      "pass": 2,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/cmd/ingest-runner": {
+      "pass": 0,
+      "fail": 0,
+      "skip": 1
+    },
+    "dev-orchestrator/cmd/metadata-upgrade": {
+      "pass": 0,
+      "fail": 0,
+      "skip": 1
+    },
+    "dev-orchestrator/cmd/api": {
+      "pass": 3,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/cmd/provisioner": {
+      "pass": 4,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/internal/agentpolicy": {
+      "pass": 0,
+      "fail": 0,
+      "skip": 1
+    },
+    "dev-orchestrator/internal/artifacts": {
+      "pass": 18,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/internal/builder": {
+      "pass": 2,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/internal/buildjob": {
+      "pass": 14,
+      "fail": 0,
+      "skip": 2
+    },
+    "dev-orchestrator/internal/clonejob": {
+      "pass": 8,
+      "fail": 0,
+      "skip": 1
+    },
+    "dev-orchestrator/internal/cloner": {
+      "pass": 9,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/internal/configguest": {
+      "pass": 1,
+      "fail": 0,
+      "skip": 11
+    },
+    "dev-orchestrator/internal/contracts": {
+      "pass": 153,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/internal/domain": {
+      "pass": 3,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/internal/egress": {
+      "pass": 37,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/internal/ingest": {
+      "pass": 1,
+      "fail": 0,
+      "skip": 4
+    },
+    "dev-orchestrator/internal/policy": {
+      "pass": 60,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/internal/auth": {
+      "pass": 7,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/internal/httpapi": {
+      "pass": 23,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/internal/storage": {
+      "pass": 73,
+      "fail": 0,
+      "skip": 0
+    },
+    "dev-orchestrator/internal/provisioner": {
+      "pass": 63,
+      "fail": 0,
+      "skip": 28
+    },
+    "dev-orchestrator/internal/provisionerrpc": {
+      "pass": 9,
+      "fail": 0,
+      "skip": 4
+    },
+    "dev-orchestrator/migrations": {
+      "pass": 0,
+      "fail": 0,
+      "skip": 1
+    },
+    "dev-orchestrator/tests/fixtures/compose": {
+      "pass": 0,
+      "fail": 0,
+      "skip": 1
+    },
+    "dev-orchestrator/tests/fixtures/dockerfile": {
+      "pass": 0,
+      "fail": 0,
+      "skip": 1
+    },
+    "dev-orchestrator/tests/fixtures/egress-probe": {
+      "pass": 0,
+      "fail": 0,
+      "skip": 1
+    },
+    "dev-orchestrator/tests/fixtures/oci": {
+      "pass": 0,
+      "fail": 0,
+      "skip": 1
+    }
+  }
+}

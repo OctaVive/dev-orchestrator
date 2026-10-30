@@ -8,13 +8,15 @@ Security-first, self-hosted Git-to-container application portal. Administrators 
 
 ## Implementation status
 
-**PH1 in progress: P1-M01–P1-M07 are implemented, with M04 validation qualifications.** A TLS-only JSON API and explicitly configured isolated Git-to-image build/admission pipeline are present. GUI, runtime deployment and the complete application controller remain planned.
+**PH1 in progress: P1-M01–P1-M08 are implemented, with M04 validation qualifications.** A TLS-only JSON API and explicitly configured isolated Git-to-image build/admission pipeline are present. Strict configuration normalization and independent agent policy are implemented. GUI, runtime deployment and the complete application controller remain planned.
 
 **P1-M04: Implemented/tested\*.** \* V14 and V15 marked as SKIP. V01–V13 and V16 passed the real-host checks; the skipped cases are not passes. Explicit QEMU/KVM/systemd backend includes pinned raw images, resource limits, no-NIC guests, independent deadlines and ownership-safe cleanup. Execution defaults to disabled; no simulator or unsafe fallback. See the [acceptance record](docs/project/PH1/P1M04/testing/acceptance-report.md) and [real-host procedure](docs/project/PH1/P1M04/testing/real-host.md) for results and the qualified status. See [implementation status](docs/project/PH1/P1M04/build-provisioner.md).
 
 **P1-M05: Implemented/tested; isolated-KVM acceptance PASS.** External inspecting HTTPS broker, pinned policy/CA, isolated namespace/TAP, QEMU descriptors, cancellation, independent expiry and recovery are present. Controlled N01–N13 KVM tests passed with packet captures and destination canaries. No-NIC mode stays the default. See the [LLD](LLD-documents/PH1/p1-m05.md) and [validation evidence](docs/project/PH1/P1M05/implementation-evidence.md).
 
 **P1-M06/M07: Implemented/tested; isolated-KVM acceptance PASS.** Restricted Git clone, rootless BuildKit, separate opaque quarantine service, independent OCI validation/scanning and immutable artifact admission are present. M07 passed all 146 required ledger cases, including budget failures and controller loss; admission does not approve or deploy an application. See [M07 evidence](docs/project/PH1/P1M07/testing/acceptance-report.md).
+
+**P1-M08: Implemented/tested; isolated-KVM acceptance PASS.** All 214 required acceptance ledger cases passed for strict configuration normalization, source/admission binding and independent agent policy. See [M08 evidence](docs/project/PH1/P1M08/testing/acceptance-report.md); actual runtime execution remains M09.
 
 Testing after cloning onto a Debian-based Linux VM: [M04 check-off test plan](docs/project/PH1/P1M04/testing/linux-checklist.md).
 

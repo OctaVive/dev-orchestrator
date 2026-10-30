@@ -1,5 +1,5 @@
-# Data-only future P1-M08 fixture; no Compose parser/runner exists yet.
-# Candidate subset syntax, subject to platform normalization and real policy.
+# M08 parser fixture only; digest syntax is not image admission.
+# Runtime finalization separately requires exact image admission evidence.
 services:
   web:
     build:

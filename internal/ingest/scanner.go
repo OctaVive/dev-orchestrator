@@ -90,6 +90,7 @@ func Scan(parent context.Context, _ string, scratch string, j contracts.BuildJob
 	if json.Unmarshal(sbom, &document) != nil || document.BOMFormat != "CycloneDX" {
 		return r, ErrDenied
 	}
+	r.Metadata = v.Metadata
 	r.ArchiveDigest = v.ArchiveDigest
 	r.ImageDigest = v.ImageDigest
 	r.ScannerDigest = j.Policy.ScannerDigest

@@ -8,8 +8,11 @@ import (
 	"bytes"
 	"context"
 	"dev-orchestrator/internal/builder"
+	"dev-orchestrator/internal/configguest"
+	"dev-orchestrator/internal/policy"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"golang.org/x/sys/unix"
 	"io"
 	"os"
@@ -23,6 +26,9 @@ import (
 )
 
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "-normalize" {
+		os.Exit(configguest.Child())
+	}
 	// Read exactly one bounded, length-prefixed JSON job from a read-only raw
 	// virtio device; sector padding is never interpreted as a second document.
 	f, e := os.Open("/dev/vdb")
@@ -65,6 +71,31 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	defer stop()
 	r := cloner.Run(ctx, job, emit)
+	if r.Outcome == "success" && job.Configuration != nil {
+		marker, e := os.ReadFile("/work/context-ready")
+		parts := strings.Split(strings.TrimSpace(string(marker)), "\n")
+		if e != nil || len(parts) != 2 || parts[0] != r.ContextID {
+			r.Outcome = "denied"
+			r.ContextID = ""
+		} else {
+			config := job.ConfigPath
+			if job.BuildContext != "." {
+				config = strings.TrimPrefix(config, job.BuildContext+"/")
+			}
+			p, e := configguest.Analyze(ctx, parts[1], job.Configuration.Mode, config)
+			if e != nil || p.PolicyHash != job.Configuration.PolicyHash || policy.ValidatePlan(p) != nil {
+				if e != nil {
+					fmt.Fprintln(os.Stderr, e.Error())
+				} else {
+					fmt.Fprintln(os.Stderr, "parser_policy_denied")
+				}
+				r.Outcome = "denied"
+				r.ContextID = ""
+			} else {
+				r.Plan = &p
+			}
+		}
+	}
 	if emit(r) != nil {
 		os.Exit(2)
 	}

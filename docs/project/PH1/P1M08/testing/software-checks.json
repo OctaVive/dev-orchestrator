@@ -1,0 +1,70 @@
+{
+  "software-suite": {
+    "command": [
+      "/usr/local/go/bin/go",
+      "test",
+      "-count=1",
+      "-json",
+      "./..."
+    ],
+    "exit_code": 0,
+    "log": "/tmp/m08-final-checks/software-suite.log",
+    "sha256": "a60aff08cf3ddd8cbc71aa17f2ccde43ee3d4ea2a2b5e91b2e53aa5815411ba7"
+  },
+  "go-vet": {
+    "command": [
+      "/usr/local/go/bin/go",
+      "vet",
+      "./..."
+    ],
+    "exit_code": 0,
+    "log": "/tmp/m08-final-checks/go-vet.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "targeted-race": {
+    "command": [
+      "/usr/local/go/bin/go",
+      "test",
+      "-race",
+      "-count=1",
+      "./internal/contracts",
+      "./internal/policy",
+      "./internal/agentpolicy",
+      "./internal/storage",
+      "./internal/provisioner",
+      "./internal/clonejob",
+      "./internal/buildjob"
+    ],
+    "exit_code": 0,
+    "log": "/tmp/m08-final-checks/targeted-race.log",
+    "sha256": "679b29467ac16a2cedba0c7e48e9e9fe29c4566b3b8988db114af53b5371a01b"
+  },
+  "agent-fuzz": {
+    "command": [
+      "/usr/local/go/bin/go",
+      "test",
+      "./internal/policy",
+      "-run",
+      "^$",
+      "-fuzz",
+      "^FuzzAgentPolicy$",
+      "-fuzztime",
+      "5s",
+      "-parallel",
+      "2"
+    ],
+    "exit_code": 0,
+    "log": "/tmp/m08-final-checks/agent-fuzz.log",
+    "sha256": "292773f5a3a8324d4a766cb67df50eba44188958237d73428ea1802298855159"
+  },
+  "script-validation": {
+    "command": [
+      "python3",
+      "-c",
+      "import ast,pathlib,subprocess; [ast.parse(pathlib.Path(p).read_text()) for p in ('infra/build/lab.py','infra/clone/fixture.py','infra/config/lab.py','infra/config/report.py')]; subprocess.run(['bash','-n','infra/builder/build-lab-fixture.sh'],check=True); print('Python AST and shell syntax PASS')"
+    ],
+    "exit_code": 0,
+    "log": "/tmp/m08-final-checks/script-validation.log",
+    "sha256": "0d9e21f3693199a1b73d79e8a11f23281961ee3bc17680d31102c638b9d6fa0a"
+  }
+}

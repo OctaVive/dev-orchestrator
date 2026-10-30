@@ -5,6 +5,7 @@ Contracts used by multiple milestones. See the [project index](../README.md) for
 - [api design](api-design.md)
 - [restricted clone runner](clone-runner.md)
 - [rootless build and isolated artifact admission](build-ingest.md)
+- [configuration normalization and agent policy](configuration-policy.md)
 - [deployment agent](deployment-agent.md)
 - [development environment](development-environment.md)
 - [frontend design](frontend-design.md)

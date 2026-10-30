@@ -22,3 +22,12 @@ After signature/role/policy/worker checks, agent atomically reserves command ID 
 Current `DecodeAgentCommand` checks shape and basic context only. Its `LastGeneration` is a preliminary supplied per-app value, not durable replay protection; it intentionally cannot execute anything. Fixture signatures are all-zero bytes and must fail future signature verification tests.
 
 Changing profile semantics, adding control authority or widening accepted values requires security review, migration/compatibility strategy and new negative tests. Unknown versions/fields fail closed.
+
+M08 adds [agent envelope v2](agent-v2.schema.json), decoded by
+`agentpolicy.Decode` with independent semantic policy and a trusted local
+admission/ownership resolver. It binds source/context, normalized plan, per-service
+image admissions and a canonical spec hash. This gate is not signature verification
+or replay authorization; M09 must supply both before engine operations. The v1
+agent decoder remains a shape-only legacy fixture contract. No public deployment
+endpoint or agent execution endpoint is introduced by M08. See the
+[configuration policy](../docs/project/specifications/configuration-policy.md).

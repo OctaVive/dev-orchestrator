@@ -94,6 +94,7 @@ func (p BuildPolicy) Validate(now time.Time) error {
 }
 
 type BuildJob struct {
+	PlanHash   string      `json:"plan_hash,omitempty"`
 	Version    int         `json:"version"`
 	Clone      CloneJob    `json:"clone"`
 	SHA        string      `json:"sha"`
@@ -105,11 +106,14 @@ type BuildJob struct {
 }
 
 func (j BuildJob) Validate(now time.Time) error {
+	if (j.Clone.Configuration == nil && j.PlanHash != "") || (j.Clone.Configuration != nil && !ValidDigest(j.PlanHash)) {
+		return ErrInvalidRequest
+	}
 	if j.Clone.Build == nil || j.Clone.Build.Policy.Hash() != j.PolicyHash || j.Clone.Build.Dockerfile != j.Dockerfile {
 		return ErrInvalidRequest
 	}
 
-	if j.Version != 1 || j.Clone.Validate(now) != nil || !ValidSHA1(j.SHA) || !cloneHash.MatchString(j.ContextID) || j.Policy.Validate(now) != nil || j.PolicyHash != j.Policy.Hash() || !ClonePath(j.Dockerfile, false) || !j.ExpiresAt.After(now) || j.ExpiresAt.After(j.Clone.ExpiresAt) {
+	if ((j.Clone.Configuration == nil && j.Version != 1) || (j.Clone.Configuration != nil && j.Version != 2)) || j.Clone.Validate(now) != nil || !ValidSHA1(j.SHA) || !cloneHash.MatchString(j.ContextID) || j.Policy.Validate(now) != nil || j.PolicyHash != j.Policy.Hash() || !ClonePath(j.Dockerfile, false) || !j.ExpiresAt.After(now) || j.ExpiresAt.After(j.Clone.ExpiresAt) {
 		return ErrInvalidRequest
 	}
 	return nil
@@ -132,24 +136,31 @@ func DecodeBuildJob(r io.Reader, now time.Time) (BuildJob, error) {
 // ArtifactResult contains only normalized evidence. Raw tool diagnostics, URLs,
 // paths, credentials and repository-controlled finding text are excluded.
 type ArtifactResult struct {
-	Version        int    `json:"version"`
-	JobID          string `json:"job_id"`
-	DeploymentID   string `json:"deployment_id"`
-	Attempt        int64  `json:"attempt"`
-	Generation     int64  `json:"generation"`
-	PolicyHash     string `json:"policy_hash"`
-	ArchiveDigest  string `json:"archive_digest"`
-	ImageDigest    string `json:"image_digest"`
-	ScannerDigest  string `json:"scanner_digest"`
-	DatabaseDigest string `json:"database_digest"`
-	ReportDigest   string `json:"report_digest"`
-	SBOMDigest     string `json:"sbom_digest"`
-	Outcome        string `json:"outcome"`
-	High           int    `json:"high"`
-	Critical       int    `json:"critical"`
+	Metadata       *ImageMetadata `json:"metadata,omitempty"`
+	Version        int            `json:"version"`
+	JobID          string         `json:"job_id"`
+	DeploymentID   string         `json:"deployment_id"`
+	Attempt        int64          `json:"attempt"`
+	Generation     int64          `json:"generation"`
+	PolicyHash     string         `json:"policy_hash"`
+	ArchiveDigest  string         `json:"archive_digest"`
+	ImageDigest    string         `json:"image_digest"`
+	ScannerDigest  string         `json:"scanner_digest"`
+	DatabaseDigest string         `json:"database_digest"`
+	ReportDigest   string         `json:"report_digest"`
+	SBOMDigest     string         `json:"sbom_digest"`
+	Outcome        string         `json:"outcome"`
+	High           int            `json:"high"`
+	Critical       int            `json:"critical"`
 }
 
 func (r ArtifactResult) Validate(j BuildJob) error {
+	if r.Metadata != nil {
+		b, e := json.Marshal(r.Metadata)
+		if e != nil || len(b) > 4096 || r.Metadata.Platform != "linux/amd64" {
+			return ErrInvalidRequest
+		}
+	}
 	if r.Version != 1 || r.JobID != j.Clone.JobID || r.DeploymentID != j.Clone.DeploymentID || r.Attempt != j.Clone.Attempt || r.Generation != j.Clone.Generation || r.PolicyHash != j.PolicyHash || r.High < 0 || r.Critical < 0 || r.High > 100000 || r.Critical > 100000 {
 		return ErrInvalidRequest
 	}
@@ -160,6 +171,9 @@ func (r ArtifactResult) Validate(j BuildJob) error {
 	}
 	switch r.Outcome {
 	case "admitted":
+		if j.Clone.Configuration != nil && r.Metadata == nil {
+			return ErrInvalidRequest
+		}
 		if !ValidDigest(r.ArchiveDigest) || !ValidDigest(r.ImageDigest) || r.ScannerDigest != j.Policy.ScannerDigest || r.DatabaseDigest != j.Policy.DatabaseDigest || !ValidDigest(r.ReportDigest) || !ValidDigest(r.SBOMDigest) {
 			return ErrInvalidRequest
 		}

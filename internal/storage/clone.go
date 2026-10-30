@@ -11,6 +11,7 @@ import (
 
 	"dev-orchestrator/internal/contracts"
 	"dev-orchestrator/internal/domain"
+	"dev-orchestrator/internal/policy"
 )
 
 type CloneIntent struct {
@@ -77,7 +78,7 @@ func dbCloneError(ctx context.Context, e error) error {
 // No network operations occur under the SQLite transaction. Late results deny,
 // even when they repeat a previously valid result after cancellation or expiry.
 func (s *Store) RecordClone(ctx context.Context, i CloneIntent, r contracts.CloneResult) error {
-	if !i.valid() || r.Validate(i.Job) != nil {
+	if !i.valid() || r.Validate(i.Job) != nil || (r.Plan != nil && policy.ValidatePlan(*r.Plan) != nil) {
 		return ErrInvalidInput
 	}
 	return s.write(ctx, func(c *sql.Conn) error {
@@ -127,6 +128,15 @@ func (s *Store) RecordClone(ctx context.Context, i CloneIntent, r contracts.Clon
 			commit = r.SHA
 		}
 		payload, _ := json.Marshal(r)
+		eventPayload := payload
+		if r.Plan != nil {
+			sanitized := r
+			sanitized.Plan = nil
+			eventPayload, _ = json.Marshal(struct {
+				contracts.CloneResult
+				PlanHash string `json:"plan_hash"`
+			}{sanitized, policy.PlanHash(*r.Plan)})
+		}
 		_, e = c.ExecContext(ctx, `UPDATE clone_attempts SET commit_sha=?,outcome=?,result_json=?,expected_version=expected_version+1,updated_at=? WHERE job_id=?`, commit, r.Outcome, string(payload), now.UnixNano(), i.Job.JobID)
 		if e != nil {
 			return databaseError(ctx, e)
@@ -146,11 +156,11 @@ func (s *Store) RecordClone(ctx context.Context, i CloneIntent, r contracts.Clon
 			return e
 		}
 		eventType := "clone." + r.Outcome
-		_, e = c.ExecContext(ctx, "INSERT INTO clone_events(id,job_id,event_type,payload,created_at) VALUES(?,?,?,?,?)", id, r.JobID, eventType, string(payload), now.UnixNano())
+		_, e = c.ExecContext(ctx, "INSERT INTO clone_events(id,job_id,event_type,payload,created_at) VALUES(?,?,?,?,?)", id, r.JobID, eventType, string(eventPayload), now.UnixNano())
 		if e != nil {
 			return databaseError(ctx, e)
 		}
-		_, e = c.ExecContext(ctx, `INSERT INTO audit_events(id,actor_kind,actor_id,action,target_type,target_id,correlation_id,sanitized_metadata,created_at) VALUES(?,?,?,?,'deployment',?,?,?,?)`, id, i.Actor.Kind, i.Actor.ID, eventType, d.ID, i.CorrelationID, string(payload), now.UnixNano())
+		_, e = c.ExecContext(ctx, `INSERT INTO audit_events(id,actor_kind,actor_id,action,target_type,target_id,correlation_id,sanitized_metadata,created_at) VALUES(?,?,?,?,'deployment',?,?,?,?)`, id, i.Actor.Kind, i.Actor.ID, eventType, d.ID, i.CorrelationID, string(eventPayload), now.UnixNano())
 		if e != nil {
 			return databaseError(ctx, e)
 		}

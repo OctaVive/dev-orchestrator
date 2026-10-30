@@ -1,6 +1,6 @@
 # PH1 capability and security evidence checklist
 
-P1-M01–P1-M07-core inventory. A checked contract/storage/auth/lifecycle assertion is not an infrastructure guarantee. Credential-free real KVM fixtures, controlled Git repositories and test-only API/guard processes have been executed; hostile Git/OCI parsing and rootless image builds ran only inside guests. M07 admitted a scanned image but did not deploy an application. P1-M04 is recorded as PASS*: V14 and V15 marked as SKIP. Skips are not passes; see the [acceptance record](PH1/P1M04/testing/acceptance-report.md).
+P1-M01–P1-M08-core inventory. A checked contract/storage/auth/lifecycle assertion is not an infrastructure guarantee. Credential-free real KVM fixtures, controlled Git repositories and test-only API/guard processes have been executed; hostile Git/OCI parsing and rootless image builds ran only inside guests. M07 admitted a scanned image but did not deploy an application. P1-M04 is recorded as PASS*: V14 and V15 marked as SKIP. Skips are not passes; see the [acceptance record](PH1/P1M04/testing/acceptance-report.md).
 
 ## Required isolation capabilities
 
@@ -27,11 +27,11 @@ P1-M01–P1-M07-core inventory. A checked contract/storage/auth/lifecycle assert
 | SEC-03 no app ports | No engine exists; not evaluated | M09/M11 port scan |
 | SEC-04 gateway ACL | Principal grant helper only | M11 real requests |
 | SEC-05 no management socket | No engine integration; architectural restriction | M09 process/mount inventory |
-| SEC-06 Compose dangerous fields | Agent-spec unknown fields rejected, YAML is unparsed | M08 strict Compose parser + agent policy |
+| SEC-06 Compose dangerous fields | [M08 isolated-KVM acceptance PASS](PH1/P1M08/testing/acceptance-report.md): strict guest YAML/Dockerfile corpus and fuzzing, forbidden-field denials, controller/agent normalized policy and actual one/two-service specs | M14 end-to-end release regression; actual engine constraints remain M09 |
 | SEC-07 SSRF/egress | [M05 isolated-KVM N01–N13 PASS](PH1/P1M05/testing/acceptance-report.md): inspecting broker, IPv4/IPv6/direct/DNS/metadata filtering, rebinding, captures and zero forbidden canary arrivals | [M06 Git/client integration PASS](PH1/P1M06/testing/acceptance-report.md); M14 end-to-end acceptance remains |
 | SEC-08 resource limits | M04 fixed-profile caps, M06 clone bounds and M07 real build/scan budgets, controller loss and resource exhaustion PASS | M09 runtime enforcement |
 | SEC-09 volume/credential isolation | Mount shape/nonoverlap tests only | M10 ownership/quota/storage proof |
-| SEC-10 secrets absent from logs | Decoder/auth errors sanitized; password hashes/token hashes verified in DB; auth audit contains no request secrets; raw session token only in secure cookie | M06 closed clone outcomes, bounded diagnostics and suppressed raw Git output and execution sentinels PASS; M07 closed build/scan outcomes, private scoped upload grants and bounded report metadata PASS; remaining M08–M14 runtime paths |
+| SEC-10 secrets absent from logs | Decoder/auth errors sanitized; password hashes/token hashes verified in DB; auth audit contains no request secrets; raw session token only in secure cookie | M06 closed clone outcomes, bounded diagnostics and suppressed raw Git output and execution sentinels PASS; M07 closed build/scan outcomes, private scoped upload grants and bounded report metadata PASS; M08 repository/image metadata redaction and runtime/build-input separation PASS; remaining M09–M14 runtime paths |
 | SEC-11 cleanup | M04 qualified evidence plus M05/M06/M07 real cancel/expiry, worker loss, crash boundaries, foreign ownership, race fencing and clean final inventories | M12 complete deployment reconciliation; M04 V14/V15 remain SKIP |
 | SEC-12 timed revoke | Logout/disabled account/auth epoch/current roles enforced on next management request; DB outage denies | App gateway/WS/SSE timed lease closure in PH2/PH3 |
 | SEC-13 proxy rollback | Not implemented | M11 |

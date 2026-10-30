@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"dev-orchestrator/internal/contracts"
+	"dev-orchestrator/internal/policy"
 )
 
 var ErrDenied = errors.New("artifact denied")
@@ -42,6 +43,7 @@ type descriptor struct {
 	} `json:"platform,omitempty"`
 }
 type Verified struct {
+	Metadata      *contracts.ImageMetadata
 	LayoutPath    string // guest-local; never part of a wire result
 	ImageDigest   string
 	ArchiveDigest string
@@ -274,10 +276,13 @@ func Validate(r io.Reader, scratch string, l contracts.ArtifactLimits) (Verified
 			DiffIDs []string `json:"diff_ids"`
 		} `json:"rootfs"`
 		Config struct {
-			User    string                     `json:"User"`
-			Volumes map[string]json.RawMessage `json:"Volumes"`
-			OnBuild []string                   `json:"OnBuild"`
-			Env     []string                   `json:"Env"`
+			Command      []string                   `json:"Cmd"`
+			Entrypoint   []string                   `json:"Entrypoint"`
+			ExposedPorts map[string]json.RawMessage `json:"ExposedPorts"`
+			User         string                     `json:"User"`
+			Volumes      map[string]json.RawMessage `json:"Volumes"`
+			OnBuild      []string                   `json:"OnBuild"`
+			Env          []string                   `json:"Env"`
 		} `json:"config"`
 	}
 	if readJSON(cp, l.JSONBytes, &cfg) != nil || cfg.Architecture != "amd64" || cfg.OS != "linux" || cfg.RootFS.Type != "layers" || len(cfg.RootFS.DiffIDs) != len(m.Layers) || len(cfg.Config.Volumes) > 0 || len(cfg.Config.OnBuild) > 0 {
@@ -290,6 +295,36 @@ func Validate(r io.Reader, scratch string, l contracts.ArtifactLimits) (Verified
 	if uidErr != nil || uid == 0 || strings.Trim(user, "0123456789") != "" {
 		return result, ErrDenied
 	}
+	metadata := &contracts.ImageMetadata{User: cfg.Config.User, Platform: "linux/amd64", Command: cfg.Config.Command, Entrypoint: cfg.Config.Entrypoint, Environment: map[string]string{}}
+	if _, _, e := policy.User(metadata.User); e != nil {
+		return result, ErrDenied
+	}
+	for _, v := range cfg.Config.Env {
+		k, x, ok := strings.Cut(v, "=")
+		if !ok {
+			return result, ErrDenied
+		}
+		if _, exists := metadata.Environment[k]; exists {
+			return result, ErrDenied
+		}
+		metadata.Environment[k] = x
+	}
+	for key := range cfg.Config.ExposedPorts {
+		port, proto, ok := strings.Cut(key, "/")
+		if !ok || proto != "tcp" {
+			return result, ErrDenied
+		}
+		n, e := strconv.Atoi(port)
+		if e != nil {
+			return result, ErrDenied
+		}
+		metadata.Expose = append(metadata.Expose, n)
+	}
+	b, _ := json.Marshal(metadata)
+	if len(b) > 4096 || !policy.Environment(metadata.Environment) {
+		return result, ErrDenied
+	}
+	result.Metadata = metadata
 	links := map[string]string{}
 	types := map[string]byte{}
 	for i, d := range m.Layers {

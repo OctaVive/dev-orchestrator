@@ -1,0 +1,7 @@
+ok  	dev-orchestrator/internal/contracts	2.006s
+ok  	dev-orchestrator/internal/policy	1.194s
+?   	dev-orchestrator/internal/agentpolicy	[no test files]
+ok  	dev-orchestrator/internal/storage	14.936s
+ok  	dev-orchestrator/internal/provisioner	4.325s
+ok  	dev-orchestrator/internal/clonejob	3.679s
+ok  	dev-orchestrator/internal/buildjob	4.580s
