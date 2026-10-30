@@ -1,0 +1,33 @@
+{
+  "ingest_log_sha256": "ff7725e9da5c736a64a2f94a1c7dcdd7730fc97178e19c02e33636c5354dad58",
+  "host_identity_log_sha256": "2678320af4f6aa2dc59b8a14f12ae74ceca140ddb0457eab554bf4c1309b807e",
+  "provisioner_sha256": "f0531f5e7e460a2ccac64214c0e66dcafb78418e486d1b4b77bd440b9eceadf1",
+  "provisioner_tests_sha256": "2c146497187c0c103ebfd10a737f2e984dc7f1e10f140df3fed0d859da65f5c9",
+  "ingest_config": {
+    "root": "/var/lib/orchestrator-builder/m07.1793363524503781782/ingest",
+    "image": "/var/lib/orchestrator-builder/image-build/fixture.NRRxXGt2/fixture.raw",
+    "digest": "sha256:2efabfa18eca6be8bd8d473796dfe9b9130b53f06690f3f33983eab4049aca79",
+    "template_id": "ingest-m07-v1",
+    "executable": "/var/lib/orchestrator-builder/m07.1793363524503781782/provisioner",
+    "qemu": "/usr/bin/qemu-system-x86_64",
+    "uid": 101,
+    "gid": 104,
+    "kvm_gid": 993,
+    "ingest_enabled": true,
+    "artifact_root": "/var/lib/orchestrator-builder/m07.1793363524503781782/quarantine",
+    "ingest_database": "/var/lib/orchestrator-builder/m07.1793363524503781782/database.raw",
+    "ingest_database_digest": "sha256:f6627d155f8843185335d92245addc6cdc9037e79a259fcb7e8ddc83ad95126f"
+  },
+  "identity_config": {
+    "root": "/var/lib/orchestrator-builder/m07.1793363524503781782/host",
+    "image": "/var/lib/orchestrator-builder/image-build/fixture.Vdx45tzQ/fixture.raw",
+    "digest": "sha256:4c79f1f83c5f728dd984462f04012d632efcd77d9b103d151f277479f21b8b3f",
+    "template_id": "build-m07-feasibility-v1",
+    "executable": "/var/lib/orchestrator-builder/m07.1793363524503781782/provisioner",
+    "qemu": "/usr/bin/qemu-system-x86_64",
+    "uid": 101,
+    "gid": 104,
+    "kvm_gid": 993
+  },
+  "owned_disks_absent": true
+}

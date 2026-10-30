@@ -1,0 +1,756 @@
+=== RUN   TestRealM07Ingest
+=== RUN   TestRealM07Ingest/clean
+    linux_build_linux_test.go:59: owned test job: e125fa16-aded-4c72-a35f-d75c20cad030
+    linux_build_linux_test.go:91: normalized result: {Version:1 JobID:11111111-1111-4111-8111-111111111111 DeploymentID:22222222-2222-4222-8222-222222222222 Attempt:1 Generation:1 PolicyHash:sha256:f411e2447b87084e1ed91f84d15f03bcef7b2239b6a79e7ad2da8e8091abaf19 ArchiveDigest:sha256:b8917e047925f1be27e7e5a3ea0b9511795075e20d5d5275d22451aadbcee231 ImageDigest:sha256:17a133e2e1dbac7d06c0650efd676d6655d92609b7b42049d252e52da9ea4eea ScannerDigest:sha256:d1dfca6ae10a1ad4540bb94e64f0510077c47008920a9b554986b39dca573d83 DatabaseDigest:sha256:ed3be3de4f440d6f8c068be57b69210bed6a3015aa4930a01100c3ef4d46d836 ReportDigest:sha256:4894b63a99a93e7a4cadbdb343c0730f427924af1f3f3558e10b0c1f382e5b36 SBOMDigest:sha256:d8bb057f125ce4a725f50e7614c62421cc530a938ba5afd1a7e8d39f0beafe7f Outcome:admitted High:0 Critical:0}
+    linux_build_linux_test.go:95: M04-FIXTURE M07-INGEST tests=0 runner=0
+    linux_build_linux_test.go:107: === RUN   TestGuestOCIValidation
+        === RUN   TestGuestOCIValidation/plain
+        === RUN   TestGuestOCIValidation/gzip
+        === RUN   TestGuestOCIValidation/internal-symlink
+        === RUN   TestGuestOCIValidation/internal-hardlink
+        === RUN   TestGuestOCIValidation/safe-whiteout
+        === RUN   TestGuestOCIValidation/traversal
+        === RUN   TestGuestOCIValidation/absolute
+        === RUN   TestGuestOCIValidation/duplicate
+        === RUN   TestGuestOCIValidation/symlink
+        === RUN   TestGuestOCIValidation/device
+        === RUN   TestGuestOCIValidation/fifo
+        === RUN   TestGuestOCIValidation/bad-digest
+        === RUN   TestGuestOCIValidation/truncated
+        === RUN   TestGuestOCIValidation/extra-blob
+        === RUN   TestGuestOCIValidation/trailing
+        === RUN   TestGuestOCIValidation/platform
+        === RUN   TestGuestOCIValidation/root-user
+        === RUN   TestGuestOCIValidation/diff-id
+        === RUN   TestGuestOCIValidation/external-url
+        === RUN   TestGuestOCIValidation/layer-traversal
+        === RUN   TestGuestOCIValidation/layer-cycle
+        === RUN   TestGuestOCIValidation/layer-ancestor
+        === RUN   TestGuestOCIValidation/whiteout-link
+        === RUN   TestGuestOCIValidation/suid
+        === RUN   TestGuestOCIValidation/upload-limit
+        === RUN   TestGuestOCIValidation/expanded-limit
+        === RUN   TestGuestOCIValidation/entries
+        === RUN   TestGuestOCIValidation/ratio
+        === RUN   TestGuestOCIValidation/json-duplicate
+        === RUN   TestGuestOCIValidation/blob-size
+        === RUN   TestGuestOCIValidation/media-type
+        === RUN   TestGuestOCIValidation/pax
+        === RUN   TestGuestOCIValidation/gzip-truncated
+        === RUN   TestGuestOCIValidation/gzip-concatenated
+        === RUN   TestGuestOCIValidation/unreferenced-valid
+        === RUN   TestGuestOCIValidation/case-alias
+        === RUN   TestGuestOCIValidation/zero-user
+        === RUN   TestGuestOCIValidation/uid-overflow
+        --- PASS: TestGuestOCIValidation (0.03s)
+            --- PASS: TestGuestOCIValidation/plain (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip (0.00s)
+            --- PASS: TestGuestOCIValidation/internal-symlink (0.00s)
+            --- PASS: TestGuestOCIValidation/internal-hardlink (0.00s)
+            --- PASS: TestGuestOCIValidation/safe-whiteout (0.00s)
+            --- PASS: TestGuestOCIValidation/traversal (0.00s)
+            --- PASS: TestGuestOCIValidation/absolute (0.00s)
+            --- PASS: TestGuestOCIValidation/duplicate (0.00s)
+            --- PASS: TestGuestOCIValidation/symlink (0.00s)
+            --- PASS: TestGuestOCIValidation/device (0.00s)
+            --- PASS: TestGuestOCIValidation/fifo (0.00s)
+            --- PASS: TestGuestOCIValidation/bad-digest (0.00s)
+            --- PASS: TestGuestOCIValidation/truncated (0.00s)
+            --- PASS: TestGuestOCIValidation/extra-blob (0.00s)
+            --- PASS: TestGuestOCIValidation/trailing (0.00s)
+            --- PASS: TestGuestOCIValidation/platform (0.00s)
+            --- PASS: TestGuestOCIValidation/root-user (0.00s)
+            --- PASS: TestGuestOCIValidation/diff-id (0.00s)
+            --- PASS: TestGuestOCIValidation/external-url (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-traversal (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-cycle (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-ancestor (0.00s)
+            --- PASS: TestGuestOCIValidation/whiteout-link (0.00s)
+            --- PASS: TestGuestOCIValidation/suid (0.00s)
+            --- PASS: TestGuestOCIValidation/upload-limit (0.00s)
+            --- PASS: TestGuestOCIValidation/expanded-limit (0.00s)
+            --- PASS: TestGuestOCIValidation/entries (0.00s)
+            --- PASS: TestGuestOCIValidation/ratio (0.00s)
+            --- PASS: TestGuestOCIValidation/json-duplicate (0.00s)
+            --- PASS: TestGuestOCIValidation/blob-size (0.00s)
+            --- PASS: TestGuestOCIValidation/media-type (0.00s)
+            --- PASS: TestGuestOCIValidation/pax (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip-truncated (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip-concatenated (0.00s)
+            --- PASS: TestGuestOCIValidation/unreferenced-valid (0.00s)
+            --- PASS: TestGuestOCIValidation/case-alias (0.00s)
+            --- PASS: TestGuestOCIValidation/zero-user (0.00s)
+            --- PASS: TestGuestOCIValidation/uid-overflow (0.00s)
+        === RUN   TestGuestScanPolicy
+        === RUN   TestGuestScanPolicy/clean
+        === RUN   TestGuestScanPolicy/high-unfixed
+        === RUN   TestGuestScanPolicy/critical
+        === RUN   TestGuestScanPolicy/exception
+        === RUN   TestGuestScanPolicy/wrong-digest
+        === RUN   TestGuestScanPolicy/expired
+        === RUN   TestGuestScanPolicy/unknown
+        === RUN   TestGuestScanPolicy/missing-coverage
+        === RUN   TestGuestScanPolicy/eol
+        === RUN   TestGuestScanPolicy/stale-db
+        === RUN   TestGuestScanPolicy/malformed
+        --- PASS: TestGuestScanPolicy (0.00s)
+            --- PASS: TestGuestScanPolicy/clean (0.00s)
+            --- PASS: TestGuestScanPolicy/high-unfixed (0.00s)
+            --- PASS: TestGuestScanPolicy/critical (0.00s)
+            --- PASS: TestGuestScanPolicy/exception (0.00s)
+            --- PASS: TestGuestScanPolicy/wrong-digest (0.00s)
+            --- PASS: TestGuestScanPolicy/expired (0.00s)
+            --- PASS: TestGuestScanPolicy/unknown (0.00s)
+            --- PASS: TestGuestScanPolicy/missing-coverage (0.00s)
+            --- PASS: TestGuestScanPolicy/eol (0.00s)
+            --- PASS: TestGuestScanPolicy/stale-db (0.00s)
+            --- PASS: TestGuestScanPolicy/malformed (0.00s)
+        === RUN   TestGuestRealTrivy
+        === RUN   TestGuestRealTrivy/clean
+        === RUN   TestGuestRealTrivy/vulnerable
+        --- PASS: TestGuestRealTrivy (15.99s)
+            --- PASS: TestGuestRealTrivy/clean (3.93s)
+            --- PASS: TestGuestRealTrivy/vulnerable (4.06s)
+        PASS
+        fuzz: elapsed: 0s, gathering baseline coverage: 0/2 completed
+        fuzz: elapsed: 0s, gathering baseline coverage: 2/2 completed, now fuzzing with 1 workers
+        fuzz: elapsed: 3s, execs: 396 (132/sec), new interesting: 1 (total: 3)
+        fuzz: elapsed: 6s, execs: 396 (0/sec), new interesting: 1 (total: 3)
+        fuzz: elapsed: 6s, execs: 396 (0/sec), new interesting: 1 (total: 3)
+        PASS
+        brw-------    1 root     root      254,   0 Oct 30 14:17 /dev/vda
+        brw-------    1 root     root      254,   1 Oct 30 14:17 /dev/vda1
+        brw-------    1 root     root      254,  16 Oct 30 14:17 /dev/vdb
+        brw-------    1 root     root      254,  32 Oct 30 14:17 /dev/vdc
+        brw-------    1 root     root      254,  48 Oct 30 14:17 /dev/vdd
+        drwxr-xr-x    4 root     root          4096 Oct 30 12:46 /scan-cache
+        drwxr-xr-x    2 root     root          4096 Oct 30 12:46 /scan-cache/db
+        
+    linux_build_linux_test.go:70: === RUN   TestGuestOCIValidation
+        === RUN   TestGuestOCIValidation/plain
+        === RUN   TestGuestOCIValidation/gzip
+        === RUN   TestGuestOCIValidation/internal-symlink
+        === RUN   TestGuestOCIValidation/internal-hardlink
+        === RUN   TestGuestOCIValidation/safe-whiteout
+        === RUN   TestGuestOCIValidation/traversal
+        === RUN   TestGuestOCIValidation/absolute
+        === RUN   TestGuestOCIValidation/duplicate
+        === RUN   TestGuestOCIValidation/symlink
+        === RUN   TestGuestOCIValidation/device
+        === RUN   TestGuestOCIValidation/fifo
+        === RUN   TestGuestOCIValidation/bad-digest
+        === RUN   TestGuestOCIValidation/truncated
+        === RUN   TestGuestOCIValidation/extra-blob
+        === RUN   TestGuestOCIValidation/trailing
+        === RUN   TestGuestOCIValidation/platform
+        === RUN   TestGuestOCIValidation/root-user
+        === RUN   TestGuestOCIValidation/diff-id
+        === RUN   TestGuestOCIValidation/external-url
+        === RUN   TestGuestOCIValidation/layer-traversal
+        === RUN   TestGuestOCIValidation/layer-cycle
+        === RUN   TestGuestOCIValidation/layer-ancestor
+        === RUN   TestGuestOCIValidation/whiteout-link
+        === RUN   TestGuestOCIValidation/suid
+        === RUN   TestGuestOCIValidation/upload-limit
+        === RUN   TestGuestOCIValidation/expanded-limit
+        === RUN   TestGuestOCIValidation/entries
+        === RUN   TestGuestOCIValidation/ratio
+        === RUN   TestGuestOCIValidation/json-duplicate
+        === RUN   TestGuestOCIValidation/blob-size
+        === RUN   TestGuestOCIValidation/media-type
+        === RUN   TestGuestOCIValidation/pax
+        === RUN   TestGuestOCIValidation/gzip-truncated
+        === RUN   TestGuestOCIValidation/gzip-concatenated
+        === RUN   TestGuestOCIValidation/unreferenced-valid
+        === RUN   TestGuestOCIValidation/case-alias
+        === RUN   TestGuestOCIValidation/zero-user
+        === RUN   TestGuestOCIValidation/uid-overflow
+        --- PASS: TestGuestOCIValidation (0.03s)
+            --- PASS: TestGuestOCIValidation/plain (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip (0.00s)
+            --- PASS: TestGuestOCIValidation/internal-symlink (0.00s)
+            --- PASS: TestGuestOCIValidation/internal-hardlink (0.00s)
+            --- PASS: TestGuestOCIValidation/safe-whiteout (0.00s)
+            --- PASS: TestGuestOCIValidation/traversal (0.00s)
+            --- PASS: TestGuestOCIValidation/absolute (0.00s)
+            --- PASS: TestGuestOCIValidation/duplicate (0.00s)
+            --- PASS: TestGuestOCIValidation/symlink (0.00s)
+            --- PASS: TestGuestOCIValidation/device (0.00s)
+            --- PASS: TestGuestOCIValidation/fifo (0.00s)
+            --- PASS: TestGuestOCIValidation/bad-digest (0.00s)
+            --- PASS: TestGuestOCIValidation/truncated (0.00s)
+            --- PASS: TestGuestOCIValidation/extra-blob (0.00s)
+            --- PASS: TestGuestOCIValidation/trailing (0.00s)
+            --- PASS: TestGuestOCIValidation/platform (0.00s)
+            --- PASS: TestGuestOCIValidation/root-user (0.00s)
+            --- PASS: TestGuestOCIValidation/diff-id (0.00s)
+            --- PASS: TestGuestOCIValidation/external-url (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-traversal (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-cycle (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-ancestor (0.00s)
+            --- PASS: TestGuestOCIValidation/whiteout-link (0.00s)
+            --- PASS: TestGuestOCIValidation/suid (0.00s)
+            --- PASS: TestGuestOCIValidation/upload-limit (0.00s)
+            --- PASS: TestGuestOCIValidation/expanded-limit (0.00s)
+            --- PASS: TestGuestOCIValidation/entries (0.00s)
+            --- PASS: TestGuestOCIValidation/ratio (0.00s)
+            --- PASS: TestGuestOCIValidation/json-duplicate (0.00s)
+            --- PASS: TestGuestOCIValidation/blob-size (0.00s)
+            --- PASS: TestGuestOCIValidation/media-type (0.00s)
+            --- PASS: TestGuestOCIValidation/pax (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip-truncated (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip-concatenated (0.00s)
+            --- PASS: TestGuestOCIValidation/unreferenced-valid (0.00s)
+            --- PASS: TestGuestOCIValidation/case-alias (0.00s)
+            --- PASS: TestGuestOCIValidation/zero-user (0.00s)
+            --- PASS: TestGuestOCIValidation/uid-overflow (0.00s)
+        === RUN   TestGuestScanPolicy
+        === RUN   TestGuestScanPolicy/clean
+        === RUN   TestGuestScanPolicy/high-unfixed
+        === RUN   TestGuestScanPolicy/critical
+        === RUN   TestGuestScanPolicy/exception
+        === RUN   TestGuestScanPolicy/wrong-digest
+        === RUN   TestGuestScanPolicy/expired
+        === RUN   TestGuestScanPolicy/unknown
+        === RUN   TestGuestScanPolicy/missing-coverage
+        === RUN   TestGuestScanPolicy/eol
+        === RUN   TestGuestScanPolicy/stale-db
+        === RUN   TestGuestScanPolicy/malformed
+        --- PASS: TestGuestScanPolicy (0.00s)
+            --- PASS: TestGuestScanPolicy/clean (0.00s)
+            --- PASS: TestGuestScanPolicy/high-unfixed (0.00s)
+            --- PASS: TestGuestScanPolicy/critical (0.00s)
+            --- PASS: TestGuestScanPolicy/exception (0.00s)
+            --- PASS: TestGuestScanPolicy/wrong-digest (0.00s)
+            --- PASS: TestGuestScanPolicy/expired (0.00s)
+            --- PASS: TestGuestScanPolicy/unknown (0.00s)
+            --- PASS: TestGuestScanPolicy/missing-coverage (0.00s)
+            --- PASS: TestGuestScanPolicy/eol (0.00s)
+            --- PASS: TestGuestScanPolicy/stale-db (0.00s)
+            --- PASS: TestGuestScanPolicy/malformed (0.00s)
+        === RUN   TestGuestRealTrivy
+        === RUN   TestGuestRealTrivy/clean
+        === RUN   TestGuestRealTrivy/vulnerable
+        --- PASS: TestGuestRealTrivy (15.99s)
+            --- PASS: TestGuestRealTrivy/clean (3.93s)
+            --- PASS: TestGuestRealTrivy/vulnerable (4.06s)
+        PASS
+        fuzz: elapsed: 0s, gathering baseline coverage: 0/2 completed
+        fuzz: elapsed: 0s, gathering baseline coverage: 2/2 completed, now fuzzing with 1 workers
+        fuzz: elapsed: 3s, execs: 396 (132/sec), new interesting: 1 (total: 3)
+        fuzz: elapsed: 6s, execs: 396 (0/sec), new interesting: 1 (total: 3)
+        fuzz: elapsed: 6s, execs: 396 (0/sec), new interesting: 1 (total: 3)
+        PASS
+        brw-------    1 root     root      254,   0 Oct 30 14:17 /dev/vda
+        brw-------    1 root     root      254,   1 Oct 30 14:17 /dev/vda1
+        brw-------    1 root     root      254,  16 Oct 30 14:17 /dev/vdb
+        brw-------    1 root     root      254,  32 Oct 30 14:17 /dev/vdc
+        brw-------    1 root     root      254,  48 Oct 30 14:17 /dev/vdd
+        drwxr-xr-x    4 root     root          4096 Oct 30 12:46 /scan-cache
+        drwxr-xr-x    2 root     root          4096 Oct 30 12:46 /scan-cache/db
+        
+=== RUN   TestRealM07Ingest/vulnerable
+    linux_build_linux_test.go:59: owned test job: b3804b5c-f54c-43a2-864b-0ebdbd7ced55
+    linux_build_linux_test.go:91: normalized result: {Version:1 JobID:11111111-1111-4111-8111-111111111111 DeploymentID:22222222-2222-4222-8222-222222222222 Attempt:1 Generation:1 PolicyHash:sha256:f411e2447b87084e1ed91f84d15f03bcef7b2239b6a79e7ad2da8e8091abaf19 ArchiveDigest: ImageDigest: ScannerDigest: DatabaseDigest: ReportDigest: SBOMDigest: Outcome:denied High:0 Critical:0}
+    linux_build_linux_test.go:95: M04-FIXTURE M07-INGEST tests=0 runner=0
+    linux_build_linux_test.go:107: === RUN   TestGuestOCIValidation
+        === RUN   TestGuestOCIValidation/plain
+        === RUN   TestGuestOCIValidation/gzip
+        === RUN   TestGuestOCIValidation/internal-symlink
+        === RUN   TestGuestOCIValidation/internal-hardlink
+        === RUN   TestGuestOCIValidation/safe-whiteout
+        === RUN   TestGuestOCIValidation/traversal
+        === RUN   TestGuestOCIValidation/absolute
+        === RUN   TestGuestOCIValidation/duplicate
+        === RUN   TestGuestOCIValidation/symlink
+        === RUN   TestGuestOCIValidation/device
+        === RUN   TestGuestOCIValidation/fifo
+        === RUN   TestGuestOCIValidation/bad-digest
+        === RUN   TestGuestOCIValidation/truncated
+        === RUN   TestGuestOCIValidation/extra-blob
+        === RUN   TestGuestOCIValidation/trailing
+        === RUN   TestGuestOCIValidation/platform
+        === RUN   TestGuestOCIValidation/root-user
+        === RUN   TestGuestOCIValidation/diff-id
+        === RUN   TestGuestOCIValidation/external-url
+        === RUN   TestGuestOCIValidation/layer-traversal
+        === RUN   TestGuestOCIValidation/layer-cycle
+        === RUN   TestGuestOCIValidation/layer-ancestor
+        === RUN   TestGuestOCIValidation/whiteout-link
+        === RUN   TestGuestOCIValidation/suid
+        === RUN   TestGuestOCIValidation/upload-limit
+        === RUN   TestGuestOCIValidation/expanded-limit
+        === RUN   TestGuestOCIValidation/entries
+        === RUN   TestGuestOCIValidation/ratio
+        === RUN   TestGuestOCIValidation/json-duplicate
+        === RUN   TestGuestOCIValidation/blob-size
+        === RUN   TestGuestOCIValidation/media-type
+        === RUN   TestGuestOCIValidation/pax
+        === RUN   TestGuestOCIValidation/gzip-truncated
+        === RUN   TestGuestOCIValidation/gzip-concatenated
+        === RUN   TestGuestOCIValidation/unreferenced-valid
+        === RUN   TestGuestOCIValidation/case-alias
+        === RUN   TestGuestOCIValidation/zero-user
+        === RUN   TestGuestOCIValidation/uid-overflow
+        --- PASS: TestGuestOCIValidation (0.03s)
+            --- PASS: TestGuestOCIValidation/plain (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip (0.00s)
+            --- PASS: TestGuestOCIValidation/internal-symlink (0.00s)
+            --- PASS: TestGuestOCIValidation/internal-hardlink (0.00s)
+            --- PASS: TestGuestOCIValidation/safe-whiteout (0.00s)
+            --- PASS: TestGuestOCIValidation/traversal (0.00s)
+            --- PASS: TestGuestOCIValidation/absolute (0.00s)
+            --- PASS: TestGuestOCIValidation/duplicate (0.00s)
+            --- PASS: TestGuestOCIValidation/symlink (0.00s)
+            --- PASS: TestGuestOCIValidation/device (0.00s)
+            --- PASS: TestGuestOCIValidation/fifo (0.00s)
+            --- PASS: TestGuestOCIValidation/bad-digest (0.00s)
+            --- PASS: TestGuestOCIValidation/truncated (0.00s)
+            --- PASS: TestGuestOCIValidation/extra-blob (0.00s)
+            --- PASS: TestGuestOCIValidation/trailing (0.00s)
+            --- PASS: TestGuestOCIValidation/platform (0.00s)
+            --- PASS: TestGuestOCIValidation/root-user (0.00s)
+            --- PASS: TestGuestOCIValidation/diff-id (0.00s)
+            --- PASS: TestGuestOCIValidation/external-url (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-traversal (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-cycle (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-ancestor (0.00s)
+            --- PASS: TestGuestOCIValidation/whiteout-link (0.00s)
+            --- PASS: TestGuestOCIValidation/suid (0.00s)
+            --- PASS: TestGuestOCIValidation/upload-limit (0.00s)
+            --- PASS: TestGuestOCIValidation/expanded-limit (0.00s)
+            --- PASS: TestGuestOCIValidation/entries (0.00s)
+            --- PASS: TestGuestOCIValidation/ratio (0.00s)
+            --- PASS: TestGuestOCIValidation/json-duplicate (0.00s)
+            --- PASS: TestGuestOCIValidation/blob-size (0.00s)
+            --- PASS: TestGuestOCIValidation/media-type (0.00s)
+            --- PASS: TestGuestOCIValidation/pax (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip-truncated (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip-concatenated (0.00s)
+            --- PASS: TestGuestOCIValidation/unreferenced-valid (0.00s)
+            --- PASS: TestGuestOCIValidation/case-alias (0.00s)
+            --- PASS: TestGuestOCIValidation/zero-user (0.00s)
+            --- PASS: TestGuestOCIValidation/uid-overflow (0.00s)
+        === RUN   TestGuestScanPolicy
+        === RUN   TestGuestScanPolicy/clean
+        === RUN   TestGuestScanPolicy/high-unfixed
+        === RUN   TestGuestScanPolicy/critical
+        === RUN   TestGuestScanPolicy/exception
+        === RUN   TestGuestScanPolicy/wrong-digest
+        === RUN   TestGuestScanPolicy/expired
+        === RUN   TestGuestScanPolicy/unknown
+        === RUN   TestGuestScanPolicy/missing-coverage
+        === RUN   TestGuestScanPolicy/eol
+        === RUN   TestGuestScanPolicy/stale-db
+        === RUN   TestGuestScanPolicy/malformed
+        --- PASS: TestGuestScanPolicy (0.00s)
+            --- PASS: TestGuestScanPolicy/clean (0.00s)
+            --- PASS: TestGuestScanPolicy/high-unfixed (0.00s)
+            --- PASS: TestGuestScanPolicy/critical (0.00s)
+            --- PASS: TestGuestScanPolicy/exception (0.00s)
+            --- PASS: TestGuestScanPolicy/wrong-digest (0.00s)
+            --- PASS: TestGuestScanPolicy/expired (0.00s)
+            --- PASS: TestGuestScanPolicy/unknown (0.00s)
+            --- PASS: TestGuestScanPolicy/missing-coverage (0.00s)
+            --- PASS: TestGuestScanPolicy/eol (0.00s)
+            --- PASS: TestGuestScanPolicy/stale-db (0.00s)
+            --- PASS: TestGuestScanPolicy/malformed (0.00s)
+        === RUN   TestGuestRealTrivy
+        === RUN   TestGuestRealTrivy/clean
+        === RUN   TestGuestRealTrivy/vulnerable
+        --- PASS: TestGuestRealTrivy (21.53s)
+            --- PASS: TestGuestRealTrivy/clean (6.12s)
+            --- PASS: TestGuestRealTrivy/vulnerable (4.38s)
+        PASS
+        fuzz: elapsed: 0s, gathering baseline coverage: 0/2 completed
+        fuzz: elapsed: 0s, gathering baseline coverage: 2/2 completed, now fuzzing with 1 workers
+        fuzz: elapsed: 3s, execs: 521 (174/sec), new interesting: 1 (total: 3)
+        fuzz: elapsed: 6s, execs: 521 (0/sec), new interesting: 1 (total: 3)
+        fuzz: elapsed: 6s, execs: 521 (0/sec), new interesting: 1 (total: 3)
+        PASS
+        brw-------    1 root     root      254,   0 Oct 30 14:18 /dev/vda
+        brw-------    1 root     root      254,   1 Oct 30 14:18 /dev/vda1
+        brw-------    1 root     root      254,  16 Oct 30 14:18 /dev/vdb
+        brw-------    1 root     root      254,  32 Oct 30 14:18 /dev/vdc
+        brw-------    1 root     root      254,  48 Oct 30 14:18 /dev/vdd
+        drwxr-xr-x    4 root     root          4096 Oct 30 12:46 /scan-cache
+        drwxr-xr-x    2 root     root          4096 Oct 30 12:46 /scan-cache/db
+        
+    linux_build_linux_test.go:70: === RUN   TestGuestOCIValidation
+        === RUN   TestGuestOCIValidation/plain
+        === RUN   TestGuestOCIValidation/gzip
+        === RUN   TestGuestOCIValidation/internal-symlink
+        === RUN   TestGuestOCIValidation/internal-hardlink
+        === RUN   TestGuestOCIValidation/safe-whiteout
+        === RUN   TestGuestOCIValidation/traversal
+        === RUN   TestGuestOCIValidation/absolute
+        === RUN   TestGuestOCIValidation/duplicate
+        === RUN   TestGuestOCIValidation/symlink
+        === RUN   TestGuestOCIValidation/device
+        === RUN   TestGuestOCIValidation/fifo
+        === RUN   TestGuestOCIValidation/bad-digest
+        === RUN   TestGuestOCIValidation/truncated
+        === RUN   TestGuestOCIValidation/extra-blob
+        === RUN   TestGuestOCIValidation/trailing
+        === RUN   TestGuestOCIValidation/platform
+        === RUN   TestGuestOCIValidation/root-user
+        === RUN   TestGuestOCIValidation/diff-id
+        === RUN   TestGuestOCIValidation/external-url
+        === RUN   TestGuestOCIValidation/layer-traversal
+        === RUN   TestGuestOCIValidation/layer-cycle
+        === RUN   TestGuestOCIValidation/layer-ancestor
+        === RUN   TestGuestOCIValidation/whiteout-link
+        === RUN   TestGuestOCIValidation/suid
+        === RUN   TestGuestOCIValidation/upload-limit
+        === RUN   TestGuestOCIValidation/expanded-limit
+        === RUN   TestGuestOCIValidation/entries
+        === RUN   TestGuestOCIValidation/ratio
+        === RUN   TestGuestOCIValidation/json-duplicate
+        === RUN   TestGuestOCIValidation/blob-size
+        === RUN   TestGuestOCIValidation/media-type
+        === RUN   TestGuestOCIValidation/pax
+        === RUN   TestGuestOCIValidation/gzip-truncated
+        === RUN   TestGuestOCIValidation/gzip-concatenated
+        === RUN   TestGuestOCIValidation/unreferenced-valid
+        === RUN   TestGuestOCIValidation/case-alias
+        === RUN   TestGuestOCIValidation/zero-user
+        === RUN   TestGuestOCIValidation/uid-overflow
+        --- PASS: TestGuestOCIValidation (0.03s)
+            --- PASS: TestGuestOCIValidation/plain (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip (0.00s)
+            --- PASS: TestGuestOCIValidation/internal-symlink (0.00s)
+            --- PASS: TestGuestOCIValidation/internal-hardlink (0.00s)
+            --- PASS: TestGuestOCIValidation/safe-whiteout (0.00s)
+            --- PASS: TestGuestOCIValidation/traversal (0.00s)
+            --- PASS: TestGuestOCIValidation/absolute (0.00s)
+            --- PASS: TestGuestOCIValidation/duplicate (0.00s)
+            --- PASS: TestGuestOCIValidation/symlink (0.00s)
+            --- PASS: TestGuestOCIValidation/device (0.00s)
+            --- PASS: TestGuestOCIValidation/fifo (0.00s)
+            --- PASS: TestGuestOCIValidation/bad-digest (0.00s)
+            --- PASS: TestGuestOCIValidation/truncated (0.00s)
+            --- PASS: TestGuestOCIValidation/extra-blob (0.00s)
+            --- PASS: TestGuestOCIValidation/trailing (0.00s)
+            --- PASS: TestGuestOCIValidation/platform (0.00s)
+            --- PASS: TestGuestOCIValidation/root-user (0.00s)
+            --- PASS: TestGuestOCIValidation/diff-id (0.00s)
+            --- PASS: TestGuestOCIValidation/external-url (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-traversal (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-cycle (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-ancestor (0.00s)
+            --- PASS: TestGuestOCIValidation/whiteout-link (0.00s)
+            --- PASS: TestGuestOCIValidation/suid (0.00s)
+            --- PASS: TestGuestOCIValidation/upload-limit (0.00s)
+            --- PASS: TestGuestOCIValidation/expanded-limit (0.00s)
+            --- PASS: TestGuestOCIValidation/entries (0.00s)
+            --- PASS: TestGuestOCIValidation/ratio (0.00s)
+            --- PASS: TestGuestOCIValidation/json-duplicate (0.00s)
+            --- PASS: TestGuestOCIValidation/blob-size (0.00s)
+            --- PASS: TestGuestOCIValidation/media-type (0.00s)
+            --- PASS: TestGuestOCIValidation/pax (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip-truncated (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip-concatenated (0.00s)
+            --- PASS: TestGuestOCIValidation/unreferenced-valid (0.00s)
+            --- PASS: TestGuestOCIValidation/case-alias (0.00s)
+            --- PASS: TestGuestOCIValidation/zero-user (0.00s)
+            --- PASS: TestGuestOCIValidation/uid-overflow (0.00s)
+        === RUN   TestGuestScanPolicy
+        === RUN   TestGuestScanPolicy/clean
+        === RUN   TestGuestScanPolicy/high-unfixed
+        === RUN   TestGuestScanPolicy/critical
+        === RUN   TestGuestScanPolicy/exception
+        === RUN   TestGuestScanPolicy/wrong-digest
+        === RUN   TestGuestScanPolicy/expired
+        === RUN   TestGuestScanPolicy/unknown
+        === RUN   TestGuestScanPolicy/missing-coverage
+        === RUN   TestGuestScanPolicy/eol
+        === RUN   TestGuestScanPolicy/stale-db
+        === RUN   TestGuestScanPolicy/malformed
+        --- PASS: TestGuestScanPolicy (0.00s)
+            --- PASS: TestGuestScanPolicy/clean (0.00s)
+            --- PASS: TestGuestScanPolicy/high-unfixed (0.00s)
+            --- PASS: TestGuestScanPolicy/critical (0.00s)
+            --- PASS: TestGuestScanPolicy/exception (0.00s)
+            --- PASS: TestGuestScanPolicy/wrong-digest (0.00s)
+            --- PASS: TestGuestScanPolicy/expired (0.00s)
+            --- PASS: TestGuestScanPolicy/unknown (0.00s)
+            --- PASS: TestGuestScanPolicy/missing-coverage (0.00s)
+            --- PASS: TestGuestScanPolicy/eol (0.00s)
+            --- PASS: TestGuestScanPolicy/stale-db (0.00s)
+            --- PASS: TestGuestScanPolicy/malformed (0.00s)
+        === RUN   TestGuestRealTrivy
+        === RUN   TestGuestRealTrivy/clean
+        === RUN   TestGuestRealTrivy/vulnerable
+        --- PASS: TestGuestRealTrivy (21.53s)
+            --- PASS: TestGuestRealTrivy/clean (6.12s)
+            --- PASS: TestGuestRealTrivy/vulnerable (4.38s)
+        PASS
+        fuzz: elapsed: 0s, gathering baseline coverage: 0/2 completed
+        fuzz: elapsed: 0s, gathering baseline coverage: 2/2 completed, now fuzzing with 1 workers
+        fuzz: elapsed: 3s, execs: 521 (174/sec), new interesting: 1 (total: 3)
+        fuzz: elapsed: 6s, execs: 521 (0/sec), new interesting: 1 (total: 3)
+        fuzz: elapsed: 6s, execs: 521 (0/sec), new interesting: 1 (total: 3)
+        PASS
+        brw-------    1 root     root      254,   0 Oct 30 14:18 /dev/vda
+        brw-------    1 root     root      254,   1 Oct 30 14:18 /dev/vda1
+        brw-------    1 root     root      254,  16 Oct 30 14:18 /dev/vdb
+        brw-------    1 root     root      254,  32 Oct 30 14:18 /dev/vdc
+        brw-------    1 root     root      254,  48 Oct 30 14:18 /dev/vdd
+        drwxr-xr-x    4 root     root          4096 Oct 30 12:46 /scan-cache
+        drwxr-xr-x    2 root     root          4096 Oct 30 12:46 /scan-cache/db
+        
+=== RUN   TestRealM07Ingest/malformed
+    linux_build_linux_test.go:59: owned test job: 7c55e355-a6eb-431a-a54e-b0f87a706078
+    linux_build_linux_test.go:91: normalized result: {Version:1 JobID:11111111-1111-4111-8111-111111111111 DeploymentID:22222222-2222-4222-8222-222222222222 Attempt:1 Generation:1 PolicyHash:sha256:f411e2447b87084e1ed91f84d15f03bcef7b2239b6a79e7ad2da8e8091abaf19 ArchiveDigest: ImageDigest: ScannerDigest: DatabaseDigest: ReportDigest: SBOMDigest: Outcome:denied High:0 Critical:0}
+    linux_build_linux_test.go:95: M04-FIXTURE M07-INGEST tests=0 runner=0
+    linux_build_linux_test.go:107: === RUN   TestGuestOCIValidation
+        === RUN   TestGuestOCIValidation/plain
+        === RUN   TestGuestOCIValidation/gzip
+        === RUN   TestGuestOCIValidation/internal-symlink
+        === RUN   TestGuestOCIValidation/internal-hardlink
+        === RUN   TestGuestOCIValidation/safe-whiteout
+        === RUN   TestGuestOCIValidation/traversal
+        === RUN   TestGuestOCIValidation/absolute
+        === RUN   TestGuestOCIValidation/duplicate
+        === RUN   TestGuestOCIValidation/symlink
+        === RUN   TestGuestOCIValidation/device
+        === RUN   TestGuestOCIValidation/fifo
+        === RUN   TestGuestOCIValidation/bad-digest
+        === RUN   TestGuestOCIValidation/truncated
+        === RUN   TestGuestOCIValidation/extra-blob
+        === RUN   TestGuestOCIValidation/trailing
+        === RUN   TestGuestOCIValidation/platform
+        === RUN   TestGuestOCIValidation/root-user
+        === RUN   TestGuestOCIValidation/diff-id
+        === RUN   TestGuestOCIValidation/external-url
+        === RUN   TestGuestOCIValidation/layer-traversal
+        === RUN   TestGuestOCIValidation/layer-cycle
+        === RUN   TestGuestOCIValidation/layer-ancestor
+        === RUN   TestGuestOCIValidation/whiteout-link
+        === RUN   TestGuestOCIValidation/suid
+        === RUN   TestGuestOCIValidation/upload-limit
+        === RUN   TestGuestOCIValidation/expanded-limit
+        === RUN   TestGuestOCIValidation/entries
+        === RUN   TestGuestOCIValidation/ratio
+        === RUN   TestGuestOCIValidation/json-duplicate
+        === RUN   TestGuestOCIValidation/blob-size
+        === RUN   TestGuestOCIValidation/media-type
+        === RUN   TestGuestOCIValidation/pax
+        === RUN   TestGuestOCIValidation/gzip-truncated
+        === RUN   TestGuestOCIValidation/gzip-concatenated
+        === RUN   TestGuestOCIValidation/unreferenced-valid
+        === RUN   TestGuestOCIValidation/case-alias
+        === RUN   TestGuestOCIValidation/zero-user
+        === RUN   TestGuestOCIValidation/uid-overflow
+        --- PASS: TestGuestOCIValidation (0.03s)
+            --- PASS: TestGuestOCIValidation/plain (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip (0.00s)
+            --- PASS: TestGuestOCIValidation/internal-symlink (0.00s)
+            --- PASS: TestGuestOCIValidation/internal-hardlink (0.00s)
+            --- PASS: TestGuestOCIValidation/safe-whiteout (0.00s)
+            --- PASS: TestGuestOCIValidation/traversal (0.00s)
+            --- PASS: TestGuestOCIValidation/absolute (0.00s)
+            --- PASS: TestGuestOCIValidation/duplicate (0.00s)
+            --- PASS: TestGuestOCIValidation/symlink (0.00s)
+            --- PASS: TestGuestOCIValidation/device (0.00s)
+            --- PASS: TestGuestOCIValidation/fifo (0.00s)
+            --- PASS: TestGuestOCIValidation/bad-digest (0.00s)
+            --- PASS: TestGuestOCIValidation/truncated (0.00s)
+            --- PASS: TestGuestOCIValidation/extra-blob (0.00s)
+            --- PASS: TestGuestOCIValidation/trailing (0.00s)
+            --- PASS: TestGuestOCIValidation/platform (0.00s)
+            --- PASS: TestGuestOCIValidation/root-user (0.00s)
+            --- PASS: TestGuestOCIValidation/diff-id (0.00s)
+            --- PASS: TestGuestOCIValidation/external-url (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-traversal (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-cycle (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-ancestor (0.00s)
+            --- PASS: TestGuestOCIValidation/whiteout-link (0.00s)
+            --- PASS: TestGuestOCIValidation/suid (0.00s)
+            --- PASS: TestGuestOCIValidation/upload-limit (0.00s)
+            --- PASS: TestGuestOCIValidation/expanded-limit (0.00s)
+            --- PASS: TestGuestOCIValidation/entries (0.00s)
+            --- PASS: TestGuestOCIValidation/ratio (0.00s)
+            --- PASS: TestGuestOCIValidation/json-duplicate (0.00s)
+            --- PASS: TestGuestOCIValidation/blob-size (0.00s)
+            --- PASS: TestGuestOCIValidation/media-type (0.00s)
+            --- PASS: TestGuestOCIValidation/pax (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip-truncated (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip-concatenated (0.00s)
+            --- PASS: TestGuestOCIValidation/unreferenced-valid (0.00s)
+            --- PASS: TestGuestOCIValidation/case-alias (0.00s)
+            --- PASS: TestGuestOCIValidation/zero-user (0.00s)
+            --- PASS: TestGuestOCIValidation/uid-overflow (0.00s)
+        === RUN   TestGuestScanPolicy
+        === RUN   TestGuestScanPolicy/clean
+        === RUN   TestGuestScanPolicy/high-unfixed
+        === RUN   TestGuestScanPolicy/critical
+        === RUN   TestGuestScanPolicy/exception
+        === RUN   TestGuestScanPolicy/wrong-digest
+        === RUN   TestGuestScanPolicy/expired
+        === RUN   TestGuestScanPolicy/unknown
+        === RUN   TestGuestScanPolicy/missing-coverage
+        === RUN   TestGuestScanPolicy/eol
+        === RUN   TestGuestScanPolicy/stale-db
+        === RUN   TestGuestScanPolicy/malformed
+        --- PASS: TestGuestScanPolicy (0.00s)
+            --- PASS: TestGuestScanPolicy/clean (0.00s)
+            --- PASS: TestGuestScanPolicy/high-unfixed (0.00s)
+            --- PASS: TestGuestScanPolicy/critical (0.00s)
+            --- PASS: TestGuestScanPolicy/exception (0.00s)
+            --- PASS: TestGuestScanPolicy/wrong-digest (0.00s)
+            --- PASS: TestGuestScanPolicy/expired (0.00s)
+            --- PASS: TestGuestScanPolicy/unknown (0.00s)
+            --- PASS: TestGuestScanPolicy/missing-coverage (0.00s)
+            --- PASS: TestGuestScanPolicy/eol (0.00s)
+            --- PASS: TestGuestScanPolicy/stale-db (0.00s)
+            --- PASS: TestGuestScanPolicy/malformed (0.00s)
+        === RUN   TestGuestRealTrivy
+        === RUN   TestGuestRealTrivy/clean
+        === RUN   TestGuestRealTrivy/vulnerable
+        --- PASS: TestGuestRealTrivy (16.38s)
+            --- PASS: TestGuestRealTrivy/clean (4.39s)
+            --- PASS: TestGuestRealTrivy/vulnerable (4.35s)
+        PASS
+        fuzz: elapsed: 0s, gathering baseline coverage: 0/2 completed
+        fuzz: elapsed: 0s, gathering baseline coverage: 2/2 completed, now fuzzing with 1 workers
+        fuzz: elapsed: 3s, execs: 8 (3/sec), new interesting: 1 (total: 3)
+        fuzz: elapsed: 6s, execs: 8 (0/sec), new interesting: 1 (total: 3)
+        fuzz: elapsed: 6s, execs: 8 (0/sec), new interesting: 1 (total: 3)
+        PASS
+        brw-------    1 root     root      254,   0 Oct 30 14:19 /dev/vda
+        brw-------    1 root     root      254,   1 Oct 30 14:19 /dev/vda1
+        brw-------    1 root     root      254,  16 Oct 30 14:19 /dev/vdb
+        brw-------    1 root     root      254,  32 Oct 30 14:19 /dev/vdc
+        brw-------    1 root     root      254,  48 Oct 30 14:19 /dev/vdd
+        drwxr-xr-x    4 root     root          4096 Oct 30 12:46 /scan-cache
+        drwxr-xr-x    2 root     root          4096 Oct 30 12:46 /scan-cache/db
+        
+    linux_build_linux_test.go:70: === RUN   TestGuestOCIValidation
+        === RUN   TestGuestOCIValidation/plain
+        === RUN   TestGuestOCIValidation/gzip
+        === RUN   TestGuestOCIValidation/internal-symlink
+        === RUN   TestGuestOCIValidation/internal-hardlink
+        === RUN   TestGuestOCIValidation/safe-whiteout
+        === RUN   TestGuestOCIValidation/traversal
+        === RUN   TestGuestOCIValidation/absolute
+        === RUN   TestGuestOCIValidation/duplicate
+        === RUN   TestGuestOCIValidation/symlink
+        === RUN   TestGuestOCIValidation/device
+        === RUN   TestGuestOCIValidation/fifo
+        === RUN   TestGuestOCIValidation/bad-digest
+        === RUN   TestGuestOCIValidation/truncated
+        === RUN   TestGuestOCIValidation/extra-blob
+        === RUN   TestGuestOCIValidation/trailing
+        === RUN   TestGuestOCIValidation/platform
+        === RUN   TestGuestOCIValidation/root-user
+        === RUN   TestGuestOCIValidation/diff-id
+        === RUN   TestGuestOCIValidation/external-url
+        === RUN   TestGuestOCIValidation/layer-traversal
+        === RUN   TestGuestOCIValidation/layer-cycle
+        === RUN   TestGuestOCIValidation/layer-ancestor
+        === RUN   TestGuestOCIValidation/whiteout-link
+        === RUN   TestGuestOCIValidation/suid
+        === RUN   TestGuestOCIValidation/upload-limit
+        === RUN   TestGuestOCIValidation/expanded-limit
+        === RUN   TestGuestOCIValidation/entries
+        === RUN   TestGuestOCIValidation/ratio
+        === RUN   TestGuestOCIValidation/json-duplicate
+        === RUN   TestGuestOCIValidation/blob-size
+        === RUN   TestGuestOCIValidation/media-type
+        === RUN   TestGuestOCIValidation/pax
+        === RUN   TestGuestOCIValidation/gzip-truncated
+        === RUN   TestGuestOCIValidation/gzip-concatenated
+        === RUN   TestGuestOCIValidation/unreferenced-valid
+        === RUN   TestGuestOCIValidation/case-alias
+        === RUN   TestGuestOCIValidation/zero-user
+        === RUN   TestGuestOCIValidation/uid-overflow
+        --- PASS: TestGuestOCIValidation (0.03s)
+            --- PASS: TestGuestOCIValidation/plain (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip (0.00s)
+            --- PASS: TestGuestOCIValidation/internal-symlink (0.00s)
+            --- PASS: TestGuestOCIValidation/internal-hardlink (0.00s)
+            --- PASS: TestGuestOCIValidation/safe-whiteout (0.00s)
+            --- PASS: TestGuestOCIValidation/traversal (0.00s)
+            --- PASS: TestGuestOCIValidation/absolute (0.00s)
+            --- PASS: TestGuestOCIValidation/duplicate (0.00s)
+            --- PASS: TestGuestOCIValidation/symlink (0.00s)
+            --- PASS: TestGuestOCIValidation/device (0.00s)
+            --- PASS: TestGuestOCIValidation/fifo (0.00s)
+            --- PASS: TestGuestOCIValidation/bad-digest (0.00s)
+            --- PASS: TestGuestOCIValidation/truncated (0.00s)
+            --- PASS: TestGuestOCIValidation/extra-blob (0.00s)
+            --- PASS: TestGuestOCIValidation/trailing (0.00s)
+            --- PASS: TestGuestOCIValidation/platform (0.00s)
+            --- PASS: TestGuestOCIValidation/root-user (0.00s)
+            --- PASS: TestGuestOCIValidation/diff-id (0.00s)
+            --- PASS: TestGuestOCIValidation/external-url (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-traversal (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-cycle (0.00s)
+            --- PASS: TestGuestOCIValidation/layer-ancestor (0.00s)
+            --- PASS: TestGuestOCIValidation/whiteout-link (0.00s)
+            --- PASS: TestGuestOCIValidation/suid (0.00s)
+            --- PASS: TestGuestOCIValidation/upload-limit (0.00s)
+            --- PASS: TestGuestOCIValidation/expanded-limit (0.00s)
+            --- PASS: TestGuestOCIValidation/entries (0.00s)
+            --- PASS: TestGuestOCIValidation/ratio (0.00s)
+            --- PASS: TestGuestOCIValidation/json-duplicate (0.00s)
+            --- PASS: TestGuestOCIValidation/blob-size (0.00s)
+            --- PASS: TestGuestOCIValidation/media-type (0.00s)
+            --- PASS: TestGuestOCIValidation/pax (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip-truncated (0.00s)
+            --- PASS: TestGuestOCIValidation/gzip-concatenated (0.00s)
+            --- PASS: TestGuestOCIValidation/unreferenced-valid (0.00s)
+            --- PASS: TestGuestOCIValidation/case-alias (0.00s)
+            --- PASS: TestGuestOCIValidation/zero-user (0.00s)
+            --- PASS: TestGuestOCIValidation/uid-overflow (0.00s)
+        === RUN   TestGuestScanPolicy
+        === RUN   TestGuestScanPolicy/clean
+        === RUN   TestGuestScanPolicy/high-unfixed
+        === RUN   TestGuestScanPolicy/critical
+        === RUN   TestGuestScanPolicy/exception
+        === RUN   TestGuestScanPolicy/wrong-digest
+        === RUN   TestGuestScanPolicy/expired
+        === RUN   TestGuestScanPolicy/unknown
+        === RUN   TestGuestScanPolicy/missing-coverage
+        === RUN   TestGuestScanPolicy/eol
+        === RUN   TestGuestScanPolicy/stale-db
+        === RUN   TestGuestScanPolicy/malformed
+        --- PASS: TestGuestScanPolicy (0.00s)
+            --- PASS: TestGuestScanPolicy/clean (0.00s)
+            --- PASS: TestGuestScanPolicy/high-unfixed (0.00s)
+            --- PASS: TestGuestScanPolicy/critical (0.00s)
+            --- PASS: TestGuestScanPolicy/exception (0.00s)
+            --- PASS: TestGuestScanPolicy/wrong-digest (0.00s)
+            --- PASS: TestGuestScanPolicy/expired (0.00s)
+            --- PASS: TestGuestScanPolicy/unknown (0.00s)
+            --- PASS: TestGuestScanPolicy/missing-coverage (0.00s)
+            --- PASS: TestGuestScanPolicy/eol (0.00s)
+            --- PASS: TestGuestScanPolicy/stale-db (0.00s)
+            --- PASS: TestGuestScanPolicy/malformed (0.00s)
+        === RUN   TestGuestRealTrivy
+        === RUN   TestGuestRealTrivy/clean
+        === RUN   TestGuestRealTrivy/vulnerable
+        --- PASS: TestGuestRealTrivy (16.38s)
+            --- PASS: TestGuestRealTrivy/clean (4.39s)
+            --- PASS: TestGuestRealTrivy/vulnerable (4.35s)
+        PASS
+        fuzz: elapsed: 0s, gathering baseline coverage: 0/2 completed
+        fuzz: elapsed: 0s, gathering baseline coverage: 2/2 completed, now fuzzing with 1 workers
+        fuzz: elapsed: 3s, execs: 8 (3/sec), new interesting: 1 (total: 3)
+        fuzz: elapsed: 6s, execs: 8 (0/sec), new interesting: 1 (total: 3)
+        fuzz: elapsed: 6s, execs: 8 (0/sec), new interesting: 1 (total: 3)
+        PASS
+        brw-------    1 root     root      254,   0 Oct 30 14:19 /dev/vda
+        brw-------    1 root     root      254,   1 Oct 30 14:19 /dev/vda1
+        brw-------    1 root     root      254,  16 Oct 30 14:19 /dev/vdb
+        brw-------    1 root     root      254,  32 Oct 30 14:19 /dev/vdc
+        brw-------    1 root     root      254,  48 Oct 30 14:19 /dev/vdd
+        drwxr-xr-x    4 root     root          4096 Oct 30 12:46 /scan-cache
+        drwxr-xr-x    2 root     root          4096 Oct 30 12:46 /scan-cache/db
+        
+--- PASS: TestRealM07Ingest (137.16s)
+    --- PASS: TestRealM07Ingest/clean (45.09s)
+    --- PASS: TestRealM07Ingest/vulnerable (48.98s)
+    --- PASS: TestRealM07Ingest/malformed (43.09s)
+PASS

@@ -1,6 +1,6 @@
 # P1-M07 - Rootless BuildKit export and isolated ingest/scanner adapter
 
-Status: **Planned**.
+Status: **Implemented/tested; isolated-KVM acceptance PASS** on 2026-10-30. All 146 required ledger cases PASS.
 
 ## Requirement and acceptance contract
 
@@ -13,6 +13,15 @@ Status: **Planned**.
 
 ## Documents
 
+- [implementation plan](implementation-plan.md)
+- [post-implementation test plan](test-plan.md)
+- [implementation and validation evidence](implementation-evidence.md)
+- [acceptance report](testing/acceptance-report.md)
+- [per-case results](testing/acceptance-results.json)
+- [shared build/ingest contract](../../specifications/build-ingest.md)
+- [build runbook](../../../../infra/build/README.md)
+- [ingest runbook](../../../../infra/ingest/README.md)
+
 - [deployment agent](../../specifications/deployment-agent.md)
 
-Implementation and validation evidence have not been recorded. Add milestone-specific design, implementation notes and acceptance evidence here as work proceeds. Shared contracts stay in `../../specifications/`.
+The complete software and isolated-KVM matrix passed with zero failed, missing or skipped required cases. Admission leaves deployment SCANNING; runtime deployment and approval remain later milestones. Historical M04 V14/V15 SKIPs remain unchanged.

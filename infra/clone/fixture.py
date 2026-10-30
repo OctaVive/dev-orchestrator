@@ -19,6 +19,12 @@ import time
 import zlib
 
 
+def registry_fixture(onbuild=False):
+    config=json.dumps({'architecture':'amd64','os':'linux','rootfs':{'type':'layers','diff_ids':[]},'config':{'OnBuild':['ADD https://ok.m06.example/remote-target /remote']} if onbuild else {}},separators=(',',':')).encode()
+    config_digest='sha256:'+hashlib.sha256(config).hexdigest()
+    manifest=json.dumps({'schemaVersion':2,'mediaType':'application/vnd.oci.image.manifest.v1+json','config':{'mediaType':'application/vnd.oci.image.config.v1+json','digest':config_digest,'size':len(config)},'layers':[]},separators=(',',':')).encode()
+    return config,config_digest,manifest,'sha256:'+hashlib.sha256(manifest).hexdigest()
+
 def pkt(data):
     return f'{len(data)+4:04x}'.encode() + data
 
@@ -45,6 +51,18 @@ def pack(objects):
 
 def repository(scenario):
     files = [(b'100644', b'Dockerfile', b'FROM scratch\n'), (b'100644', b'app.txt', b'bounded clone fixture\n')]
+    if scenario in ('build','build-cpu','build-flood','build-disk','build-memory','build-pids','build-remote'):
+        base=registry_fixture(scenario=='build-remote')[3]
+        dockerfile=('FROM ok.m06.example/base@'+base+'\nCOPY rootfs /\nRUN ["/bin/sh","-c","test ! -e /var/run/docker.sock && ! wget -T 2 -q -O /dev/null http://169.254.169.254/"]\nUSER 1000\n').encode()
+        if scenario=='build-cpu':dockerfile=dockerfile.replace(b'test ! -e /var/run/docker.sock && ! wget -T 2 -q -O /dev/null http://169.254.169.254/',b'while :; do :; done')
+        if scenario=='build-flood':dockerfile=dockerfile.replace(b'test ! -e /var/run/docker.sock && ! wget -T 2 -q -O /dev/null http://169.254.169.254/',b'while :; do echo M07-inert-log-flood; done')
+        if scenario=='build-memory':dockerfile=dockerfile.replace(b'test ! -e /var/run/docker.sock && ! wget -T 2 -q -O /dev/null http://169.254.169.254/',b"awk 'BEGIN{s=1;for(i=0;i<33;i++)s=s s;print length(s)}'")
+        if scenario=='build-pids':dockerfile=dockerfile.replace(b'test ! -e /var/run/docker.sock && ! wget -T 2 -q -O /dev/null http://169.254.169.254/',b'while :; do sleep 30 & done')
+        if scenario=='build-disk':dockerfile=dockerfile.replace(b'test ! -e /var/run/docker.sock && ! wget -T 2 -q -O /dev/null http://169.254.169.254/',b'dd if=/dev/zero of=/big bs=1048576 count=5000')
+        files = [(b'100644', b'Dockerfile', dockerfile),
+                 (b'100755', b'rootfs/bin/sh', Path('/usr/bin/busybox').read_bytes()),
+                 (b'100644', b'rootfs/etc/os-release', b'NAME=Alpine\nID=alpine\nVERSION_ID=3.23.0\n'),
+                 (b'100644', b'rootfs/lib/apk/db/installed', b'P:m07-inert\nV:1.0.0-r0\nA:x86_64\nS:0\nI:0\nT:Inert acceptance fixture\nL:MIT\no:m07-inert\nm:fixture\nt:0\nc:0000000000000000000000000000000000000000\n\n')]
     if scenario == 'executable':
         files.append((b'100755', b'run.sh', b'#!/bin/sh\nexit 0\n'))
     if scenario == 'symlink':
@@ -113,6 +131,7 @@ def main():
     rebound = False
     advertisements = {}
     cases = ['good','executable','symlink','moving','mismatch','submodule','modules','attributes','lfs','escape','cycle','collision','metadata-path','malformed','sha256','redirect','redirect-same','timeout','object-limit','context-limit','entry-limit','ref-limit','transfer-limit','adv-limit','corrupt','stall-fetch','nested','context-escape','config-symlink','deep-tree','long-path','object-count','expanded-limit','huge-object','huge-ref-list','log-flood','redirect-301','redirect-303','redirect-307','redirect-308','directory-link','directory-cycle','context-return']
+    if (root/'m07-enabled').exists(): cases.extend(['build','build-cpu','build-flood','build-disk','build-memory','build-pids','build-remote'])
     repos = {name: repository(name if name not in ('moving','mismatch') else 'good') for name in cases}
     (root / 'expected-shas.json').write_text(json.dumps({k: v[0] for k, v in repos.items()}))
 
@@ -151,6 +170,8 @@ def main():
                 if name == 'dnsfail.m06.example':
                     return
                 address = '11.0.0.1' if qtype == 1 else None
+                if name == 'ingest.m06.example':
+                    address = '11.0.0.4' if qtype == 1 else None
                 if name == 'v6.m06.example':
                     address = '2003::11' if qtype == 28 else None
                 if name == 'private.m06.example' or (name == 'rebind.m06.example' and rebound):
@@ -184,8 +205,23 @@ def main():
             self.wfile.write(data)
         def scenario(self):
             return self.path.split('/')[1].removesuffix('.git')
+        def registry(self, head=False):
+            config,cd,manifest,md=registry_fixture()
+            mapping={'/v2/':(b'{}','application/json'),'/v2/base/manifests/'+md:(manifest,'application/vnd.oci.image.manifest.v1+json'),'/v2/base/blobs/'+cd:(config,'application/octet-stream')}
+            config,cd,manifest,md=registry_fixture(True)
+            mapping['/v2/base/manifests/'+md]=(manifest,'application/vnd.oci.image.manifest.v1+json')
+            mapping['/v2/base/blobs/'+cd]=(config,'application/octet-stream')
+            if self.path not in mapping:return False
+            data,media=mapping[self.path]
+            log('registry',listener=self.server.label,path=self.path,method='HEAD' if head else 'GET')
+            self.send_response(200);self.send_header('Content-Type',media);self.send_header('Content-Length',str(len(data)));self.send_header('Docker-Distribution-Api-Version','registry/2.0');self.end_headers()
+            if not head:self.wfile.write(data)
+            return True
+        def do_HEAD(self):
+            if not self.registry(True):self.send(b'', 'text/plain',404)
         def do_GET(self):
             nonlocal rebound
+            if self.registry():return
             host = self.headers.get('Host','')
             scenario = self.scenario()
             log('http', listener=self.server.label, method='GET', host=host, path=self.path)

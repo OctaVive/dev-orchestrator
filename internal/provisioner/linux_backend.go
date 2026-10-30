@@ -16,17 +16,21 @@ type LinuxConfig struct {
 	GID        uint32 `json:"gid"`
 	KVMGID     uint32 `json:"kvm_gid"`
 	// Empty/none preserves M04's no-NIC mode. broker-v1 is explicit opt-in.
-	CloneEnabled     bool   `json:"clone_enabled,omitempty"`
-	NetworkMode      string `json:"network_mode,omitempty"`
-	EgressPolicy     string `json:"egress_policy,omitempty"`
-	EgressPolicyHash string `json:"egress_policy_hash,omitempty"`
-	EgressCA         string `json:"egress_ca,omitempty"`
-	EgressKey        string `json:"egress_key,omitempty"`
-	EgressCAHash     string `json:"egress_ca_hash,omitempty"`
-	EgressResolver   string `json:"egress_resolver,omitempty"`
-	BrokerExecutable string `json:"broker_executable,omitempty"`
-	BrokerUID        uint32 `json:"broker_uid,omitempty"`
-	BrokerGID        uint32 `json:"broker_gid,omitempty"`
+	IngestEnabled        bool   `json:"ingest_enabled,omitempty"`
+	IngestDatabase       string `json:"ingest_database,omitempty"`
+	IngestDatabaseDigest string `json:"ingest_database_digest,omitempty"`
+	ArtifactRoot         string `json:"artifact_root,omitempty"`
+	CloneEnabled         bool   `json:"clone_enabled,omitempty"`
+	NetworkMode          string `json:"network_mode,omitempty"`
+	EgressPolicy         string `json:"egress_policy,omitempty"`
+	EgressPolicyHash     string `json:"egress_policy_hash,omitempty"`
+	EgressCA             string `json:"egress_ca,omitempty"`
+	EgressKey            string `json:"egress_key,omitempty"`
+	EgressCAHash         string `json:"egress_ca_hash,omitempty"`
+	EgressResolver       string `json:"egress_resolver,omitempty"`
+	BrokerExecutable     string `json:"broker_executable,omitempty"`
+	BrokerUID            uint32 `json:"broker_uid,omitempty"`
+	BrokerGID            uint32 `json:"broker_gid,omitempty"`
 }
 
 // NewLinuxBackend fails closed on unsupported hosts. There is no emulation or

@@ -15,7 +15,8 @@ docs/project/
 |   |-- P1M02/              # README + SQLite contract
 |   |-- P1M03/              # README + authentication runbook
 |   |-- P1M04/              # README + provisioner contract + testing/
-|   |-- P1M05/ ... P1M14/   # one README per planned milestone
+|   |-- P1M05/ ... P1M07/   # implementation, runbooks, acceptance evidence
+|   |-- P1M08/ ... P1M14/   # one README per planned milestone
 |-- specifications/        # shared implementation contracts
 ```
 

@@ -99,10 +99,10 @@ func TestBootstrapReopenAndPragmas(t *testing.T) {
 	s, path := testStore(t)
 	seed(t, s)
 	submit(t, s)
-	if got := scalar(t, s, "SELECT count(*) FROM schema_migrations"); got != 2 {
-		t.Fatal("expected both embedded migrations")
+	if got := scalar(t, s, "SELECT count(*) FROM schema_migrations"); got != 3 {
+		t.Fatal("expected all embedded migrations")
 	}
-	if got := scalar(t, s, "PRAGMA user_version"); got != 2 {
+	if got := scalar(t, s, "PRAGMA user_version"); got != 3 {
 		t.Fatal("wrong schema version")
 	}
 	for query, want := range map[string]int64{"PRAGMA foreign_keys": 1, "PRAGMA synchronous": 2, "PRAGMA busy_timeout": 5000, "PRAGMA trusted_schema": 0} {
@@ -467,8 +467,8 @@ func TestMigrationHistoryFailsClosed(t *testing.T) {
 			case "checksum":
 				execSQL(t, s, "UPDATE schema_migrations SET checksum=?", strings.Repeat("0", 64))
 			case "future":
-				execSQL(t, s, "INSERT INTO schema_migrations(version,name,checksum,applied_at) VALUES (3,'003_future.sql',?,0)", strings.Repeat("0", 64))
-				execSQL(t, s, "PRAGMA user_version=3")
+				execSQL(t, s, "INSERT INTO schema_migrations(version,name,checksum,applied_at) VALUES (4,'004_future.sql',?,0)", strings.Repeat("0", 64))
+				execSQL(t, s, "PRAGMA user_version=4")
 			case "user-version":
 				execSQL(t, s, "PRAGMA user_version=9")
 			case "missing":

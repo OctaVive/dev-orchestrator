@@ -1,0 +1,13 @@
+{
+  "acceptance-results.json": "9cd39ea1b638b238a4ae9bc530b81a1da6d33b6ec93155c8576125b0db14d738",
+  "software-checks.json": "9fab7cad809ec4ae29438a3e57fb9a5e980082920e35bd404cc6f701060f68a6",
+  "host-identity.log": "2678320af4f6aa2dc59b8a14f12ae74ceca140ddb0457eab554bf4c1309b807e",
+  "ingest.log": "ff7725e9da5c736a64a2f94a1c7dcdd7730fc97178e19c02e33636c5354dad58",
+  "ingest-evidence.json": "127bd7e9d1f3909085e936a330e9ec18ca37ca48eb68f69f3a1f3fa89b69cc76",
+  "cleanup.json": "23cd5e3c012e56b58a731b57dbb88791658cb4ef4a8df1e13e6d0b2552975861",
+  "pipeline-evidence.json": "5ceba4200fd18c24740e6f06bb0fcc3c5f47d28502b4f5e0ef6c6f708e86c226",
+  "pipeline.log": "4f4dfb64f992a1676807e14943533a7ca5bca471825d12147f7ffa639855ee93",
+  "acceptance-report.md": "adae8a58aa8b217ebdc424608b8540922bdc3bc479b8335fd91789b2fde04b34",
+  "private_pipeline_directory": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600",
+  "private_software_directory": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804"
+}

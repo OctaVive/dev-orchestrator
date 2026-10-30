@@ -10,6 +10,7 @@ These files are **test data**, not runnable examples. Never run `docker compose 
 | `contracts/build-lease.json` | Same / provisioner tests | Bounded fixed-template VM intent only; no host XML/path/network/secret inputs; not actual VM creation |
 | Generated contract mutations | Same | Unknown keys, unsafe types, resource omissions, host settings, malformed JSON, mount overlaps rejected |
 | `git/` / `infra/clone/fixture.py` | P1-M06 isolated KVM corpus | 51 real Git cases PASS; exact SHAs, execution sentinels, safe contexts, bounded denial and external canary/capture evidence |
+| `oci/` and M07 Git/registry extensions | P1-M07 guest corpus and real KVM pipeline | 146 required ledger cases PASS; OCI validation, real scanner policy, rootless build/resource failures and quarantine/admission evidence |
 | `compose/review-candidate.yaml` | Future P1-M08 | Candidate two-service subset; not yet validated or approved |
 | `compose/deny-privileged.yaml` | Future P1-M08 | Must reject privileged configuration |
 | `compose/deny-host-access.yaml` | Future P1-M08 | Must reject host namespaces, sockets, bind mounts/devices |
@@ -23,4 +24,4 @@ These files are **test data**, not runnable examples. Never run `docker compose 
 - P1-M09/M10: wrong worker/app/volume IDs, symlink ownership race, replayed command, rootless resource bypass, cross-app network access.
 - P1-M11/M14: direct app port scans, forged headers, auth outage, proxy config injection, late cancellation, orphan kill after controller loss.
 
-M05/M06 network and Git cases have recorded [isolated-KVM PASS evidence](../../docs/project/PH1/P1M06/testing/acceptance-report.md), including all 51 M06 corpus cases. The remaining future milestone fixtures above remain pending; they do not inherit those passes. The capability checklist tracks release blockers.
+M05/M06 network and Git cases have recorded [isolated-KVM PASS evidence](../../docs/project/PH1/P1M06/testing/acceptance-report.md), including all 51 M06 corpus cases. M07 has [complete isolated build/ingest PASS evidence](../../docs/project/PH1/P1M07/testing/acceptance-report.md). The remaining future milestone fixtures above remain pending; they do not inherit those passes. The capability checklist tracks release blockers.

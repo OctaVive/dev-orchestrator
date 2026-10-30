@@ -21,6 +21,7 @@ import (
 	"time"
 	"unsafe"
 
+	"dev-orchestrator/internal/contracts"
 	"golang.org/x/sys/unix"
 )
 
@@ -50,19 +51,23 @@ func (d *launchDiagnostic) Write(p []byte) (int, error) {
 }
 
 type hostMachine struct {
-	Version      int          `json:",omitempty"`
-	CloneVersion int          `json:",omitempty"`
-	Network      *hostNetwork `json:",omitempty"`
-	Machine      Machine
-	BootID       string
-	Deadline     int64 // absolute CLOCK_BOOTTIME nanoseconds; never renewed
-	Fenced       bool
-	DiskDev      uint64
-	DiskIno      uint64
-	DiskFSUUID   string `json:",omitempty"`
-	ReadyDev     uint64
-	ReadyIno     uint64
-	ReadyFSUUID  string `json:",omitempty"`
+	Version       int          `json:",omitempty"`
+	IngestVersion int          `json:",omitempty"`
+	CloneVersion  int          `json:",omitempty"`
+	Network       *hostNetwork `json:",omitempty"`
+	Machine       Machine
+	BootID        string
+	Deadline      int64 // absolute CLOCK_BOOTTIME nanoseconds; never renewed
+	Fenced        bool
+	DiskDev       uint64
+	DiskIno       uint64
+	DiskFSUUID    string `json:",omitempty"`
+	AuthDev       uint64
+	AuthIno       uint64
+	AuthFSUUID    string `json:",omitempty"`
+	ReadyDev      uint64
+	ReadyIno      uint64
+	ReadyFSUUID   string `json:",omitempty"`
 }
 
 // FS_IOC_GETFSUUID reads the filesystem's UUID through an existing file FD.
@@ -163,6 +168,10 @@ func loadLinuxConfig(path string) (LinuxConfig, error) {
 }
 
 func validateLinuxConfig(c LinuxConfig) error {
+	if c.IngestEnabled && (c.CloneEnabled || c.NetworkMode != "" && c.NetworkMode != "none" || c.ArtifactRoot == "") {
+		return ErrInvalid
+	}
+
 	if c.CloneEnabled && c.NetworkMode != "broker-v1" {
 		return ErrInvalid
 	}
@@ -361,7 +370,7 @@ func validMachine(m Machine, c LinuxConfig) bool {
 	return identifier.MatchString(m.Lease.JobID) && len(m.OwnershipProof) == 64 && err == nil && m.Budget == SmallBudget() && m.Lease.ProfileID == "build-small-v1" && m.Lease.Template == (Template{c.TemplateID, c.Digest})
 }
 func sameMachine(a, b Machine) bool {
-	return a.Lease.JobID == b.Lease.JobID && a.OwnershipProof == b.OwnershipProof && a.Lease.Template == b.Lease.Template && a.Lease.ExpiresAt.Equal(b.Lease.ExpiresAt) && cloneEqual(a.Clone, b.Clone)
+	return a.Lease.JobID == b.Lease.JobID && a.OwnershipProof == b.OwnershipProof && a.Lease.Template == b.Lease.Template && a.Lease.ExpiresAt.Equal(b.Lease.ExpiresAt) && cloneEqual(a.Clone, b.Clone) && ingestEqual(a.Ingest, b.Ingest)
 }
 
 func hostCommand(ctx context.Context, path string, args ...string) (string, error) {
@@ -422,6 +431,9 @@ func (b *linuxBackend) Create(ctx context.Context, m Machine) error {
 	if !validMachine(m, b.c) {
 		return ErrInvalid
 	}
+	if err := validateIngestMachine(m, b.c, time.Now()); err != nil {
+		return err
+	}
 	if err := validateCloneMachine(m, b.c, time.Now()); err != nil {
 		return err
 	}
@@ -462,6 +474,9 @@ func (b *linuxBackend) Create(ctx context.Context, m Machine) error {
 	s := hostMachine{Machine: m, BootID: boot, Deadline: now + int64(remaining)}
 	if m.Clone != nil {
 		s.CloneVersion = 1
+	}
+	if m.Ingest != nil {
+		s.IngestVersion = 1
 	}
 	if err = b.write(s); err != nil {
 		return err
@@ -577,7 +592,7 @@ func waitGuestReady(ctx context.Context, ready func() (bool, error), active func
 
 func serviceProperties(ttl time.Duration) []string {
 	return []string{"Type=exec", "Restart=no", "KillMode=control-group", "TimeoutStopSec=2s", "SendSIGKILL=yes", "RuntimeMaxSec=" + strconv.FormatFloat(ttl.Seconds(), 'f', 3, 64),
-		"Slice=system.slice", "CapabilityBoundingSet=CAP_SETUID CAP_SETGID", "RestrictNamespaces=yes", "DevicePolicy=closed", "DeviceAllow=/dev/kvm rw",
+		"Slice=system.slice", "CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_KILL", "RestrictNamespaces=yes", "DevicePolicy=closed", "DeviceAllow=/dev/kvm rw",
 		"InaccessiblePaths=/tmp /var/tmp /dev/shm /run/user",
 		"CPUQuota=200%", "MemoryMax=4608M", "MemorySwapMax=0", "TasksMax=128", "LimitFSIZE=10737418240", "LimitCORE=0", "OOMPolicy=stop",
 		"PrivateNetwork=yes", "PrivateTmp=yes", "ProtectSystem=strict", "ProtectHome=yes", "NoNewPrivileges=yes", "RestrictSUIDSGID=yes", "RestrictRealtime=yes", "LockPersonality=yes", "ProtectKernelTunables=yes", "ProtectKernelModules=yes", "ProtectControlGroups=yes", "ProtectKernelLogs=yes", "RestrictAddressFamilies=AF_UNIX", "UMask=0077", "StandardOutput=null", "StandardError=journal"}
@@ -656,6 +671,9 @@ func (b *linuxBackend) Cleanup(ctx context.Context, m Machine) (CleanupResult, e
 	s, err := b.read(m.Lease.JobID)
 	if os.IsNotExist(err) {
 		s = hostMachine{Machine: m, Fenced: true}
+		if m.Ingest != nil {
+			s.IngestVersion = 1
+		}
 		if m.Clone != nil {
 			s.CloneVersion = 1
 		}
@@ -703,7 +721,7 @@ func (b *linuxBackend) Cleanup(ctx context.Context, m Machine) (CleanupResult, e
 	}
 	// Retain root-owned journal tombstones forever. Never recursively remove a
 	// directory or follow a link; only these exact, verified regular files exist.
-	for _, suffix := range []string{".raw", ".ready"} {
+	for _, suffix := range []string{".raw", ".ready", ".authorize"} {
 		p := filepath.Join(b.c.Root, m.Lease.JobID+suffix)
 		i, e := trustedPath(p, true)
 		if e != nil {
@@ -717,6 +735,9 @@ func (b *linuxBackend) Cleanup(ctx context.Context, m Machine) (CleanupResult, e
 			return CleanupResult{}, ErrConflict
 		}
 		dev, ino, fsUUID := s.DiskDev, s.DiskIno, s.DiskFSUUID
+		if suffix == ".authorize" {
+			dev, ino, fsUUID = s.AuthDev, s.AuthIno, s.AuthFSUUID
+		}
 		if suffix == ".ready" {
 			dev, ino = s.ReadyDev, s.ReadyIno
 			fsUUID = s.ReadyFSUUID
@@ -864,6 +885,57 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 		serial = &cloneSerial{}
 		q.Stdout = serial
 	}
+	if s.Machine.Ingest != nil {
+		input, e := ingestInputFD(s.Machine.Ingest.Build)
+		if e != nil {
+			return e
+		}
+		defer input.Close()
+		artifact, e := openIngestArtifact(c, *s.Machine.Ingest)
+		if e != nil {
+			return e
+		}
+		defer artifact.Close()
+		attachIngest(q, input, artifact)
+		database, e := openIngestDatabase(c)
+		if e != nil {
+			return e
+		}
+		defer database.Close()
+		attachIngestDatabase(q, database)
+		serial = &cloneSerial{}
+		q.Stdout = serial
+	}
+	var authorize *os.File
+	var controlRead, controlWrite *os.File
+	if s.Machine.Clone != nil && s.Machine.Clone.Build != nil {
+		var e error
+		authorize, e = os.OpenFile(filepath.Join(c.Root, job+".authorize"), os.O_CREATE|os.O_EXCL|os.O_RDWR|unix.O_NOFOLLOW, 0600)
+		if e != nil {
+			return e
+		}
+		defer authorize.Close()
+		st, e := authorize.Stat()
+		if e != nil {
+			return e
+		}
+		si := st.Sys().(*syscall.Stat_t)
+		s.AuthDev, s.AuthIno = uint64(si.Dev), si.Ino
+		s.AuthFSUUID, e = fileFilesystemUUID(authorize)
+		if e != nil {
+			return e
+		}
+		if e = b.write(s); e != nil {
+			return e
+		}
+		controlRead, controlWrite, e = os.Pipe()
+		if e != nil {
+			return e
+		}
+		defer controlRead.Close()
+		defer controlWrite.Close()
+		q.Stdin = controlRead
+	}
 	var diagnostic launchDiagnostic
 	q.Stderr = &diagnostic
 	if err = q.Start(); err != nil {
@@ -937,6 +1009,76 @@ func runLinuxGuest(ctx context.Context, config, job string) error {
 		_ = q.Process.Kill()
 		<-done
 		return e
+	}
+	if authorize != nil {
+		go func() {
+			ticker := time.NewTicker(100 * time.Millisecond)
+			defer ticker.Stop()
+			for {
+				select {
+				case <-serialStop:
+					return
+				case <-ctx.Done():
+					return
+				case <-ticker.C:
+				}
+				st, e := authorize.Stat()
+				if e != nil {
+					return
+				}
+				if st.Size() == 0 {
+					continue
+				}
+				if st.Size() > contracts.MaxBuildJobBytes+513 {
+					_ = q.Process.Kill()
+					return
+				}
+				data := make([]byte, st.Size())
+				if _, e = authorize.ReadAt(data, 0); e != nil {
+					return
+				}
+				if data[len(data)-1] != '\n' {
+					continue
+				}
+				authorization, e := contracts.DecodeBuildAuthorization(bytes.NewReader(bytes.TrimSuffix(data, []byte{'\n'})), *s.Machine.Clone, time.Now())
+				if e != nil {
+					_ = q.Process.Kill()
+					return
+				}
+				duration := time.Duration(authorization.Job.Policy.BuildSeconds) * time.Second
+				if remaining := time.Until(authorization.Job.ExpiresAt); remaining < duration {
+					duration = remaining
+				}
+				now, e := bootNow()
+				if e != nil {
+					_ = q.Process.Kill()
+					return
+				}
+				stageDeadline := now + int64(duration)
+				if s.Deadline < stageDeadline {
+					stageDeadline = s.Deadline
+				}
+				// Re-arm the independent CLOCK_BOOTTIME timer before delivering
+				// input. A guest that stops reading cannot defer its deadline.
+				if e = unix.TimerfdSettime(timer, unix.TFD_TIMER_ABSTIME, &unix.ItimerSpec{Value: unix.NsecToTimespec(stageDeadline)}, nil); e != nil {
+					_ = q.Process.Kill()
+					return
+				}
+				delivery := 5 * time.Second
+				if duration < delivery {
+					delivery = duration
+				}
+				if e = controlWrite.SetWriteDeadline(time.Now().Add(delivery)); e != nil {
+					_ = q.Process.Kill()
+					return
+				}
+				if _, e = controlWrite.Write(data); e != nil {
+					_ = q.Process.Kill()
+					return
+				}
+				return
+			}
+		}()
 	}
 	unlock(l)
 	l = nil

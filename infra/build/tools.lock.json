@@ -1,0 +1,34 @@
+{
+  "buildkit": {
+    "version": "v0.34.1",
+    "archive_url": "https://github.com/moby/buildkit/releases/download/v0.34.1/buildkit-v0.34.1.linux-amd64.tar.gz",
+    "archive_sha256": "a59539daf547fe0958efe2d07e41c0a6944e1112a66d7e519ec1cf5b673ef15b"
+  },
+  "trivy": {
+    "version": "v0.76.1",
+    "archive_url": "https://github.com/aquasecurity/trivy/releases/download/v0.76.1/trivy_0.76.1_Linux-64bit.tar.gz",
+    "archive_sha256": "c7cbe3137fb8a48a17574bede3dd6beb16742d1e9772929940fc90082c39d9c0"
+  },
+  "vulnerability_database": {
+    "sha256": "ed3be3de4f440d6f8c068be57b69210bed6a3015aa4930a01100c3ef4d46d836",
+    "metadata": {
+      "Version": 2,
+      "NextUpdate": "2026-10-31T07:16:25.05417423Z",
+      "UpdatedAt": "2026-10-30T07:16:25.054174501Z",
+      "DownloadedAt": "2026-10-30T12:29:02.448572098Z"
+    }
+  },
+  "rootlesskit": {
+    "debian_package": "2.0.2-2+b9"
+  },
+  "uidmap": {
+    "debian_package": "1:4.17.4-2"
+  },
+  "debian_sha256": {
+    "tcpdump_4.99.5-2_amd64.deb": "c35a180eb0ee118976c4648473de0beb36788dc2ec6986ab880722f5a9868ba6",
+    "libpcap0.8t64_1.10.5-2_amd64.deb": "6a756d536a5b0cd3ef92f19ff9f22ed80c66baadbc0fe55d599f4aa0c27d3f86",
+    "uidmap_1%3a4.17.4-2_amd64.deb": "a017182d42a32ca241cd830a59153488e1f65ae6e31a760014575878044a9d2d",
+    "libsubid5_1%3a4.17.4-2_amd64.deb": "4d4faef8143c117a055a9041a7e99f8ba014c420a9b6e2fef5c693482581a204",
+    "rootlesskit_2.0.2-2+b9_amd64.deb": "e9f16eb64017074c2d49f1c6e788aa849070777a5b888fc07e5b57bded051a0c"
+  }
+}

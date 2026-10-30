@@ -75,23 +75,27 @@ func (p ClonePolicy) Hash() string {
 }
 
 type CloneJob struct {
-	Version        int         `json:"version"`
-	JobID          string      `json:"job_id"`
-	DeploymentID   string      `json:"deployment_id"`
-	LeaseID        string      `json:"lease_id"`
-	Attempt        int64       `json:"attempt"`
-	Generation     int64       `json:"generation"`
-	ExpiresAt      time.Time   `json:"expires_at"`
-	TemplateDigest string      `json:"template_digest"`
-	PolicyHash     string      `json:"policy_hash"`
-	RepositoryURL  string      `json:"repository_url"`
-	Branch         string      `json:"branch"`
-	ConfigPath     string      `json:"config_path"`
-	BuildContext   string      `json:"build_context"`
-	Policy         ClonePolicy `json:"policy"`
+	Build          *BuildSettings `json:"build,omitempty"`
+	Version        int            `json:"version"`
+	JobID          string         `json:"job_id"`
+	DeploymentID   string         `json:"deployment_id"`
+	LeaseID        string         `json:"lease_id"`
+	Attempt        int64          `json:"attempt"`
+	Generation     int64          `json:"generation"`
+	ExpiresAt      time.Time      `json:"expires_at"`
+	TemplateDigest string         `json:"template_digest"`
+	PolicyHash     string         `json:"policy_hash"`
+	RepositoryURL  string         `json:"repository_url"`
+	Branch         string         `json:"branch"`
+	ConfigPath     string         `json:"config_path"`
+	BuildContext   string         `json:"build_context"`
+	Policy         ClonePolicy    `json:"policy"`
 }
 
 func (j CloneJob) Validate(now time.Time) error {
+	if j.Build != nil && j.Build.Validate(now) != nil {
+		return ErrInvalidRequest
+	}
 	if j.Version != 1 || !cloneID.MatchString(j.JobID) || !cloneID.MatchString(j.DeploymentID) ||
 		!cloneID.MatchString(j.LeaseID) || j.Attempt < 1 || j.Generation < 1 || j.Attempt > 9007199254740991 || j.Generation > 9007199254740991 ||
 		now.IsZero() || !j.ExpiresAt.After(now) || j.ExpiresAt.After(now.Add(30*time.Minute)) ||
@@ -214,6 +218,18 @@ func DecodeCloneResult(rd io.Reader, j CloneJob) (CloneResult, error) {
 // contract instead requires exact JSON tags, including nested policy fields.
 func exactCloneFields(b []byte, t reflect.Type) error {
 	if t == reflect.TypeOf(time.Time{}) {
+		return nil
+	}
+	if t.Kind() == reflect.Slice || t.Kind() == reflect.Array {
+		var values []json.RawMessage
+		if json.Unmarshal(b, &values) != nil {
+			return ErrSchema
+		}
+		for _, value := range values {
+			if e := exactCloneFields(value, t.Elem()); e != nil {
+				return e
+			}
+		}
 		return nil
 	}
 	if t.Kind() != reflect.Struct {

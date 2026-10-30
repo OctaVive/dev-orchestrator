@@ -8,7 +8,8 @@
 | P1-M04 — KVM provisioner and lifecycle | Implemented/tested* |
 | P1-M05 | Implemented/tested; controlled isolated-KVM N01–N13 PASS |
 | P1-M06 | Implemented/tested; isolated-KVM M06 acceptance PASS |
-| P1-M07–P1-M14 | Planned |
+| P1-M07 | Implemented/tested; isolated-KVM M07 acceptance PASS |
+| P1-M08–P1-M14 | Planned |
 
 \* V14 and V15 marked as SKIP. V01–V13 and V16 passed; the skipped checks are not passes.
 
@@ -23,5 +24,6 @@ Implementation history, deliverables, limitations and validation records now liv
 - [P1-M04 implementation and validation](PH1/P1M04/README.md#implementation-history-and-validation)
 - [P1-M05 implementation and validation](PH1/P1M05/implementation-evidence.md)
 - [P1-M06 implementation and validation](PH1/P1M06/implementation-evidence.md)
+- [P1-M07 implementation and validation](PH1/P1M07/implementation-evidence.md)
 
-Next: [P1-M07 rootless build and isolated ingest](PH1/P1M07/README.md). [P1-M06 acceptance](PH1/P1M06/testing/acceptance-report.md) records every required case PASS. [P1-M05 acceptance](PH1/P1M05/testing/acceptance-report.md) covers the tested isolated VM/template. [All PH1 milestones](PH1/README.md) and the [requirement-to-milestone map](requirement-milestones.md) define the remaining work.
+Next: [P1-M08 Compose/Dockerfile normalization and agent policy](PH1/P1M08/README.md). [P1-M07 acceptance](PH1/P1M07/testing/acceptance-report.md) records all 146 required ledger cases PASS. [P1-M06 acceptance](PH1/P1M06/testing/acceptance-report.md) records every required case PASS. [P1-M05 acceptance](PH1/P1M05/testing/acceptance-report.md) covers the tested isolated VM/template. [All PH1 milestones](PH1/README.md) and the [requirement-to-milestone map](requirement-milestones.md) define the remaining work.

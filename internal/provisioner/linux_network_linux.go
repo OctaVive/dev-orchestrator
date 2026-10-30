@@ -75,6 +75,10 @@ func validateNetworkConfig(c LinuxConfig) error {
 	return nil
 }
 func validateNetworkState(s hostMachine) error {
+	if (s.IngestVersion != 0 && s.IngestVersion != 1) || (s.IngestVersion == 0) != (s.Machine.Ingest == nil) || s.Machine.Ingest != nil && s.Machine.Clone != nil {
+		return ErrInvalid
+	}
+
 	if s.CloneVersion != 0 && s.CloneVersion != 1 {
 		return ErrVersion
 	}
@@ -387,7 +391,7 @@ func guestServiceProperties(ttl time.Duration, network bool) []string {
 	}
 	for i, p := range props {
 		if strings.HasPrefix(p, "CapabilityBoundingSet=") {
-			props[i] = "CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_SYS_ADMIN CAP_NET_ADMIN"
+			props[i] = "CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_KILL CAP_SYS_ADMIN CAP_NET_ADMIN"
 		}
 		if p == "RestrictNamespaces=yes" {
 			props[i] = "RestrictNamespaces=net"

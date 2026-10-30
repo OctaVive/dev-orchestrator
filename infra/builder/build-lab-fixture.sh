@@ -7,7 +7,7 @@ umask 077
   echo 'Requires root and M04_IMAGE_BUILD=YES-I-AUTHORIZE-LOOP-IMAGE' >&2; exit 1;
 }
 MODE=${1:-idle}
-case "$MODE" in idle|cpu|memory|io|pids|egress|clone) ;; *) exit 1;; esac
+case "$MODE" in idle|cpu|memory|io|pids|egress|clone|m07|build|ingest) ;; *) exit 1;; esac
 for tool in busybox grub-install sfdisk losetup mkfs.ext4 mount umount cpio gzip modprobe ldd; do
   command -v "$tool" >/dev/null
 done
@@ -68,7 +68,7 @@ copy_binary() {
   done < <(ldd "$src" | awk '/=> \//{print $3} /^[[:space:]]*\//{print $1}')
 }
 copy_binary "$(command -v modprobe)" sbin/modprobe
-if [[ $MODE == clone ]]; then
+if [[ $MODE == clone || $MODE == build ]]; then
   # Clone needs only virtio dependencies, not the host's entire driver tree.
   for module in virtio_pci virtio_blk virtio_net; do
     while read -r lib; do cp --parents "$lib" "$ROOT/"; done < <(modprobe --show-depends "$module" | awk '/^insmod /{print $2}')
@@ -80,7 +80,7 @@ else
   cp /lib/modules/"$KERNEL"/modules.* "$ROOT/lib/modules/$KERNEL/"
 fi
 if [[ $MODE == io ]]; then copy_binary /usr/bin/fio bin/fio; fi
-if [[ $MODE == clone ]]; then
+if [[ $MODE == clone || $MODE == build ]]; then
   [[ -f ${M06_CA_CERT:-} && -x ${M06_RUNNER:-} ]]
   openssl x509 -in "$M06_CA_CERT" -noout >/dev/null
   if grep -q 'PRIVATE KEY' "$M06_CA_CERT"; then exit 1; fi
@@ -90,11 +90,49 @@ if [[ $MODE == clone ]]; then
   copy_binary /usr/bin/git usr/bin/git
   copy_binary /usr/lib/git-core/git-remote-https usr/lib/git-core/git-remote-https
   copy_binary /usr/bin/ip bin/ip
-  printf 'root:x:0:0:root:/:/bin/sh\nrunner:x:1000:1000:runner:/work:/bin/false\n' > "$ROOT/etc/passwd"
+  printf 'root:x:0:0:root:/:/bin/sh\nrunner:x:1000:1000:runner:/work:/bin/false\nscanner:x:1001:1001:scanner:/scan-work:/bin/false\n' > "$ROOT/etc/passwd"
   printf 'root:x:0:\nrunner:x:1000:\n' > "$ROOT/etc/group"
   copy_binary /usr/bin/setpriv bin/runner-identity
   for name in chown chmod false; do ln -s busybox "$ROOT/bin/$name"; done
   { /usr/bin/git --version; dpkg-query -W git libcurl3t64-gnutls ca-certificates; sha256sum "$M06_RUNNER"; } > "$WORK/clone-packages.txt"
+fi
+if [[ $MODE == m07 || $MODE == build ]]; then
+  [[ -d ${M07_TOOLS:-}/buildkit/bin && -x ${M07_TOOLS:-}/uidmap/usr/bin/rootlesskit ]]
+  mkdir -p "$ROOT/usr/bin" "$ROOT/etc" "$ROOT/work" "$ROOT/dev/pts" "$ROOT/tmp"
+  for binary in buildkitd buildctl buildkit-runc; do cp "$M07_TOOLS/buildkit/bin/$binary" "$ROOT/usr/bin/"; done
+  if [[ $MODE == build && ${M07_BUILD_DEBUG:-} == YES ]]; then
+    mv "$ROOT/usr/bin/buildctl" "$ROOT/usr/bin/buildctl-real"
+    cat > "$ROOT/usr/bin/buildctl" <<'DEBUG'
+#!/bin/sh
+/usr/bin/buildctl-real "$@" > /work/build-diagnostic 2>&1
+rc=$?
+head -c 49152 /work/build-diagnostic | dd of=/dev/vda bs=512 seek=20971390 conv=notrunc,fsync
+cat /work/build-diagnostic
+exit "$rc"
+DEBUG
+    chmod 0755 "$ROOT/usr/bin/buildctl"
+  fi
+  copy_binary "$M07_TOOLS/uidmap/usr/bin/rootlesskit" usr/bin/rootlesskit
+  copy_binary "$M07_TOOLS/uidmap/usr/bin/newuidmap" usr/bin/newuidmap
+  copy_binary "$M07_TOOLS/uidmap/usr/bin/newgidmap" usr/bin/newgidmap
+  chmod 4755 "$ROOT/usr/bin/newuidmap" "$ROOT/usr/bin/newgidmap"
+  copy_binary /usr/bin/setpriv usr/bin/setpriv
+  printf 'root:x:0:0:root:/:/bin/sh\nrunner:x:1000:1000:runner:/work:/bin/sh\n' > "$ROOT/etc/passwd"
+  printf 'root:x:0:\nrunner:x:1000:\n' > "$ROOT/etc/group"
+  for name in chown chmod env seq; do ln -sf busybox "$ROOT/bin/$name"; done
+  cp "$(dirname "$0")/../build/guest-init.sh" "$ROOT/bin/m07-init"
+fi
+if [[ $MODE == ingest ]]; then
+  [[ -x ${M07_INGEST_RUNNER:-} && -x ${M07_INGEST_TESTS:-} && -f ${M07_TOOLS:-}/cache/db/trivy.db ]]
+  mkdir -p "$ROOT/usr/bin" "$ROOT/etc" "$ROOT/work" "$ROOT/tmp" "$ROOT/scan-cache/db"
+  cp "$M07_TOOLS/trivy/trivy" "$ROOT/usr/bin/trivy"
+  # The large pinned database is attached read-only as /dev/vdd.
+  cp "$M07_INGEST_RUNNER" "$ROOT/bin/ingest-runner"
+  cp "$M07_INGEST_TESTS" "$ROOT/bin/ingest-tests"
+  copy_binary /usr/bin/setpriv bin/runner-identity
+  printf 'root:x:0:0:root:/:/bin/sh\nrunner:x:1000:1000:runner:/work:/bin/false\nscanner:x:1001:1001:scanner:/scan-work:/bin/false\n' > "$ROOT/etc/passwd"
+  printf 'root:x:0:\nrunner:x:1000:\n' > "$ROOT/etc/group"
+  for name in chown chmod; do ln -s busybox "$ROOT/bin/$name"; done
 fi
 if [[ $MODE == egress ]]; then
   [[ -f ${M05_CA_CERT:-} && ${M05_PROBE_HOST:-} =~ ^[a-z0-9][a-z0-9.-]+[a-z0-9]$ && ${M05_CONTROL_IP:-} =~ ^[0-9.]+$ ]]
@@ -119,6 +157,7 @@ export PATH=/bin:/sbin
 mount -t proc proc /proc
 mount -t sysfs sysfs /sys
 mount -t devtmpfs devtmpfs /dev
+mkdir -p /dev/pts
 mount -t tmpfs tmpfs /run
 mkdir -p /sys/fs/cgroup
 mount -t cgroup2 none /sys/fs/cgroup
@@ -132,7 +171,7 @@ for n in 1 2 3 4 5; do [ -b /dev/vda ] && break; sleep 1; done
 result() { printf 'M04-FIXTURE %s\n' "$*" | dd of=/dev/vda bs=512 seek=20971519 count=1 conv=notrunc,fsync; }
 result "BOOT mode=$MODE runner_pids=$(cat /sys/fs/cgroup/runner/pids.max)"
 case "$MODE" in
-  clone)
+  clone|build)
     result CLONE-BOOT
     modprobe virtio_net
     ip link set eth0 address 02:00:00:00:00:02
@@ -140,6 +179,20 @@ case "$MODE" in
     ip link set eth0 up
     ip link set lo up
     mkdir -p /run/orchestrator-clone-worker /work
+    runner_extra=--no-new-privs
+    if [ "$MODE" = build ]; then
+      runner_extra=
+      mkdir -p /run/orchestrator-build-worker /run/user/1000 /tmp
+      chmod 0755 /run/orchestrator-build-worker
+      chown 1000:1000 /run/user/1000
+      chmod 0700 /run/user/1000
+      chmod 1777 /tmp
+      if [ -e /usr/bin/buildctl-real ]; then chown 1000:1000 /dev/vda; fi
+      mount -t devpts devpts /dev/pts
+      mount --make-rprivate /
+      printf 'runner:100000:65536\n' > /etc/subuid
+      printf 'runner:100000:65536\n' > /etc/subgid
+    fi
     chmod 0755 /run/orchestrator-clone-worker
     mount -t tmpfs -o size=2300m,nodev,nosuid tmpfs /work
     chown 1000:1000 /work
@@ -157,7 +210,7 @@ case "$MODE" in
     result CLONE-RUNNER-START
     GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=credential.helper GIT_CONFIG_VALUE_0='!touch /work/helper-ran' \
       GIT_CONFIG_GLOBAL=/work/poison GIT_EXEC_PATH=/work HTTPS_PROXY=http://127.0.0.1:9 \
-      /bin/runner-identity --reuid=1000 --regid=1000 --clear-groups --no-new-privs /bin/clone-runner 2>/run/clone-error
+      /bin/runner-identity --reuid=1000 --regid=1000 --clear-groups $runner_extra /bin/clone-runner 2>/run/clone-error
     rc=$?
     context_check=not-applicable
     if [ "$rc" = 0 ]; then
@@ -174,6 +227,58 @@ case "$MODE" in
     [ -e /work/hook-ran ] && hook=RAN
     result "CLONE-EXIT status=$rc helper=$helper filter=$filter hook=$hook context_check=$context_check diagnostic=$(head -c 128 /run/clone-error)"
     ;;
+  ingest)
+    mkdir -p /run/orchestrator-ingest-worker /work
+    modprobe ext4
+    for n in 1 2 3 4 5; do [ -b /dev/vdd ] && break; sleep 1; done
+    mount -t ext4 -o ro,nodev,nosuid,noexec /dev/vdd /scan-cache > /run/db-mount.log 2>&1
+    ls -l /dev/vd* >> /run/db-mount.log 2>&1
+    ls -ld /scan-cache /scan-cache/db >> /run/db-mount.log 2>&1
+    chmod 0755 /run/orchestrator-ingest-worker
+    mount -t tmpfs -o size=1800m,nodev,nosuid tmpfs /work
+    chown 1000:1000 /work
+    chmod 0700 /work
+    chown 1000:1000 /dev/vdb /dev/vdc
+    chown 1001:1001 /dev/ttyS1
+    chmod 0600 /dev/vdb /dev/vdc /dev/ttyS1
+    echo $$ > /sys/fs/cgroup/runner/cgroup.procs
+    # Unit corpus and real tool policy checks execute inside this VM only.
+    M07_GUEST_TESTS=1 TMPDIR=/work /bin/runner-identity --reuid=1000 --regid=1000 --clear-groups --no-new-privs /bin/ingest-tests -test.v -test.run '^TestGuest' > /run/tests.log 2>&1
+    test_rc=$?
+    M07_GUEST_TESTS=1 TMPDIR=/work /bin/runner-identity --reuid=1000 --regid=1000 --clear-groups --no-new-privs /bin/ingest-tests -test.run '^$' -test.fuzz '^FuzzGuestOCI$' -test.fuzztime 5s -test.fuzzcachedir /work/fuzzcache -test.parallel 1 >> /run/tests.log 2>&1
+    fuzz_rc=$?
+    if [ "$fuzz_rc" != 0 ]; then test_rc=1; fi
+    cat /run/db-mount.log >> /run/tests.log
+    (exit $test_rc)
+    tests=$?
+    head -c 49152 /run/tests.log | dd of=/dev/vda bs=512 seek=20971390 conv=notrunc,fsync
+    mkdir /sys/fs/cgroup/validator
+    echo 256 > /sys/fs/cgroup/validator/pids.max
+    sh -c 'echo $$ > /sys/fs/cgroup/validator/cgroup.procs; exec /bin/runner-identity --reuid=1000 --regid=1000 --clear-groups --no-new-privs /bin/ingest-runner -phase validate'
+    ingest=$?
+    echo 1 > /sys/fs/cgroup/validator/cgroup.kill
+    if [ "$ingest" = 0 ]; then
+      # The validator and all descendants are gone before freezing its output.
+      while [ "$(cat /sys/fs/cgroup/validator/pids.current)" != 0 ]; do sleep .1; done
+      chown -R 0:0 /work
+      chmod 0711 /work
+      chmod -R a+rX /work/oci-*
+      chmod 0444 /work/verified.json /dev/vdb /dev/vdc
+      chown 1001:1001 /dev/ttyS1
+      mkdir -p /scan-work
+      mount -t tmpfs -o size=300m,nodev,nosuid,noexec tmpfs /scan-work
+      chown 1001:1001 /scan-work
+      chmod 0700 /scan-work
+      /bin/runner-identity --reuid=1001 --regid=1001 --clear-groups --no-new-privs /bin/ingest-runner -phase scan
+      ingest=$?
+    else
+      chmod 0444 /dev/vdb
+      /bin/runner-identity --reuid=1001 --regid=1001 --clear-groups --no-new-privs /bin/ingest-runner -phase deny
+      ingest=$?
+    fi
+    result "M07-INGEST tests=$tests runner=$ingest"
+    ;;
+  m07) . /bin/m07-init ;;
   egress) /bin/m05-probes ;;
   cpu)
     yes >/dev/null & a=$!; yes >/dev/null & b=$!
@@ -199,9 +304,27 @@ esac
 while :; do sleep 100; done
 INIT
 chmod 0755 "$ROOT/init"
+if [[ $MODE == build || $MODE == m07 ]]; then
+  # runc cannot pivot_root from the special initramfs rootfs. Switch PID 1 to
+  # a normal private tmpfs root before starting rootless namespaces.
+  mv "$ROOT/init" "$ROOT/init-real"
+  cat > "$ROOT/init" <<'SWITCH'
+#!/bin/sh
+/bin/busybox mount -t devtmpfs devtmpfs /dev
+/bin/busybox mkdir -p /newroot
+/bin/busybox mount -t tmpfs -o size=700m,nodev tmpfs /newroot
+for name in bin sbin usr lib lib64 etc init-real fixture-mode build-ca.pem; do
+  if [ -e "/$name" ]; then /bin/busybox cp -a "/$name" /newroot/; fi
+done
+/bin/busybox mkdir -p /newroot/dev /newroot/proc /newroot/sys /newroot/run /newroot/work /newroot/tmp
+exec /bin/busybox switch_root /newroot /init-real
+SWITCH
+  chmod 0755 "$ROOT/init"
+fi
+
 # The clone runner is unprivileged; this credential-free template contains only
 # public tools/configuration. Runtime work directories are private separately.
-if [[ $MODE == clone ]]; then chmod -R a+rX "$ROOT"; fi
+if [[ $MODE == clone || $MODE == m07 || $MODE == build || $MODE == ingest ]]; then chmod -R a+rX "$ROOT"; fi
 (cd "$ROOT"; find . -xdev -print0 | cpio --null -o --format=newc | gzip -1) > "$MNT/boot/initrd"
 cat > "$MNT/boot/grub/grub.cfg" <<'GRUB'
 set timeout=0

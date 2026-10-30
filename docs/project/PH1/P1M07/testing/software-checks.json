@@ -1,0 +1,71 @@
+{
+  "software-suite": {
+    "command": [
+      "/usr/local/go/bin/go",
+      "test",
+      "-count=1",
+      "-json",
+      "./..."
+    ],
+    "exit_code": 0,
+    "log": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl",
+    "sha256": "7bf86f4d747ef60f98a6607ebbc201496de8142cd81ba7333e497c1006b97dbb"
+  },
+  "go-vet": {
+    "command": [
+      "/usr/local/go/bin/go",
+      "vet",
+      "./..."
+    ],
+    "exit_code": 0,
+    "log": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/go-vet.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "targeted-race": {
+    "command": [
+      "/usr/local/go/bin/go",
+      "test",
+      "-count=1",
+      "-race",
+      "./internal/artifacts",
+      "./internal/buildjob",
+      "./internal/storage",
+      "./internal/provisioner"
+    ],
+    "exit_code": 0,
+    "log": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/targeted-race.log",
+    "sha256": "d4239a5fb847ce304b2c25f3832b2497feb8c7dba5be7583691a2aaca5584060"
+  },
+  "contract-fuzz": {
+    "command": [
+      "/usr/local/go/bin/go",
+      "test",
+      "-run",
+      "^$",
+      "-fuzz",
+      "^FuzzBuildJob$",
+      "-fuzztime",
+      "5s",
+      "-parallel",
+      "2",
+      "./internal/contracts"
+    ],
+    "exit_code": 0,
+    "log": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/contract-fuzz.log",
+    "sha256": "6a9c910bb55a2752fbc983e93d602151f05864a7215289fafbf2bb7f431f493e"
+  },
+  "script-validation": {
+    "command": [
+      "python3",
+      "-m",
+      "py_compile",
+      "infra/build/lab.py",
+      "infra/build/report.py",
+      "infra/build/prepare-tools.py",
+      "infra/clone/fixture.py"
+    ],
+    "exit_code": 0,
+    "log": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/script-validation.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -87,7 +87,8 @@ type Machine struct {
 	Budget         Budget
 	OwnershipProof string `json:"-"`
 	// Host-internal, already-authorized clone intent; never a generic command.
-	Clone *contracts.CloneJob `json:",omitempty"`
+	Ingest *contracts.IngestJob `json:",omitempty"`
+	Clone  *contracts.CloneJob  `json:",omitempty"`
 }
 
 // Controls describe obligations, not proof. A future real backend must have
@@ -138,4 +139,17 @@ func (UnconfiguredBackend) Cleanup(context.Context, Machine) (CleanupResult, err
 type CloneBackend interface {
 	Backend
 	CloneResults(context.Context, Machine) ([]contracts.CloneResult, error)
+}
+
+// BuildBackend extends the clone VM with one bounded build authorization.
+type BuildBackend interface {
+	CloneBackend
+	AuthorizeBuild(context.Context, Machine, contracts.BuildAuthorization) error
+	BuildResult(context.Context, Machine, contracts.BuildJob) (contracts.BuildResult, bool, error)
+}
+
+type IngestBackend interface {
+	Backend
+	CleanupIngests(context.Context, contracts.BuildJob) error
+	IngestResult(context.Context, Machine) (contracts.ArtifactResult, bool, error)
 }

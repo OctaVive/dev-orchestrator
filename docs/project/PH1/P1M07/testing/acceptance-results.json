@@ -1,0 +1,741 @@
+{
+  "milestone": "P1-M07",
+  "status": "PASS",
+  "cases": [
+    {
+      "case": "software-suite",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildResultBoundIdentity",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildAuthorizationStrict",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/duplicate",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/case",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/trailing",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/oversize",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/unknown",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/sha",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/context",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/deadline",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/db-stale",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/db-future",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/limit",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/policy-hash",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/path",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/exception",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/contracts/TestBuildContractStrictness/undeclared-build",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestUploadQuarantine",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestUploadLimitsAndFencing",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestArtifactServiceControlAndUpload",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestQuarantineRetentionAndReservation",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestArtifactHostReserve",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestArtifactHostReserve/floor",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestArtifactHostReserve/available",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestArtifactHostReserve/pending",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestArtifactHostReserve/underflow",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestArtifactHostReserve/negative",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestArtifactHostReserve/overflow",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestUploadLimitsAndFencing/oversize",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestUploadLimitsAndFencing/cancel",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestUploadLimitsAndFencing/revoked",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestUploadLimitsAndFencing/expiry",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestUploadLimitsAndFencing/capacity",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/artifacts/TestUploadLimitsAndFencing/tamper",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/builder/TestDockerfileFixturePolicy",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildDurableAdmission",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildTransactionFences",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildExportRecoveryAndOutbox",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildFailureAfterDeadline",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestCloneSchemaUpgradeRequiresVerifiedBackup",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildTransactionFences/wrong-context",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildTransactionFences/wrong-sha",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildTransactionFences/rollback-start",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildTransactionFences/cancelled",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildTransactionFences/generation",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildTransactionFences/wrong-archive",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildTransactionFences/rollback-admission",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildTransactionFences/wrong-policy",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/storage/TestBuildTransactionFences/denied",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure/success",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure/build-error",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure/no-upload",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure/build-timeout",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure/scan-timeout",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure/wrong-digest",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure/stale-result",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure/denied",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure/cleanup-failure",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure/resume",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure/promotion-crash",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/buildjob/TestWorkflowAdmissionAndFailure/service-restart",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/provisioner/TestBuildSerialFrameFencing",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "internal/provisioner/TestBuildBoottimeTimerRearm",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/software-suite.jsonl"
+    },
+    {
+      "case": "TestRealM07Ingest",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestRealM07Ingest/clean",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestRealM07Ingest/vulnerable",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestRealM07Ingest/malformed",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/plain",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/gzip",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/internal-symlink",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/internal-hardlink",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/safe-whiteout",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/traversal",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/absolute",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/duplicate",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/symlink",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/device",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/fifo",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/bad-digest",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/truncated",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/extra-blob",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/trailing",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/platform",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/root-user",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/diff-id",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/external-url",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/layer-traversal",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/layer-cycle",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/layer-ancestor",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/whiteout-link",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/suid",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/upload-limit",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/expanded-limit",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/entries",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/ratio",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/json-duplicate",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/blob-size",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/media-type",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/pax",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/gzip-truncated",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/gzip-concatenated",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/unreferenced-valid",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/case-alias",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/zero-user",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestOCIValidation/uid-overflow",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestScanPolicy/clean",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestScanPolicy/high-unfixed",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestScanPolicy/critical",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestScanPolicy/exception",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestScanPolicy/wrong-digest",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestScanPolicy/expired",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestScanPolicy/unknown",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestScanPolicy/missing-coverage",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestScanPolicy/eol",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestScanPolicy/stale-db",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestScanPolicy/malformed",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestRealTrivy/clean",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestGuestRealTrivy/vulnerable",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "isolated-OCI-fuzz",
+      "status": "PASS",
+      "evidence": "/tmp/m07-ingest-accepted.log"
+    },
+    {
+      "case": "TestRealM07Pipeline",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/run.log"
+    },
+    {
+      "case": "TestRealM07Pipeline/success",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/run.log"
+    },
+    {
+      "case": "TestRealM07Pipeline/build-timeout",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/run.log"
+    },
+    {
+      "case": "TestRealM07Pipeline/cancelled",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/run.log"
+    },
+    {
+      "case": "TestRealM07Pipeline/controller-loss",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/run.log"
+    },
+    {
+      "case": "TestRealM07Pipeline/scanner-timeout",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/run.log"
+    },
+    {
+      "case": "TestRealM07Pipeline/log-flood",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/run.log"
+    },
+    {
+      "case": "TestRealM07Pipeline/disk-exhaustion",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/run.log"
+    },
+    {
+      "case": "TestRealM07Pipeline/memory-exhaustion",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/run.log"
+    },
+    {
+      "case": "TestRealM07Pipeline/pid-exhaustion",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/run.log"
+    },
+    {
+      "case": "TestRealM07Pipeline/remote-source",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/run.log"
+    },
+    {
+      "case": "pipeline-exit",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/evidence.json"
+    },
+    {
+      "case": "source-unchanged",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/evidence.json"
+    },
+    {
+      "case": "no-debug-wrapper",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/evidence.json"
+    },
+    {
+      "case": "no-forbidden-arrivals",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/evidence.json"
+    },
+    {
+      "case": "actual-registry-pulls",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/evidence.json"
+    },
+    {
+      "case": "no-required-skips",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/evidence.json"
+    },
+    {
+      "case": "owned-cleanup",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/evidence.json"
+    },
+    {
+      "case": "packet-capture",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m05-lab.4cac6wpp/m07.1793368911214050600/evidence.json"
+    },
+    {
+      "case": "software-suite",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/checks.json"
+    },
+    {
+      "case": "go-vet",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/checks.json"
+    },
+    {
+      "case": "targeted-race",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/checks.json"
+    },
+    {
+      "case": "contract-fuzz",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/checks.json"
+    },
+    {
+      "case": "script-validation",
+      "status": "PASS",
+      "evidence": "/var/lib/orchestrator-builder/m07.1793363524503781782/software.1793368879279701804/checks.json"
+    }
+  ],
+  "counts": {
+    "PASS": 146,
+    "FAIL": 0
+  },
+  "missing_or_failed": []
+}

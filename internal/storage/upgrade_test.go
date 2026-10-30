@@ -36,7 +36,7 @@ func TestCloneSchemaUpgradeRequiresVerifiedBackup(t *testing.T) {
 		t.Fatal(e)
 	}
 	defer s.Close()
-	if scalar(t, s, "SELECT count(*) FROM deployments") != 1 || scalar(t, s, "PRAGMA user_version") != 2 {
+	if scalar(t, s, "SELECT count(*) FROM deployments") != 1 || scalar(t, s, "PRAGMA user_version") != int64(len(list)) {
 		t.Fatal("upgrade lost data")
 	}
 	if _, e = Open(ctx, backup); !errors.Is(e, ErrUpgradeRequired) {

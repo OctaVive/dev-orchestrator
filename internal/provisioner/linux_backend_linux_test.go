@@ -96,7 +96,7 @@ func hostLab(t *testing.T) *linuxBackend {
 	}
 	return b.(*linuxBackend)
 }
-func labMachine(t *testing.T, b *linuxBackend, ttl time.Duration) Machine {
+func labMachine(t *testing.T, b *linuxBackend, ttl time.Duration, configure ...func(*Machine)) Machine {
 	t.Helper()
 	var id [16]byte
 	var proof [32]byte
@@ -110,6 +110,9 @@ func labMachine(t *testing.T, b *linuxBackend, ttl time.Duration) Machine {
 	id[8] = (id[8] & 63) | 128
 	job := fmt.Sprintf("%x-%x-%x-%x-%x", id[:4], id[4:6], id[6:8], id[8:10], id[10:])
 	m := Machine{Lease: Lease{JobID: job, ProfileID: "build-small-v1", Template: Template{b.c.TemplateID, b.c.Digest}, CreatedAt: time.Now().UTC(), ExpiresAt: time.Now().UTC().Add(ttl)}, Budget: SmallBudget(), OwnershipProof: fmt.Sprintf("%x", proof)}
+	for _, apply := range configure {
+		apply(&m)
+	}
 	t.Logf("owned test job: %s", job)
 	t.Cleanup(func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)

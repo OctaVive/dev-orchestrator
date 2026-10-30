@@ -2,25 +2,26 @@
 
 Last reviewed: 2026-10-30.
 
-This is the consolidated overview of PH1–PH5: scope, implementation progress, remaining work and supporting documentation. Status is based on the recorded [implementation progress](docs/project/progress.md), [PH1 milestones](docs/project/PH1/README.md) and phase plans; PH1M05 and PH1M06 software and real-host validation are recorded in their linked evidence reports.
+This is the consolidated overview of PH1–PH5: scope, implementation progress, remaining work and supporting documentation. Status is based on the recorded [implementation progress](docs/project/progress.md), [PH1 milestones](docs/project/PH1/README.md) and phase plans; PH1M05, PH1M06 and PH1M07 software and real-host validation are recorded in their linked evidence reports.
 
 ## Phase overview
 
 | Phase | Scope | Status | Implementation progress | Recorded implemented milestones |
 |---|---|---|---|---|
-| [PH1](#ph1--secure-core) | Secure deployment platform foundation | In progress; validation gaps remain | **42.9%** | 6 / 14* |
+| [PH1](#ph1--secure-core) | Secure deployment platform foundation | In progress; validation gaps remain | **50.0%** | 7 / 14* |
 | [PH2](#ph2--embedded-applications-and-routing) | Embedded applications and automated routing | Planned | **0%** | 0 / 6 |
 | [PH3](#ph3--mfa-users-and-application-permissions) | MFA, user administration and application permissions | Planned | **0%** | 0 / 7 |
 | [PH4](#ph4--git-updates-and-rollback) | Git updates, deployment history and safe rollback | Planned | **0%** | 0 / 6 |
 | [PH5](#ph5--security-assurance-and-recovery) | Security regression, operational recovery and release review | Planned | **0%** | 0 / 6 |
-| **Overall** | **Minimal baseline across all five phases** | **In progress** | **15.4%** | **6 / 39*** |
+| **Overall** | **Minimal baseline across all five phases** | **In progress** | **17.9%** | **7 / 39*** |
 
 ### How percentages are calculated
 
 - Implementation progress = milestones recorded as implemented / total milestones in the phase's **minimal** plan × 100, rounded to one decimal place. Milestones have equal weight; these figures are not estimates of effort or time remaining.
-- *P1-M04 counts as implemented with qualified validation: V01–V13 and V16 passed; **V14 and V15 are SKIP, not passes**. Only five PH1 milestones have unqualified implemented/tested status. No arbitrary partial credit is assigned to skipped checks.
+- *P1-M04 counts as implemented with qualified validation: V01–V13 and V16 passed; **V14 and V15 are SKIP, not passes**. Only six PH1 milestones have unqualified implemented/tested status. No arbitrary partial credit is assigned to skipped checks.
 - P1-M05 counts as implemented/tested after controlled isolated-KVM N01–N13 acceptance; its lab evidence does not enable production or waive later build gates.
 - P1-M06 counts as implemented/tested after all 83 required cases passed, including 51 actual Git cases and the controlled M05 regression; production rollout and later build/controller gates remain separate.
+- P1-M07 counts as implemented/tested after all 146 required ledger cases passed, including the complete rootless build/isolated ingest pipeline and real budget-failure cases; admission remains separate from deployment approval.
 - Planned milestones receive no credit. Writing plans or creating milestone folders does not count as implementation.
 - Recommended and hardened additions are outside these percentages and are not assessed here. Their scope is linked under each phase. The [master roadmap](docs/plans/master-roadmap.md) defines the cumulative tracks and prerequisites.
 - Release readiness is separate: no phase is recorded as release complete. A phase reaches release completion only when all required acceptance gates and reviews are satisfied.
@@ -37,7 +38,7 @@ Build the authenticated, isolated Git-to-container deployment foundation: persis
 | [P1-M04](docs/project/PH1/P1M04/README.md) | KVM provisioner and expiring build-guest lifecycle | Implemented/tested with V14 and V15 skipped |
 | [P1-M05](docs/project/PH1/P1M05/README.md) | Controlled build egress and firewall policy | Implemented/tested; controlled isolated-KVM N01–N13 PASS |
 | [P1-M06](docs/project/PH1/P1M06/README.md) | Restricted Git clone runner and malicious Git fixtures | Implemented/tested; isolated-KVM M06 acceptance PASS |
-| [P1-M07](docs/project/PH1/P1M07/README.md) | Rootless BuildKit, isolated image ingest and scanning | Planned |
+| [P1-M07](docs/project/PH1/P1M07/README.md) | Rootless BuildKit, isolated image ingest and scanning | Implemented/tested; isolated-KVM M07 acceptance PASS |
 | [P1-M08](docs/project/PH1/P1M08/README.md) | Compose/Dockerfile normalization and agent policy | Planned |
 | [P1-M09](docs/project/PH1/P1M09/README.md) | Runtime capability checks and agent create/inspect/stop | Planned |
 | [P1-M10](docs/project/PH1/P1M10/README.md) | Managed storage ownership/quotas and secret references | Planned |
@@ -46,7 +47,7 @@ Build the authenticated, isolated Git-to-container deployment foundation: persis
 | [P1-M13](docs/project/PH1/P1M13/README.md) | Login, sidebar, deployment wizard, timeline and bounded logs | Planned |
 | [P1-M14](docs/project/PH1/P1M14/README.md) | Secure-core acceptance and operator setup/backup smoke checks | Planned |
 
-**Next:** P1-M07 rootless BuildKit and isolated ingest/scanning. P1-M05 and [P1-M06](docs/project/PH1/P1M06/testing/acceptance-report.md) are accepted on their tested isolated VM/templates; later build and controller gates remain separate. Track P1-M04's skipped checks in the [acceptance report](docs/project/PH1/P1M04/testing/acceptance-report.md). There is no working end-to-end deployment platform yet.
+**Next:** P1-M08 Compose/Dockerfile normalization and agent policy. [P1-M07](docs/project/PH1/P1M07/testing/acceptance-report.md) passed all 146 required ledger cases; it produces admitted artifacts, not deployed applications. P1-M05 and [P1-M06](docs/project/PH1/P1M06/testing/acceptance-report.md) are accepted on their tested isolated VM/templates; later build and controller gates remain separate. Track P1-M04's skipped checks in the [acceptance report](docs/project/PH1/P1M04/testing/acceptance-report.md). There is no working end-to-end deployment platform yet.
 
 **Release gate:** complete the secure-core acceptance harness, actual guest isolation evidence, default-deny authorization, private application routing, independent agent policy, cleanup and authenticated status checks. See the [requirement evidence](docs/project/requirement-evidence.md) for gaps and operator decisions.
 

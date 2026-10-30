@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -31,6 +32,21 @@ func validateCloneMachine(m Machine, c LinuxConfig, now time.Time) error {
 	p, e := loadEgressPolicy(c)
 	if e != nil {
 		return e
+	}
+	if j.Build != nil {
+		if j.Build.Policy.EgressPolicyHash != c.EgressPolicyHash {
+			return ErrInvalid
+		}
+		u, _ := url.Parse(j.Build.Policy.UploadOrigin)
+		found := false
+		for _, host := range p.Hosts {
+			if host == u.Hostname() {
+				found = true
+			}
+		}
+		if !found {
+			return ErrInvalid
+		}
 	}
 	for _, host := range j.Policy.Hosts {
 		found := false
@@ -179,6 +195,18 @@ func parseCloneFrames(data []byte, j contracts.CloneJob) ([]contracts.CloneResul
 			break
 		}
 		data = rest
+		if bytes.HasPrefix(line, []byte("M07 ")) && j.Build != nil {
+			if len(result) != 2 || result[1].Outcome != "success" || len(line) > 1028 || len(data) > 0 {
+				return nil, ErrInvalid
+			}
+			var job contracts.BuildJob
+			job.Clone = j
+			job.PolicyHash = j.Build.Policy.Hash()
+			if _, e := contracts.DecodeBuildResult(bytes.NewReader(line[4:]), job); e != nil {
+				return nil, ErrInvalid
+			}
+			continue
+		}
 		if !bytes.HasPrefix(line, []byte("M06 ")) {
 			return nil, ErrInvalid
 		}

@@ -1,0 +1,50 @@
+=== RUN   TestRealM07RootlessFeasibility
+    linux_build_linux_test.go:24: owned test job: 9ea93064-4723-4406-9472-6fac1839c388
+    linux_build_linux_test.go:35: M04-FIXTURE M07-FEASIBILITY build=0 workers=0 uidmap=173
+    linux_build_linux_test.go:39: Uid:	101	101	101	101
+    linux_build_linux_test.go:39: Gid:	104	104	104	104
+    linux_build_linux_test.go:39: Groups:	993 
+    linux_build_linux_test.go:39: CapEff:	0000000000000000
+    linux_build_linux_test.go:39: QEMU /usr/bin/qemu-system-x86_64 -no-user-config -nodefaults -machine q35,accel=kvm -cpu host -smp 2 -m 4096 -display none -serial none -monitor none -nic none -no-reboot -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny -add-fd fd=3,set=1 -add-fd fd=4,set=1 -drive file=/dev/fdset/1,format=raw,if=virtio,cache=writeback,aio=threads,throttling.iops-total=1000 
+    linux_build_linux_test.go:39: network namespaces net:[4026531840] net:[4026532550]
+    linux_build_linux_test.go:39: KVM FD 10 /dev/kvm
+    linux_build_linux_test.go:39: KVM FD 11 anon_inode:kvm-vm
+    linux_build_linux_test.go:39: KVM FD 12 anon_inode:kvm-vcpu:0
+    linux_build_linux_test.go:39: KVM FD 13 anon_inode:kvm-vcpu-stats:0
+    linux_build_linux_test.go:39: KVM FD 14 anon_inode:kvm-vcpu:1
+    linux_build_linux_test.go:39: KVM FD 15 anon_inode:kvm-vcpu-stats:1
+    linux_build_linux_test.go:39: owned disk FD 16 flags:	02500002
+    linux_build_linux_test.go:39: owned disk FD 7 flags:	02500002
+    linux_build_linux_test.go:39: owned disk FD 8 flags:	02500000
+    linux_build_linux_test.go:32: time="2026-10-30T14:19:44Z" level=warning msg="failed check for fsverity support" error="enable fsverity failed: inappropriate ioctl for device" path=/work/buildkit/runc-native/content
+        time="2026-10-30T14:19:44Z" level=warning msg="git source cannot be enabled: failed to find git binary: exec: \"git\": executable file not found in $PATH"
+        time="2026-10-30T14:19:44Z" level=info msg="found worker \"7veoty3ry4a55pugmla47j9xn\", labels=map[org.mobyproject.buildkit.worker.executor:oci org.mobyproject.buildkit.worker.hostname:(none) org.mobyproject.buildkit.worker.network:host org.mobyproject.buildkit.worker.oci.process-mode:sandbox org.mobyproject.buildkit.worker.selinux.enabled:false org.mobyproject.buildkit.worker.snapshotter:native], platforms=[linux/amd64 linux/amd64/v2 linux/amd64/v3 linux/386]"
+        time="2026-10-30T14:19:44Z" level=info msg="found 1 workers, default=\"7veoty3ry4a55pugmla47j9xn\""
+        time="2026-10-30T14:19:44Z" level=warning msg="currently, only the default worker can be used."
+        time="2026-10-30T14:19:44Z" level=info msg="running server on /work/buildkit.sock"
+        ID				PLATFORMS
+        7veoty3ry4a55pugmla47j9xn	linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/386
+        #1 [internal] load build definition from Dockerfile
+        #1 transferring dockerfile: 78B done
+        #1 DONE 0.0s
+        
+        #2 [internal] load .dockerignore
+        #2 transferring context: 2B done
+        #2 DONE 0.0s
+        
+        #3 [internal] load build context
+        #3 transferring context: 45B done
+        #3 DONE 0.0s
+        
+        #4 [1/1] COPY hello /hello
+        #4 DONE 0.0s
+        
+        #5 exporting to oci image format
+        #5 exporting layers done
+        #5 exporting manifest sha256:c5d497e309e75544c2e9f9169725336a3096dae7362c78c9ef5cc874b9d0e615 done
+        #5 exporting config sha256:1c8a05904572da802fca207585abd44bf7e5ee040372f732a1bf9142ac824b87 done
+        #5 sending tarball done
+        #5 DONE 0.0s
+        
+--- PASS: TestRealM07RootlessFeasibility (17.89s)
+PASS
