@@ -1,0 +1,35 @@
+{
+  "scope": "Trusted BusyBox fixture diagnosis only; not M09 acceptance",
+  "observed_utc": "2026-10-30T16:49:42.209639+00:00",
+  "controls": {
+    "additional_gids": [
+      1000
+    ],
+    "apparmor_is_empty": true,
+    "caps_counts": {},
+    "effective_uid": 0,
+    "gid": 1000,
+    "gid_mappings": null,
+    "hooks_present": false,
+    "namespace_has_existing_path": {
+      "cgroup": false,
+      "ipc": false,
+      "mount": false,
+      "network": false,
+      "pid": false,
+      "time": false,
+      "uts": false
+    },
+    "nnp": true,
+    "readonly": true,
+    "seccomp_default_action": "SCMP_ACT_ERRNO",
+    "uid": 1000,
+    "uid_mappings": null
+  },
+  "first_rejected_requirement": "private_user_namespace_missing",
+  "explanation": "The bundle omits the user namespace and UID/GID mapping arrays; runtimeprofile.Harden requires an explicit private user namespace and refuses the bundle. The earlier uid_map EPERM experiment was a different failure.",
+  "production_hardener_sha256": "851e762fcd158e5c2e996b5e5ec41be45192f0f349fc7bd1664d4c05bbcb5c40",
+  "diagnostic_source_sha256": "8b10cbbcfc004a029351cb3b79b9f87c248ef0dedfc38772aa14f4748cbefd77",
+  "diagnostic_binary_sha256": "051b0a059cd2a4b9239be9129f23d52250a9fd16a16d977b0df0ce6f1909296f",
+  "source_log_sha256": "be1da0535f4d3994cc39b4cc100748ecb9900d4a42c35b3970f38d561d38102e"
+}

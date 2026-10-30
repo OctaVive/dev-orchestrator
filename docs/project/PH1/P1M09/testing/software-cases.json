@@ -1,0 +1,691 @@
+{
+  "scope": "Software boundary tests only; not runtime acceptance",
+  "count": 137,
+  "cases": [
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestArtifactServiceControlAndUpload",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestQuarantineRetentionAndReservation",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestArtifactHostReserve/floor",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestArtifactHostReserve/available",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestArtifactHostReserve/pending",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestArtifactHostReserve/underflow",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestArtifactHostReserve/negative",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestArtifactHostReserve/overflow",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestArtifactHostReserve",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactAuthorizationAndOpaqueDelivery/admission",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactAuthorizationAndOpaqueDelivery/unknown",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactAuthorizationAndOpaqueDelivery/duplicate",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactAuthorizationAndOpaqueDelivery/tag",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactAuthorizationAndOpaqueDelivery/relay",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactAuthorizationAndOpaqueDelivery/worker",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactAuthorizationAndOpaqueDelivery",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactCorruptionAndSymlinkDenials/corrupt",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactCorruptionAndSymlinkDenials/symlink",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactCorruptionAndSymlinkDenials/public",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactCorruptionAndSymlinkDenials/wrong-size",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactCorruptionAndSymlinkDenials",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactRevocationBeforeStreaming",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestRuntimeArtifactRequiresMTLSAndNoListing",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestUploadQuarantine",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestUploadLimitsAndFencing/oversize",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestUploadLimitsAndFencing/cancel",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestUploadLimitsAndFencing/revoked",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestUploadLimitsAndFencing/expiry",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestUploadLimitsAndFencing/capacity",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestUploadLimitsAndFencing/tamper",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/artifacts",
+      "test": "TestUploadLimitsAndFencing",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignedLifecycleAndDurableRetry",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/expiry",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/log-limit",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/key",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/spec",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/worker",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/nonce",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/signature",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/app",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/policy",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/spec-hash",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/target",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/version",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/operation",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/id",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/incarnation",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/deployment",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering/generation",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSignatureFieldTampering",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestStrictDecoder/trailing",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestStrictDecoder/oversize",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestStrictDecoder/unknown",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestStrictDecoder/duplicate",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestStrictDecoder/case-alias",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestStrictDecoder/float",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestStrictDecoder",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSemanticAndAuthorizationDenials/expired",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSemanticAndAuthorizationDenials/root",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSemanticAndAuthorizationDenials/mount",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSemanticAndAuthorizationDenials/lease",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSemanticAndAuthorizationDenials/too-far",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSemanticAndAuthorizationDenials/zero-generation",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSemanticAndAuthorizationDenials/secret",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSemanticAndAuthorizationDenials/approval",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSemanticAndAuthorizationDenials/unknown-op",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestSemanticAndAuthorizationDenials",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestConcurrentReplayAndConflicts",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestGenerationFencesAndCleanup",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestPendingIntentAndUncertainFailure",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestRevocationDuringCreate",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestUnsupportedReadiness",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestBoundedSanitizedLogs",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestLedgerIsolationAndRestartIdentity",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestInventorySignatureAndControls",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "TestExecutionSchemaAndSigningGolden",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "FuzzCommandDecode/seed#0",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "FuzzCommandDecode/seed#1",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeagent",
+      "test": "FuzzCommandDecode",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestFixedBundleSupplement",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestUnsafeBundlesDeniedBeforeNamespaceJoin/mac",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestUnsafeBundlesDeniedBeforeNamespaceJoin/hooks",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestUnsafeBundlesDeniedBeforeNamespaceJoin/allow-all-syscalls",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestUnsafeBundlesDeniedBeforeNamespaceJoin/host-network",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestUnsafeBundlesDeniedBeforeNamespaceJoin/nnp",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimerpc",
+      "test": "TestArtifactStreamIntegrityAndBounds",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimerpc",
+      "test": "TestMTLSPollBoundaries/pin",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimerpc",
+      "test": "TestMTLSPollBoundaries/uri",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimerpc",
+      "test": "TestMTLSPollBoundaries/name",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimerpc",
+      "test": "TestMTLSPollBoundaries/role",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimerpc",
+      "test": "TestMTLSPollBoundaries",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestUnsafeBundlesDeniedBeforeNamespaceJoin/capabilities",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestUnsafeBundlesDeniedBeforeNamespaceJoin/root-write",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestUnsafeBundlesDeniedBeforeNamespaceJoin/seccomp",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestUnsafeBundlesDeniedBeforeNamespaceJoin/shared-pid",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestUnsafeBundlesDeniedBeforeNamespaceJoin/root",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestUnsafeBundlesDeniedBeforeNamespaceJoin/group",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestUnsafeBundlesDeniedBeforeNamespaceJoin",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeprofile",
+      "test": "TestBundlePathAndSymlinkDenials",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimerpc",
+      "test": "TestRevocationOnReusedTLSConnection",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimerpc",
+      "test": "TestRejectUnsafeOrigins",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestDeliveryVerifiesBeforeImportAndCleansSpool/ok",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestDeliveryVerifiesBeforeImportAndCleansSpool/corrupt",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestDeliveryVerifiesBeforeImportAndCleansSpool/short",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestDeliveryVerifiesBeforeImportAndCleansSpool/transport-failure",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestDeliveryVerifiesBeforeImportAndCleansSpool/revoked",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestDeliveryVerifiesBeforeImportAndCleansSpool",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestRequiredEngineConfiguration",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/host-pid",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/swap",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/foreign-network",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/root",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/ports",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/labels",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/capability",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/pids",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/cpu",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/logs",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/stopped",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/mac",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/host-network",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/host-ipc",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/restart",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/mount",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/privilege",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/root-write",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/groups",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift/no-nnp",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestInspectDetectsDrift",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestMissingEnforcementRefusesWithoutEngineCalls",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestLogFrameBounds/truncated-body",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestLogFrameBounds/stream",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestLogFrameBounds/oversized",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestLogFrameBounds/flood",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestLogFrameBounds/truncated-header",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestLogFrameBounds",
+      "status": "PASS"
+    },
+    {
+      "package": "dev-orchestrator/internal/runtimeengine",
+      "test": "TestUnixClientResponseBoundsAndSanitizedErrors",
+      "status": "PASS"
+    }
+  ]
+}

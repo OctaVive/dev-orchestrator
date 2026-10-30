@@ -1,0 +1,7 @@
+fuzz: elapsed: 0s, gathering baseline coverage: 0/2 completed
+fuzz: elapsed: 0s, gathering baseline coverage: 2/2 completed, now fuzzing with 2 workers
+fuzz: elapsed: 3s, execs: 329 (110/sec), new interesting: 3 (total: 5)
+fuzz: elapsed: 6s, execs: 329 (0/sec), new interesting: 3 (total: 5)
+fuzz: elapsed: 6s, execs: 329 (0/sec), new interesting: 3 (total: 5)
+PASS
+ok  	dev-orchestrator/internal/runtimeagent	6.014s

@@ -1,0 +1,67 @@
+{
+  "milestone": "P1-M09",
+  "cases": [
+    {
+      "id": "R01",
+      "status": "FAIL",
+      "evidence": [
+        "docs/project/PH1/P1M09/testing/runtime-feasibility.log"
+      ],
+      "reason": "Complete restricted-profile fixture did not start; current runtime supplement is not accepted."
+    },
+    {
+      "id": "R02",
+      "status": "NOT_RUN",
+      "evidence": [],
+      "reason": "Required full real-agent/runtime integration is not implemented/executed."
+    },
+    {
+      "id": "R03",
+      "status": "NOT_RUN",
+      "evidence": [],
+      "reason": "Required full real-agent/runtime integration is not implemented/executed."
+    },
+    {
+      "id": "R04",
+      "status": "NOT_RUN",
+      "evidence": [],
+      "reason": "Required full real-agent/runtime integration is not implemented/executed."
+    },
+    {
+      "id": "R05",
+      "status": "NOT_RUN",
+      "evidence": [],
+      "reason": "Required full real-agent/runtime integration is not implemented/executed."
+    },
+    {
+      "id": "R06",
+      "status": "NOT_RUN",
+      "evidence": [],
+      "reason": "Required full real-agent/runtime integration is not implemented/executed."
+    },
+    {
+      "id": "R07",
+      "status": "NOT_RUN",
+      "evidence": [],
+      "reason": "Required full real-agent/runtime integration is not implemented/executed."
+    },
+    {
+      "id": "R08",
+      "status": "NOT_RUN",
+      "evidence": [],
+      "reason": "Required full real-agent/runtime integration is not implemented/executed."
+    },
+    {
+      "id": "R09",
+      "status": "NOT_RUN",
+      "evidence": [],
+      "reason": "Required full real-agent/runtime integration is not implemented/executed."
+    },
+    {
+      "id": "R10",
+      "status": "NOT_RUN",
+      "evidence": [],
+      "reason": "Required full real-agent/runtime integration is not implemented/executed."
+    }
+  ]
+}

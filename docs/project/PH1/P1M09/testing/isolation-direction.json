@@ -1,0 +1,119 @@
+{
+  "scope": "Trusted two-app feasibility observation; not full R01 or M09 acceptance",
+  "observed_utc": "2026-10-30T16:59:17.075051+00:00",
+  "shared_engine": {
+    "log_sha256": "ded5e8992f78107990f204ca56ab220ad4aeba27499a8f9806a86281c99244f7",
+    "namespaces": {
+      "a": {
+        "user": "user:[4026532174]",
+        "pid": "pid:[4026532243]",
+        "ipc": "ipc:[4026532242]",
+        "mnt": "mnt:[4026532240]",
+        "uts": "uts:[4026532241]",
+        "net": "net:[4026532245]",
+        "cgroup": "cgroup:[4026532244]"
+      },
+      "b": {
+        "user": "user:[4026532174]",
+        "pid": "pid:[4026532307]",
+        "ipc": "ipc:[4026532306]",
+        "mnt": "mnt:[4026532304]",
+        "uts": "uts:[4026532305]",
+        "net": "net:[4026532309]",
+        "cgroup": "cgroup:[4026532308]"
+      }
+    },
+    "mac": {
+      "a": "unconfined",
+      "b": "unconfined"
+    },
+    "observations": [
+      "M09-ENGINE version=29.5.0 cgroup=systemd cgroup_version=2 security=[\"name=seccomp,profile=builtin\",\"name=rootless\",\"name=cgroupns\"]",
+      "M09-PROCESS app=a pid=804",
+      "M09-NAMESPACE app=a kind=user value=user:[4026532174]",
+      "M09-NAMESPACE app=a kind=pid value=pid:[4026532243]",
+      "M09-NAMESPACE app=a kind=ipc value=ipc:[4026532242]",
+      "M09-NAMESPACE app=a kind=mnt value=mnt:[4026532240]",
+      "M09-NAMESPACE app=a kind=uts value=uts:[4026532241]",
+      "M09-NAMESPACE app=a kind=net value=net:[4026532245]",
+      "M09-NAMESPACE app=a kind=cgroup value=cgroup:[4026532244]",
+      "M09-UID-MAP app=a",
+      "M09-GID-MAP app=a",
+      "M09-MAC app=a value=unconfined",
+      "M09-ENGINE-MAC requested=[\"no-new-privileges=true\",\"apparmor=tap-runtime\"] applied=\"\"",
+      "M09-PROCESS app=b pid=907",
+      "M09-NAMESPACE app=b kind=user value=user:[4026532174]",
+      "M09-NAMESPACE app=b kind=pid value=pid:[4026532307]",
+      "M09-NAMESPACE app=b kind=ipc value=ipc:[4026532306]",
+      "M09-NAMESPACE app=b kind=mnt value=mnt:[4026532304]",
+      "M09-NAMESPACE app=b kind=uts value=uts:[4026532305]",
+      "M09-NAMESPACE app=b kind=net value=net:[4026532309]",
+      "M09-NAMESPACE app=b kind=cgroup value=cgroup:[4026532308]",
+      "M09-UID-MAP app=b",
+      "M09-GID-MAP app=b",
+      "M09-MAC app=b value=unconfined",
+      "M09-ENGINE-MAC requested=[\"no-new-privileges=true\",\"apparmor=tap-runtime\"] applied=\"\"",
+      "M09-INITIAL-USER-NAMESPACE value=user:[4026531837]",
+      "M09-NAMESPACE-OBSERVATION-COMPLETE",
+      "M09-NAMESPACE-OBSERVATION-END rc=0"
+    ]
+  },
+  "app_scoped_engines": {
+    "log_sha256": "b181729eeeed2d6998dcb6eb02b723ccb2e70deb125b61fbdb6dd874f0368939",
+    "namespaces": {
+      "a": {
+        "user": "user:[4026532173]",
+        "pid": "pid:[4026532243]",
+        "ipc": "ipc:[4026532242]",
+        "mnt": "mnt:[4026532240]",
+        "uts": "uts:[4026532241]",
+        "net": "net:[4026532245]",
+        "cgroup": "cgroup:[4026532244]"
+      },
+      "b": {
+        "user": "user:[4026532304]",
+        "pid": "pid:[4026532369]",
+        "ipc": "ipc:[4026532368]",
+        "mnt": "mnt:[4026532366]",
+        "uts": "uts:[4026532367]",
+        "net": "net:[4026532371]",
+        "cgroup": "cgroup:[4026532370]"
+      }
+    },
+    "mac": {
+      "a": "tap-runtime (enforce)",
+      "b": "tap-runtime (enforce)"
+    },
+    "observations": [
+      "M09-APP-ENGINE version=29.5.0 id=b760e2d7-6edb-4ba1-bbc2-703d8574ea73 cgroup=systemd",
+      "M09-APP-PROCESS app=a pid=810",
+      "M09-APP-NAMESPACE app=a kind=user value=user:[4026532173]",
+      "M09-APP-NAMESPACE app=a kind=pid value=pid:[4026532243]",
+      "M09-APP-NAMESPACE app=a kind=ipc value=ipc:[4026532242]",
+      "M09-APP-NAMESPACE app=a kind=mnt value=mnt:[4026532240]",
+      "M09-APP-NAMESPACE app=a kind=uts value=uts:[4026532241]",
+      "M09-APP-NAMESPACE app=a kind=net value=net:[4026532245]",
+      "M09-APP-NAMESPACE app=a kind=cgroup value=cgroup:[4026532244]",
+      "M09-APP-MAC app=a value=tap-runtime (enforce)",
+      "M09-APP-ENGINE version=29.5.0 id=d4b16398-de3a-46c7-82ff-080a35baf673 cgroup=systemd",
+      "M09-APP-PROCESS app=b pid=1200",
+      "M09-APP-NAMESPACE app=b kind=user value=user:[4026532304]",
+      "M09-APP-NAMESPACE app=b kind=pid value=pid:[4026532369]",
+      "M09-APP-NAMESPACE app=b kind=ipc value=ipc:[4026532368]",
+      "M09-APP-NAMESPACE app=b kind=mnt value=mnt:[4026532366]",
+      "M09-APP-NAMESPACE app=b kind=uts value=uts:[4026532367]",
+      "M09-APP-NAMESPACE app=b kind=net value=net:[4026532371]",
+      "M09-APP-NAMESPACE app=b kind=cgroup value=cgroup:[4026532370]",
+      "M09-APP-MAC app=b value=tap-runtime (enforce)",
+      "M09-APP-INITIAL-USER-NAMESPACE value=user:[4026531837]",
+      "M09-APP-ENGINE-OBSERVATION-COMPLETE",
+      "M09-APP-ENGINE-OBSERVATION-END rc=0"
+    ]
+  },
+  "conclusion": "Separate rootless engines provide distinct app user namespaces in this experiment. The fixed MAC prototype applies enforced AppArmor on both. Full capability, network, quota and signed-agent integration remain unimplemented/unaccepted.",
+  "experiment_source": {
+    "infra/runtime/experiments/mac-runc-prototype.go.txt": "9e5aed4dcc76359718c09c709807f0d0ae4ba800a73200a28af43077bd03dd23",
+    "infra/runtime/experiments/namespace-guest.sh": "bfa0aad00ac7ae7abb5701058beed9f2fc16d97765882ffc152a9ab7a0e87fd0",
+    "infra/runtime/experiments/per-app-guest.sh": "4a207cc73488537f1f6c920444c6d01b16d92528c297d581808dda20ddcda074"
+  }
+}

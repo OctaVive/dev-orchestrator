@@ -10,7 +10,8 @@
 | P1-M06 | Implemented/tested; isolated-KVM M06 acceptance PASS |
 | P1-M07 | Implemented/tested; isolated-KVM M07 acceptance PASS |
 | P1-M08 | Implemented/tested; isolated-KVM M08 acceptance PASS |
-| P1-M09–P1-M14 | Planned |
+| P1-M09 | In progress; runtime acceptance incomplete / NOT PASSED |
+| P1-M10–P1-M14 | Planned |
 
 \* V14 and V15 marked as SKIP. V01–V13 and V16 passed; the skipped checks are not passes.
 

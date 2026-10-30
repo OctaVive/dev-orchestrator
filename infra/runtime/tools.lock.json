@@ -1,0 +1,10 @@
+{
+  "docker": {
+    "url": "https://download.docker.com/linux/static/stable/x86_64/docker-29.5.0.tgz",
+    "sha256": "ec7f44cd54edf68a06f0da8b507b9e0aa82b64347c4a5a6becde2e4dc6cb212c"
+  },
+  "docker-rootless-extras": {
+    "url": "https://download.docker.com/linux/static/stable/x86_64/docker-rootless-extras-29.5.0.tgz",
+    "sha256": "583643b0263d6db641d476131221869d5b870eaea9301137c4183fa22364ad32"
+  }
+}

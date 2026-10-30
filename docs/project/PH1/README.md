@@ -12,7 +12,7 @@ Folder names use `P1M01` through `P1M14`; canonical task IDs remain `P1-M01` thr
 | [P1-M06](P1M06/README.md) | Clone runner with HTTPS/ref/context limits and malicious Git fixtures | Implemented/tested; isolated-KVM M06 acceptance PASS |
 | [P1-M07](P1M07/README.md) | Rootless BuildKit export and isolated ingest/scanner adapter | Implemented/tested; isolated-KVM M07 acceptance PASS |
 | [P1-M08](P1M08/README.md) | Strict Compose/Dockerfile normalization and agent policy contract | Implemented/tested; isolated-KVM M08 acceptance PASS |
-| [P1-M09](P1M09/README.md) | Runtime capability probe and typed agent create/inspect/stop | Planned |
+| [P1-M09](P1M09/README.md) | Runtime capability probe and typed agent create/inspect/stop | In progress; NOT PASSED |
 | [P1-M10](P1M10/README.md) | Managed volume ownership/quota and secret-reference adapter | Planned |
 | [P1-M11](P1M11/README.md) | HTTP auth gateway, private relay path and atomic exact-host route activation | Planned |
 | [P1-M12](P1M12/README.md) | Job controller main state machine, cancellation and orphan reconciliation | Planned |

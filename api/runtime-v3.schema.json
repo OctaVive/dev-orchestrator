@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.dev-orchestrator.invalid/v1/runtime-v3.schema.json",
+  "title": "Signed typed runtime execution v3; current approval, lease and durable replay checks required",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": 3
+    },
+    "operation": {
+      "enum": [
+        "probe",
+        "prepare",
+        "create",
+        "inspect",
+        "logs",
+        "stop",
+        "remove"
+      ]
+    },
+    "command_id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "worker_id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "incarnation": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "app_id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "deployment_id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "nonce": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "key_id": {
+      "$ref": "common.schema.json#/$defs/name"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 35
+    },
+    "policy_hash": {
+      "$ref": "common.schema.json#/$defs/digest"
+    },
+    "spec_hash": {
+      "$ref": "common.schema.json#/$defs/digest"
+    },
+    "target": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "spec": {
+      "$ref": "agent-v2.schema.json#/properties/spec"
+    },
+    "log_limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16384
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9+/]{86}==$"
+    }
+  },
+  "required": [
+    "version",
+    "operation",
+    "command_id",
+    "worker_id",
+    "incarnation",
+    "app_id",
+    "deployment_id",
+    "generation",
+    "nonce",
+    "key_id",
+    "expires_at",
+    "policy_hash",
+    "spec_hash",
+    "signature"
+  ],
+  "oneOf": [
+    {
+      "properties": {
+        "operation": {
+          "const": "probe"
+        }
+      },
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "target"
+            ]
+          },
+          {
+            "required": [
+              "spec"
+            ]
+          },
+          {
+            "required": [
+              "log_limit"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "properties": {
+        "operation": {
+          "enum": [
+            "prepare",
+            "create"
+          ]
+        }
+      },
+      "required": [
+        "spec"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "target"
+            ]
+          },
+          {
+            "required": [
+              "log_limit"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "properties": {
+        "operation": {
+          "enum": [
+            "inspect",
+            "stop",
+            "remove"
+          ]
+        }
+      },
+      "required": [
+        "target"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "spec"
+            ]
+          },
+          {
+            "required": [
+              "log_limit"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "properties": {
+        "operation": {
+          "const": "logs"
+        }
+      },
+      "required": [
+        "target",
+        "log_limit"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "spec"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
