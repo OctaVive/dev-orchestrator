@@ -31,7 +31,14 @@ func main() {
 		if bundle == "" {
 			bundle, _ = os.Getwd()
 		}
-		if runtimeprofile.Harden(bundle) != nil {
+		app := os.Getenv("TAP_RUNTIME_APP")
+		var err error
+		if app == "" {
+			err = runtimeprofile.Harden(bundle)
+		} else {
+			err = runtimeprofile.HardenApp(bundle, app)
+		}
+		if err != nil {
 			os.Stderr.WriteString("runtime_bundle_denied\n")
 			os.Exit(1)
 		}

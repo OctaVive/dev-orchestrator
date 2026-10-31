@@ -97,3 +97,55 @@ func TestBundlePathAndSymlinkDenials(t *testing.T) {
 		t.Fatal("oversized bundle")
 	}
 }
+
+func TestInheritedBundleRequiresMeasuredEnrollment(t *testing.T) {
+	m := bundle()
+	linux := m["linux"].(map[string]any)
+	ns := linux["namespaces"].([]any)
+	linux["namespaces"] = ns[1:]
+	delete(linux, "uidMappings")
+	delete(linux, "gidMappings")
+	if Harden(writeBundle(t, m)) != ErrDenied {
+		t.Fatal("default accepted unmeasured inherited namespace")
+	}
+	if HardenApp(writeBundle(t, m), "11111111-1111-4111-8111-111111111111") != ErrDenied {
+		t.Fatal("missing trusted enrollment")
+	}
+	// The private hardening branch is reachable in production only after
+	// HardenApp verifies actual kernel namespace/maps against trusted enrollment.
+	dir := writeBundle(t, m)
+	if harden(dir, true) != nil {
+		t.Fatal("measured inherited namespace rejected")
+	}
+	m["process"].(map[string]any)["noNewPrivileges"] = false
+	if harden(writeBundle(t, m), true) != ErrDenied {
+		t.Fatal("inherited path weakened remaining profile")
+	}
+}
+
+func TestManagedEtcFilesAreReadonly(t *testing.T) {
+	m := bundle()
+	m["mounts"] = []any{map[string]any{"destination": "/etc/hosts", "type": "bind", "source": "/owned/hosts", "options": []string{"rbind", "rw"}}}
+	dir := writeBundle(t, m)
+	if Harden(dir) != nil {
+		t.Fatal("harden")
+	}
+	bytes, err := os.ReadFile(filepath.Join(dir, "config.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got struct{ Mounts []struct{ Options []string } }
+	if json.Unmarshal(bytes, &got) != nil || len(got.Mounts) != 1 {
+		t.Fatal("mounts")
+	}
+	ro := false
+	for _, option := range got.Mounts[0].Options {
+		if option == "rw" {
+			t.Fatal("uncharged writable etc bind")
+		}
+		ro = ro || option == "ro"
+	}
+	if !ro {
+		t.Fatal("missing readonly etc")
+	}
+}

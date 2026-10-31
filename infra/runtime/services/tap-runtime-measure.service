@@ -1,0 +1,23 @@
+[Unit]
+Description=Measure enrolled TAP runtime processes and private relays
+Requires=tap-runtime-host.service
+After=tap-runtime-host.service
+Before=tap-runtime-agent.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+UMask=0077
+ExecStart=/usr/local/bin/tap-runtime-measure
+Restart=no
+TimeoutStopSec=10
+KillMode=control-group
+ProtectSystem=strict
+ReadWritePaths=/run/tap-runtime
+ProtectHome=read-only
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

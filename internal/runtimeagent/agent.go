@@ -1,10 +1,13 @@
 package runtimeagent
 
 import (
+	"bytes"
 	"context"
 	"crypto/ed25519"
 	"encoding/json"
+	"os"
 	"strings"
+	"sync"
 	"time"
 	"unicode"
 	"unicode/utf8"
@@ -26,7 +29,7 @@ type Lease interface {
 // before each mutation and after long-running calls, including service starts.
 // Failure always leaves an explicit uncertain intent; it never authorizes retry.
 type Engine interface {
-	Probe(context.Context) (Inventory, error)
+	Probe(context.Context, Command, func() error) (Inventory, error)
 	Prepare(context.Context, Command, func() error) error
 	Create(context.Context, Command, func() error) error
 	Inspect(context.Context, Command) (string, error)
@@ -58,6 +61,7 @@ func validIdentity(worker, incarnation string) bool {
 type Config struct {
 	WorkerID, Incarnation string
 	Keys                  map[string]ed25519.PublicKey
+	InventoryKey          ed25519.PrivateKey
 	Resolver              policy.Resolver
 	Approval              Approval
 	Lease                 Lease
@@ -65,10 +69,24 @@ type Config struct {
 	Ledger                *Ledger
 	Now                   func() time.Time
 }
-type Agent struct{ config Config }
+type Agent struct {
+	config       Config
+	diagnostic   sync.Mutex
+	diagnosticAt time.Time
+}
+
+func (a *Agent) denied(stage string) error {
+	a.diagnostic.Lock()
+	defer a.diagnostic.Unlock()
+	if time.Since(a.diagnosticAt) >= 30*time.Second {
+		os.Stderr.WriteString("runtime_preflight_" + stage + "_denied\n")
+		a.diagnosticAt = time.Now()
+	}
+	return ErrDenied
+}
 
 func New(c Config) (*Agent, error) {
-	if !validIdentity(c.WorkerID, c.Incarnation) || c.Ledger == nil || c.Ledger.worker != c.WorkerID || c.Ledger.incarnation != c.Incarnation || c.Engine == nil || c.Approval == nil || c.Lease == nil || c.Resolver == nil || len(c.Keys) == 0 {
+	if !validIdentity(c.WorkerID, c.Incarnation) || c.Ledger == nil || c.Ledger.worker != c.WorkerID || c.Ledger.incarnation != c.Incarnation || c.Engine == nil || c.Approval == nil || c.Lease == nil || c.Resolver == nil || len(c.Keys) == 0 || len(c.InventoryKey) != ed25519.PrivateKeySize {
 		return nil, ErrDenied
 	}
 	keys := map[string]ed25519.PublicKey{}
@@ -76,21 +94,34 @@ func New(c Config) (*Agent, error) {
 		if !policy.ValidName(k) || len(v) != ed25519.PublicKeySize {
 			return nil, ErrDenied
 		}
+		if bytes.Equal(v, c.InventoryKey.Public().(ed25519.PublicKey)) {
+			return nil, ErrDenied
+		}
 		keys[k] = append(ed25519.PublicKey(nil), v...)
 	}
 	c.Keys = keys
+	c.InventoryKey = append(ed25519.PrivateKey(nil), c.InventoryKey...)
 	if c.Now == nil {
 		c.Now = time.Now
 	}
-	return &Agent{c}, nil
+	return &Agent{config: c}, nil
 }
 func (a *Agent) check(ctx context.Context, c Command, mutation bool) error {
-	if ctx.Err() != nil || c.Validate(a.config.Now(), a.config.WorkerID, a.config.Incarnation, a.config.Keys) != nil || a.config.Lease.Valid(ctx, c.WorkerID, c.Incarnation) != nil {
-		return ErrDenied
+	if ctx.Err() != nil {
+		return a.denied("context")
+	}
+	if c.Validate(a.config.Now(), a.config.WorkerID, a.config.Incarnation, a.config.Keys) != nil {
+		return a.denied("command")
+	}
+	if a.config.Lease.Valid(ctx, c.WorkerID, c.Incarnation) != nil {
+		return a.denied("lease")
 	}
 	if c.Operation == "create" || c.Operation == "prepare" {
-		if a.config.Approval.Current(ctx, c) != nil || policy.ValidateRuntime(*c.Spec, a.config.Resolver) != nil {
-			return ErrDenied
+		if a.config.Approval.Current(ctx, c) != nil {
+			return a.denied("approval")
+		}
+		if policy.ValidateRuntime(*c.Spec, a.config.Resolver) != nil {
+			return a.denied("policy")
 		}
 		for _, s := range c.Spec.Services {
 			if len(s.Volumes) != 0 || len(s.Secrets) != 0 {
@@ -128,21 +159,54 @@ func (a *Agent) Execute(ctx context.Context, c Command) (Result, error) {
 	if cached {
 		return previous, nil
 	}
+	// Revoke a long-running engine/artifact request even when it is not calling
+	// a stage callback. The same current lease/approval/fence checks are used;
+	// cancellation leaves the durable intent charged until confirmed cleanup.
+	ctx, revoke := context.WithCancel(ctx)
+	defer revoke()
+	watchDone := make(chan struct{})
+	monitorExit := make(chan struct{})
+	defer func() { close(watchDone); revoke(); <-monitorExit }()
+	go func() {
+		defer close(monitorExit)
+		ticker := time.NewTicker(500 * time.Millisecond)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-watchDone:
+				return
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				fresh, stop := context.WithTimeout(ctx, 2*time.Second)
+				err := a.check(fresh, c, true)
+				stop()
+				if err != nil {
+					revoke()
+					return
+				}
+			}
+		}
+	}()
 	r := Result{CommandID: c.ID, Code: "ok"}
 	check := func() error { return a.check(ctx, c, true) }
 	var opErr error
 	createStarted := false
 	switch c.Operation {
 	case "probe":
-		inventory, e := a.config.Engine.Probe(ctx)
-		if e != nil || inventory.Ready(a.config.Now(), c.WorkerID, c.Incarnation) != nil {
+		inventory, e := a.config.Engine.Probe(ctx, c, check)
+		if e != nil || inventory.ReadyFor(a.config.Now(), c.WorkerID, c.Incarnation, c.AppID) != nil || inventory.Challenge != c.Nonce {
 			opErr = ErrUnsupported
 		} else {
+			if inventory.Sign(a.config.InventoryKey) != nil {
+				opErr = ErrDenied
+				break
+			}
 			r.Inventory = &inventory
 		}
 	case "prepare", "create":
-		inventory, e := a.config.Engine.Probe(ctx)
-		if e != nil || inventory.Ready(a.config.Now(), c.WorkerID, c.Incarnation) != nil {
+		inventory, e := a.config.Engine.Probe(ctx, c, check)
+		if e != nil || inventory.ReadyFor(a.config.Now(), c.WorkerID, c.Incarnation, c.AppID) != nil || inventory.Challenge != c.Nonce {
 			opErr = ErrUnsupported
 			break
 		}

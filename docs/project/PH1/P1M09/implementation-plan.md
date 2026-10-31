@@ -153,3 +153,30 @@ apps do not share user namespaces with other apps or the VM's initial namespace:
 Do not promote the prototype, weaken required controls or report the narrow
 namespace/MAC observation as full M09 acceptance. No user-supplied secrets,
 permissions or requirement waiver are needed to investigate this candidate.
+
+## Completion work plan (2026-10-30)
+
+The existing backend increment is preserved. M09 passes only when all rows below
+are implemented and all R01–R10 constituent runtime cases pass on frozen source.
+No software-only or identity-only result changes a required runtime gate to PASS.
+
+| Order | Deliverable | Concrete implementation and exit condition |
+|---|---|---|
+| C01 | Trusted app runtime enrollment and MAC | Root-owned, boot-bound enrollment records authorize inherited app namespaces only after actual namespace/map verification. Integrate fixed tap-runc into typed engine options; independently measure live MAC/seccomp and namespace ownership. Real app fixtures start with enforced MAC, no hard-profile bypass. |
+| C02 | Bounded engine provisioning | Reserve before startup; provision only operator-defined app slots with private paths, fixed units/options, no network uplink, hard-sized storage and parent cgroup limits. Persist startup/cleanup/restart incidents; never adopt or delete by labels. Demonstrate pre-bind crashes retain charges. |
+| C03 | Complete enforcement and private relay | Implement concrete measured enforcement, aggregate candidate reservation, physical disk/image/log limits, namespace/map/cgroup/MAC/seccomp inspection, network default deny and fixed Unix/private relay fixture. Complete-profile probe succeeds only after all required canaries and confirmed cleanup. |
+| C04 | Durable current authorization | Implement controlled trusted durable approval, worker lease, certificate/revocation and immutable admission/artifact adapters. Approval binds exact source/context/spec/policy, worker/incarnation/app/deployment/generation and every image. Unknown/stale/revoked records deny; no automatic product approval. |
+| C05 | Agent/controller process integration | Wire a real runtime-agent service and separate mTLS runtime controller/artifact listener. Bound polling/results, sign app-bound capability reports, preserve pending results across restarts and support provisioned certificate rotation/revocation. Run one admitted stateless image through create/readiness/stop/remove. |
+| C06 | Recovery and lifecycle completion | Reconcile every durable intent boundary, detect engine/configuration drift, quarantine lease/revocation failures, preserve uncertain reservations, and enforce finite restart budgets across process/daemon restarts. Handle foreign objects without mutation. |
+| C07 | Full acceptance driver | Enumerate every constituent R01–R10 assertion, run real single/two-service lifecycle, denial/replay/crash/revocation cases, resource/network attacks and independent management identity/port observations only in disposable lab VMs. Record explicit PASS/FAIL for each case and final cleanup. |
+| C08 | Final freeze and report | Create the post-implementation test plan, freeze code/templates/policies, run full software/vet/race/fuzz regression and every required runtime case, retain failed runs, refresh source/evidence hashes and require the reporter to return PASS. Otherwise retain INCOMPLETE with exact remaining failures. |
+
+Implementation decisions to validate in the isolated lab: app engines have no
+RootlessKit uplink (`--net=none`) and no TCP listeners/port driver; private ingress
+uses a fixed separate relay identity and Unix transport. Hard-sized per-app guest
+filesystems cover daemon/image/log/spool storage, and app parent cgroups cover
+both daemons and all candidates. A fixed privileged measurement/provisioning
+helper may inspect enrolled processes and administer only predefined app slots;
+it exposes no generic exec, host paths, engine forwarding or namespace RPC.
+If a required control cannot be demonstrated, it remains a blocking implementation
+failure rather than a readiness exception.

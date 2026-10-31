@@ -30,3 +30,14 @@ shows the shared-engine apps had the same user namespace and were unconfined.
 The app-scoped prototype gave them distinct user namespaces and enforced MAC.
 Neither experiment establishes real network denial, quotas, image admission or
 signed-agent lifecycle. The full M09 ledger remains incomplete.
+
+`backend-observer-guest.sh` and `backendprobe/` exercise the actual Go Linux
+backend identity observer against both real app daemons. The fixed diagnostic
+collects trusted boot/PID/namespace/map/socket bindings as guest root, drops to
+UID/GID 1000, verifies both backends, persists/reopens the private ledger, and
+checks start-time/map/namespace/boot mismatches. It chmods only the fixed fixture
+socket/data paths. It does not run hostile workloads or assert full readiness.
+The diagnostic observes already-provisioned daemons; it does **not** test the
+production reserve-before-provisioning sequence. No command accepts deployment
+input, arbitrary paths or executable options. Use only a fresh disposable guest
+with `/etc/m09-disposable-guest`; no NIC, snapshot writes and an external timeout.

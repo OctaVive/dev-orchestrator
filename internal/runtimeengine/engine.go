@@ -2,10 +2,9 @@ package runtimeengine
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -19,7 +18,8 @@ import (
 // connectivity, and reserve capacity before any network/container/image change.
 // No default implementation substitutes configuration booleans for measurements.
 type Enforcement interface {
-	Measure(context.Context, string, string, string) (runtimeagent.Inventory, error)
+	Measure(context.Context, runtimeagent.Command, func() error) (runtimeagent.Inventory, error)
+	VerifyContainer(context.Context, runtimeagent.Command, string, int) error
 	Reserve(context.Context, runtimeagent.Command) error
 	Network(context.Context, runtimeagent.Command, string) error
 	Verify(context.Context, runtimeagent.Command) error
@@ -32,6 +32,7 @@ type ImageDelivery interface {
 	Prepare(context.Context, runtimeagent.Command, contracts.RuntimeServiceV2, func() error) error
 }
 type Engine struct {
+	Backend                           *runtimeagent.BackendBinding
 	Client                            *Client
 	Ledger                            *runtimeagent.Ledger
 	Enforcement                       Enforcement
@@ -41,15 +42,15 @@ type Engine struct {
 
 var _ runtimeagent.Engine = (*Engine)(nil)
 
-func (e *Engine) Probe(ctx context.Context) (runtimeagent.Inventory, error) {
-	if e.Client == nil || e.Ledger == nil || e.Enforcement == nil || e.Delivery == nil || e.MACProfile == "" {
+func (e *Engine) Probe(ctx context.Context, c runtimeagent.Command, check func() error) (runtimeagent.Inventory, error) {
+	if check == nil || check() != nil || e.Backend == nil || !e.Backend.Valid() || e.Backend.AppID != c.AppID || e.Client == nil || e.Ledger == nil || e.Enforcement == nil || e.Delivery == nil || e.MACProfile == "" {
 		return runtimeagent.Inventory{}, runtimeagent.ErrUnsupported
 	}
 	var info struct {
-		ID, ServerVersion, KernelVersion, CgroupDriver, CgroupVersion string
-		SecurityOptions                                               []string
+		ID, ServerVersion, KernelVersion, CgroupDriver, CgroupVersion, DockerRootDir string
+		SecurityOptions                                                              []string
 	}
-	if e.Client.call(ctx, "GET", "/info", nil, &info) != nil || info.CgroupDriver != "systemd" || info.CgroupVersion != "2" {
+	if e.Client.call(ctx, "GET", "/info", nil, &info) != nil || info.CgroupDriver != "systemd" || info.CgroupVersion != "2" || info.DockerRootDir != e.Backend.DataRoot {
 		return runtimeagent.Inventory{}, runtimeagent.ErrUnsupported
 	}
 	rootless, seccomp := false, false
@@ -64,53 +65,58 @@ func (e *Engine) Probe(ctx context.Context) (runtimeagent.Inventory, error) {
 	if !rootless || !seccomp {
 		return runtimeagent.Inventory{}, runtimeagent.ErrUnsupported
 	}
-	challenge := make([]byte, 32)
-	if _, err := rand.Read(challenge); err != nil {
-		return runtimeagent.Inventory{}, runtimeagent.ErrUnsupported
+	if !contracts.ValidDigest("sha256:" + c.Nonce) {
+		return runtimeagent.Inventory{}, runtimeagent.ErrDenied
 	}
-	inv, err := e.Enforcement.Measure(ctx, e.WorkerID, e.Incarnation, hex.EncodeToString(challenge))
-	if err != nil || inv.Challenge != hex.EncodeToString(challenge) || inv.DaemonID != info.ID || inv.Engine != info.ServerVersion || inv.Kernel != info.KernelVersion || inv.API != APIVersion || inv.Ready(time.Now(), e.WorkerID, e.Incarnation) != nil {
+	challenge := c.Nonce
+	inv, err := e.Enforcement.Measure(ctx, c, check)
+	if err != nil || inv.Challenge != challenge || inv.AppID != c.AppID || inv.BackendHash != e.Backend.Hash() || inv.DaemonID != e.Backend.DaemonID || inv.DaemonID != info.ID || inv.Engine != info.ServerVersion || inv.Kernel != info.KernelVersion || inv.API != APIVersion || inv.Ready(time.Now(), e.WorkerID, e.Incarnation) != nil {
 		return runtimeagent.Inventory{}, runtimeagent.ErrUnsupported
 	}
 	return inv, nil
 }
 func (e *Engine) Prepare(ctx context.Context, c runtimeagent.Command, check func() error) error {
 	if e.Enforcement == nil || e.Delivery == nil || e.Enforcement.Reserve(ctx, c) != nil {
+		os.Stderr.WriteString("runtime_prepare_capacity_denied\n")
 		return runtimeagent.ErrUnsupported
 	}
 	for _, s := range c.Spec.Services {
 		if check() != nil || e.Delivery.Prepare(ctx, c, s, check) != nil {
+			os.Stderr.WriteString("runtime_prepare_delivery_denied\n")
 			return runtimeagent.ErrUncertain
 		}
 		if e.verifyImage(ctx, s) != nil {
+			os.Stderr.WriteString("runtime_prepare_image_identity_denied\n")
 			return runtimeagent.ErrDenied
 		}
 	}
 	return check()
 }
+
+// The pinned containerd image store addresses loaded OCI manifests directly.
+// A signed registry reference remains an admission identity; no registry fetch or
+// mutable tag is needed to run the exact admitted content in the isolated VM.
 func (e *Engine) verifyImage(ctx context.Context, s contracts.RuntimeServiceV2) error {
+	if !policy.ValidImage(s.Image) {
+		return runtimeagent.ErrDenied
+	}
+	_, digest, _ := strings.Cut(s.Image, "@")
 	var image struct {
 		ID               string `json:"Id"`
-		RepoDigests      []string
 		Architecture, Os string
 		Config           struct {
 			User    string
 			Volumes map[string]json.RawMessage
 		}
 	}
-	if e.Client.call(ctx, "GET", "/images/"+escape(s.Image)+"/json", nil, &image) != nil || !strings.HasPrefix(image.ID, "sha256:") || !contracts.ValidDigest(image.ID) || image.Architecture != "amd64" || image.Os != "linux" || len(image.Config.Volumes) != 0 {
+	if e.Client.call(ctx, "GET", "/images/"+escape(digest)+"/json", nil, &image) != nil || image.ID != digest || image.Architecture != "amd64" || image.Os != "linux" || len(image.Config.Volumes) != 0 {
 		return runtimeagent.ErrDenied
 	}
 	u, g, err := policy.User(image.Config.User)
 	if err != nil || u != s.UID || g != s.GID {
 		return runtimeagent.ErrDenied
 	}
-	for _, d := range image.RepoDigests {
-		if d == s.Image {
-			return nil
-		}
-	}
-	return runtimeagent.ErrDenied
+	return nil
 }
 func (e *Engine) Create(ctx context.Context, c runtimeagent.Command, check func() error) error {
 	if c.Spec == nil {
@@ -122,7 +128,11 @@ func (e *Engine) Create(ctx context.Context, c runtimeagent.Command, check func(
 			return err
 		}
 	}
+	if e.Ledger.RegisterRestarts(ctx, c) != nil {
+		return runtimeagent.ErrDenied
+	}
 	if e.Prepare(ctx, c, check) != nil {
+		os.Stderr.WriteString("runtime_create_prepare_denied\n")
 		return runtimeagent.ErrUncertain
 	}
 	if check() != nil {
@@ -172,7 +182,9 @@ func (e *Engine) Create(ctx context.Context, c runtimeagent.Command, check func(
 		ids[s.Name] = created.ID
 		configs[s.Name] = cfg
 		got, err := e.inspect(ctx, created.ID)
-		if err != nil || Verify(cfg, got, false) != nil {
+		if err != nil || verifyConfiguration(cfg, got, false) != nil {
+			configurationDrift(cfg, got)
+			os.Stderr.WriteString("runtime_create_stopped_configuration_denied\n")
 			return runtimeagent.ErrUncertain
 		}
 	}
@@ -197,7 +209,8 @@ func (e *Engine) Create(ctx context.Context, c runtimeagent.Command, check func(
 			if e.Client.call(ctx, "POST", "/containers/"+ids[s.Name]+"/start", nil, nil) != nil {
 				return runtimeagent.ErrUncertain
 			}
-			if e.await(ctx, configs[s.Name], ids[s.Name], check) != nil {
+			if e.await(ctx, c, configs[s.Name], ids[s.Name], check) != nil {
+				os.Stderr.WriteString("runtime_create_readiness_denied\n")
 				return runtimeagent.ErrUncertain
 			}
 			started[s.Name] = true
@@ -212,7 +225,7 @@ func (e *Engine) Create(ctx context.Context, c runtimeagent.Command, check func(
 	}
 	return check()
 }
-func (e *Engine) await(ctx context.Context, cfg ContainerConfig, id string, check func() error) error {
+func (e *Engine) await(ctx context.Context, c runtimeagent.Command, cfg ContainerConfig, id string, check func() error) error {
 	wait, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 	for {
@@ -220,10 +233,18 @@ func (e *Engine) await(ctx context.Context, cfg ContainerConfig, id string, chec
 			return runtimeagent.ErrDenied
 		}
 		got, err := e.inspect(wait, id)
-		if err != nil || Verify(cfg, got, true) != nil {
+		if err != nil || verifyConfiguration(cfg, got, true) != nil {
 			return runtimeagent.ErrDenied
 		}
-		if cfg.Healthcheck == nil {
+		if e.Enforcement == nil || e.Enforcement.VerifyContainer(wait, c, id, got.State.Pid) != nil {
+			select {
+			case <-wait.Done():
+				return runtimeagent.ErrDenied
+			case <-time.After(100 * time.Millisecond):
+				continue
+			}
+		}
+		if cfg.Healthcheck == nil || equal(cfg.Healthcheck.Test, []string{"NONE"}) {
 			return nil
 		}
 		if got.State.Health != nil && got.State.Health.Status == "healthy" {
@@ -245,38 +266,49 @@ func (e *Engine) inspect(ctx context.Context, id string) (Inspected, error) {
 		return got, runtimeagent.ErrDenied
 	}
 	err := e.Client.call(ctx, "GET", "/containers/"+id+"/json", nil, &got)
-	if err != nil || got.ID != id {
+	if err != nil {
+		return Inspected{}, err
+	}
+	if got.ID != id {
 		return Inspected{}, runtimeagent.ErrDenied
 	}
 	return got, nil
 }
 func (e *Engine) owned(ctx context.Context, c runtimeagent.Command) ([]runtimeagent.Resource, error) {
+	return e.ownedResources(ctx, c, false)
+}
+func (e *Engine) ownedResources(ctx context.Context, c runtimeagent.Command, cleanup bool) ([]runtimeagent.Resource, error) {
 	if e.Client == nil || e.Ledger == nil {
 		return nil, runtimeagent.ErrDenied
 	}
-	r, err := e.Ledger.Resources(ctx, c.Target)
-	if err != nil || len(r) == 0 {
+	resources, err := e.Ledger.Resources(ctx, c.Target)
+	if err != nil || (!cleanup && len(resources) == 0) {
 		return nil, runtimeagent.ErrUncertain
 	}
-	for _, x := range r {
-		if !objectID.MatchString(x.ID) {
+	want := c
+	want.ID = c.Target
+	for _, resource := range resources {
+		if !objectID.MatchString(resource.ID) {
 			return nil, runtimeagent.ErrDenied
 		}
-		if x.Kind == "container" {
+		switch resource.Kind {
+		case "container":
 			var cfg ContainerConfig
-			if json.Unmarshal(x.Expected, &cfg) != nil {
+			if json.Unmarshal(resource.Expected, &cfg) != nil || !equal(cfg.Labels, labels(want, resource.Service)) {
 				return nil, runtimeagent.ErrDenied
 			}
-			want := c
-			want.ID = c.Target
-			if !equal(cfg.Labels, labels(want, x.Service)) {
-				return nil, runtimeagent.ErrDenied
+			got, err := e.inspect(ctx, resource.ID)
+			if cleanup && err == errObjectAbsent {
+				continue
 			}
-			got, err := e.inspect(ctx, x.ID)
 			if err != nil || !equal(got.Config.Labels, cfg.Labels) {
 				return nil, runtimeagent.ErrDenied
 			}
-		} else {
+		case "network":
+			var expected struct{ Labels map[string]string }
+			if json.Unmarshal(resource.Expected, &expected) != nil || !equal(expected.Labels, labels(want, "")) {
+				return nil, runtimeagent.ErrDenied
+			}
 			var got struct {
 				ID         string `json:"Id"`
 				Labels     map[string]string
@@ -284,28 +316,31 @@ func (e *Engine) owned(ctx context.Context, c runtimeagent.Command) ([]runtimeag
 				Internal   bool
 				Driver     string
 			}
-			if e.Client.call(ctx, "GET", "/networks/"+x.ID, nil, &got) != nil || got.ID != x.ID || !got.Internal || got.Driver != "bridge" {
+			err := e.Client.call(ctx, "GET", "/networks/"+resource.ID, nil, &got)
+			if cleanup && err == errObjectAbsent {
+				continue
+			}
+			if err != nil || got.ID != resource.ID || !got.Internal || got.Driver != "bridge" || !equal(got.Labels, labels(want, "")) {
 				return nil, runtimeagent.ErrDenied
 			}
-			want := c
-			want.ID = c.Target
-			if !equal(got.Labels, labels(want, "")) {
-				return nil, runtimeagent.ErrDenied
-			}
-			owned := map[string]bool{}
-			for _, v := range r {
-				if v.Kind == "container" {
-					owned[v.ID] = true
+			if !cleanup {
+				known := map[string]bool{}
+				for _, r := range resources {
+					if r.Kind == "container" {
+						known[r.ID] = true
+					}
+				}
+				for id := range got.Containers {
+					if !known[id] {
+						return nil, runtimeagent.ErrDenied
+					}
 				}
 			}
-			for id := range got.Containers {
-				if !owned[id] {
-					return nil, runtimeagent.ErrDenied
-				}
-			}
+		default:
+			return nil, runtimeagent.ErrDenied
 		}
 	}
-	return r, nil
+	return resources, nil
 }
 func (e *Engine) Inspect(ctx context.Context, c runtimeagent.Command) (string, error) {
 	r, err := e.owned(ctx, c)
@@ -322,10 +357,13 @@ func (e *Engine) Inspect(ctx context.Context, c runtimeagent.Command) (string, e
 			return "", err
 		}
 		var cfg ContainerConfig
-		if json.Unmarshal(x.Expected, &cfg) != nil || Verify(cfg, got, got.State.Running) != nil {
+		if json.Unmarshal(x.Expected, &cfg) != nil || verifyConfiguration(cfg, got, got.State.Running) != nil {
 			return "", runtimeagent.ErrDenied
 		}
 		if got.State.Running {
+			if e.Enforcement == nil || e.Enforcement.VerifyContainer(ctx, c, x.ID, got.State.Pid) != nil {
+				return "", runtimeagent.ErrDenied
+			}
 			state = "running"
 		}
 	}
@@ -353,9 +391,17 @@ func (e *Engine) Logs(ctx context.Context, c runtimeagent.Command) ([]byte, erro
 	return out, nil
 }
 func (e *Engine) Stop(ctx context.Context, c runtimeagent.Command, check func() error) error {
-	r, err := e.owned(ctx, c)
+	r, err := e.ownedResources(ctx, c, true)
 	if err != nil {
 		return err
+	}
+	var drainErr error
+	if drainer, ok := e.Enforcement.(interface {
+		DropIngress(context.Context, runtimeagent.Command) error
+	}); ok {
+		drainErr = drainer.DropIngress(ctx, c)
+	} else {
+		drainErr = runtimeagent.ErrUnsupported
 	}
 	for _, x := range r {
 		if x.Kind != "container" {
@@ -365,6 +411,9 @@ func (e *Engine) Stop(ctx context.Context, c runtimeagent.Command, check func() 
 			return runtimeagent.ErrDenied
 		}
 		got, err := e.inspect(ctx, x.ID)
+		if err == errObjectAbsent {
+			continue
+		}
 		if err != nil {
 			return err
 		}
@@ -381,13 +430,16 @@ func (e *Engine) Stop(ctx context.Context, c runtimeagent.Command, check func() 
 			return runtimeagent.ErrUncertain
 		}
 	}
+	if drainErr != nil {
+		return runtimeagent.ErrUncertain
+	}
 	return nil
 }
 func (e *Engine) Remove(ctx context.Context, c runtimeagent.Command, check func() error) error {
 	if err := e.Stop(ctx, c, check); err != nil {
 		return err
 	}
-	r, err := e.owned(ctx, c)
+	r, err := e.ownedResources(ctx, c, true)
 	if err != nil {
 		return err
 	}
@@ -400,7 +452,14 @@ func (e *Engine) Remove(ctx context.Context, c runtimeagent.Command, check func(
 		if x.Kind == "network" {
 			path = "/networks/" + x.ID
 		}
-		if e.Client.call(ctx, "DELETE", path, nil, nil) != nil {
+		// A lost DELETE response can still have completed. Only an independent
+		// same-backend GET 404 permits forgetting the exact recorded object.
+		_ = e.Client.call(ctx, "DELETE", path, nil, nil)
+		inspectPath := "/containers/" + x.ID + "/json"
+		if x.Kind == "network" {
+			inspectPath = "/networks/" + x.ID
+		}
+		if e.Client.call(ctx, "GET", inspectPath, nil, nil) != errObjectAbsent {
 			return runtimeagent.ErrUncertain
 		}
 		if e.Ledger.ForgetResource(ctx, c.Target, x.ID) != nil {

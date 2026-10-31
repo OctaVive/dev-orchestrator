@@ -53,10 +53,10 @@ is checked during handshake and on every response, including reused connections.
 Lease validation remains mandatory for execution. Rotation constructs a new
 client with the explicitly provisioned overlapping trust/pin policy.
 
-Capability inventories bind worker/incarnation, fresh challenge, template/policy
+Capability inventories v2 bind worker/incarnation, app, durable backend hash, fresh challenge, template/policy
 hashes, kernel/engine/API/daemon identity and every required control. Their
 validity is at most one minute. Inventory signatures use the separate domain
-`tap/runtime-inventory/v1` followed by NUL and JSON with signature omitted. They
+`tap/runtime-inventory/v2` followed by NUL and JSON with signature omitted. They
 are worker assertions, not hardware attestation. The engine requires a trusted
 measured enforcement adapter; engine info flags alone cannot establish readiness.
 There is currently no shipped production enforcement adapter.
@@ -81,10 +81,64 @@ runtime daemon or management endpoint yet.
 
 The engine adapter targets API 1.47; this is a wire contract, not an accepted
 engine version. Real-engine compatibility is still pending. Nonempty persistent
-volume/secret mounts fail before mutation until M10. Nonzero restart attempts
-currently fail before image/network/container mutation; durable restart dispatch
-is unfinished. Capacity, enforced network rules, measured canaries, runtime
+volume/secret mounts fail before mutation until M10. Restart allowances are limited to 0–3 and persisted before create. The agent
+consumes each attempt durably before restart and rechecks current continuing
+approval, lease, generation and stop fences. Docker always receives restart=no.
+The implementation still requires the real restart/crash acceptance cases. Capacity, enforced network rules, measured canaries, runtime
 service wiring and full recovery/quarantine integration remain unfinished.
 
 Do not schedule workloads or claim M09 acceptance from the unit tests. The M09
 acceptance report must include real rootless enforcement and all required cases.
+
+## App-scoped backend recovery increment
+
+`runtimeagent.Engine.Probe` now receives the authenticated command, so app
+selection is explicit. `runtimeengine.Factory` looks up an app only in the private
+ledger; commands cannot select sockets, data roots, daemon options or commands.
+Ledger schema 2 migrates schema 1 without resetting command/replay/generation
+records. Operator capacity is immutable on reopen. `ReserveBackend` durably
+reserves exclusive socket/data-root paths, one app slot, daemon plus workload
+memory and separate image plus workload disk allowances **before provisioning**.
+`BindBackend` subsequently binds the measured daemon ID, PID/start ticks, boot ID,
+user namespace and UID/GID map hashes. Unbound or uncertain reservations remain
+charged and cannot route commands. No automatic release/rebind exists.
+
+The Linux backend identity observer runs as the dedicated unprivileged runtime
+account in the VM's initial user namespace. It checks private paths, socket peer
+PID/UID, process start time, boot, namespace and actual kernel UID/GID maps.
+The initial namespace identity comes from trusted boot enrollment; comparing the
+agent's own namespace avoids requiring unprivileged access to `/proc/1/ns/user`.
+Mappings must exclude initial-namespace root, contain the fixed runtime user 1000
+and have valid nonoverlapping extents. A distinct inherited daemon namespace is
+allowed; OCI bundle fields are not used as proof of effective kernel isolation.
+Every factory HTTP request, including image imports and reused connections,
+rechecks the bound backend. Shared daemon IDs/namespaces and overlapping app
+storage roots are denied. Daemon restart requires reconciliation; a stable socket
+or engine ID cannot transfer readiness to a new process.
+
+Inventory v1 is no longer ready. V2 signatures include `app_id` and `backend_hash`;
+controllers must use `VerifyFor` with the independently enrolled app/backend.
+The ledger hash includes paths, incarnation measurements and reservation budgets.
+This hash is an identity binding, not evidence of physical quota enforcement.
+
+This increment does not start daemons, enforce aggregate candidate cgroups or
+physical storage limits, integrate the fixed MAC supplement, or implement network
+and relay measurement. The separate full Enforcement adapter remains mandatory;
+backend identity success alone cannot make a candidate ready. Existing workload
+inspection still requires applied MAC and is not bypassed when Docker reports an
+empty profile. The experimental OCI hardener remains unchanged and unaccepted.
+
+
+The completion implementation uses Docker's pinned containerd image store with
+its native snapshotter inside each app filesystem. Management handles the OCI
+archive as opaque bytes. The runtime verifies the full archive before import,
+then resolves the exact admitted OCI manifest digest through Engine API 1.47;
+its inspected image ID must equal that digest. Registry names remain admission
+identities and never trigger a registry fetch or mutable-tag fallback. Classic
+Docker storage is unsupported for this OCI delivery path.
+
+Completed M07 admission records remain usable after the old build lease expires,
+subject to the current scan policy/database age, immutable stored job/result,
+explicit runtime approval and current worker/certificate lease. This grants no
+new build authority. Long-running runtime requests are cancelled when periodic
+current authorization checks fail; uncertain intents remain charged.

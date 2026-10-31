@@ -1,0 +1,54 @@
+{
+  "created_utc": "2026-10-30T17:24:21.516177+00:00",
+  "status": "PASS",
+  "scope": "backend identity diagnostic only; NOT R01 or M09 acceptance",
+  "isolated_runtime_acceptance": false,
+  "qemu_exit_code": 0,
+  "source_freeze": "docs/project/PH1/P1M09/testing/backend-factory/source-freeze.json",
+  "serial_log": "docs/project/PH1/P1M09/testing/backend-factory/guest-3.log",
+  "source_tests": "BF05 in post-implementation test plan",
+  "versions": {
+    "qemu": "QEMU emulator version 10.0.13 (Debian 1:10.0.13+ds-0+deb13u1)",
+    "kernel": "6.12.113+deb13-amd64",
+    "fixture_docker": "29.5.0 (pinned fixture)"
+  },
+  "limits": {
+    "vcpus": 2,
+    "memory_mib": 1536,
+    "nic": "none",
+    "snapshot": true,
+    "external_timeout_seconds": 180
+  },
+  "markers": [
+    "M09-BACKEND-VERIFIED app=11111111-1111-4111-8111-111111111111 namespace=user:[4026532174] binding=sha256:e591f811ebc92024b89e6012bcbcb06b5264cfdbf01f123b8c23c6ea1ef9e730",
+    "M09-BACKEND-VERIFIED app=22222222-2222-4222-8222-222222222222 namespace=user:[4026532241] binding=sha256:54d66e218d62e1f62252b5e1e3ecd4be1d32ed8b5598de28c52cb8d95a912572",
+    "M09-BACKEND-DENIED app=11111111-1111-4111-8111-111111111111 field=start",
+    "M09-BACKEND-DENIED app=11111111-1111-4111-8111-111111111111 field=mapping",
+    "M09-BACKEND-DENIED app=11111111-1111-4111-8111-111111111111 field=namespace",
+    "M09-BACKEND-DENIED app=11111111-1111-4111-8111-111111111111 field=boot",
+    "M09-BACKEND-DENIED app=22222222-2222-4222-8222-222222222222 field=start",
+    "M09-BACKEND-DENIED app=22222222-2222-4222-8222-222222222222 field=mapping",
+    "M09-BACKEND-DENIED app=22222222-2222-4222-8222-222222222222 field=namespace",
+    "M09-BACKEND-DENIED app=22222222-2222-4222-8222-222222222222 field=boot",
+    "M09-BACKEND-OBSERVATION-COMPLETE scope=identity-only-not-R01",
+    "M09-BACKEND-OBSERVATION-END rc=0"
+  ],
+  "hashes": {
+    "/var/lib/orchestrator-builder/m09-tools/rootfs/opt/m09/backendprobe": "cccb8ccb6c2e113f9c19be4272b50392eb21f644cfa0f3194948a534fd16aaef",
+    "/var/lib/orchestrator-builder/m09-tools/backend-observer-3.raw": "9409c07cb6ced2681c51afa42850cae4a1b93d5568cd4f01decb7adf57e45873",
+    "/boot/vmlinuz-6.12.113+deb13-amd64": "4336c75fc1a6a58e7bda66cbe9f4042f88064e7abc93faaea9e2aceb19459561",
+    "/boot/initrd.img-6.12.113+deb13-amd64": "c3d5478d7ea469fcb7eae32278daa138833ebcca5998c65cef09968df6dcb868"
+  },
+  "cleanup": {
+    "fixture_stopped_daemons": true,
+    "guest_powered_off": true,
+    "remaining_qemu_guests": 0,
+    "guest_modified_disks_mounted_on_management": false,
+    "development_images_retained": true
+  },
+  "limitations": [
+    "Already-provisioned fixture; no production reserve/provision/bind integration",
+    "No workload readiness, MAC/seccomp/cgroup/network/storage/relay acceptance",
+    "No trusted approval/admission/lease or real runtime-agent service lifecycle"
+  ]
+}

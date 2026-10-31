@@ -272,7 +272,14 @@ func exactCloneFields(b []byte, t reflect.Type) error {
 	fields := map[string]reflect.Type{}
 	for n := 0; n < t.NumField(); n++ {
 		field := t.Field(n)
-		fields[strings.Split(field.Tag.Get("json"), ",")[0]] = field.Type
+		name := strings.Split(field.Tag.Get("json"), ",")[0]
+		if field.PkgPath != "" || name == "-" {
+			continue
+		}
+		if name == "" {
+			name = field.Name
+		}
+		fields[name] = field.Type
 	}
 	for key, value := range values {
 		field, ok := fields[key]

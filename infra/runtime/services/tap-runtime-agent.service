@@ -1,0 +1,27 @@
+[Unit]
+Description=Outbound TAP runtime agent
+Requires=tap-runtime-host.service tap-runtime-measure.service
+After=tap-runtime-host.service tap-runtime-measure.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=runtime
+Group=runtime
+UMask=0077
+ExecStart=/usr/local/bin/tap-runtime-agent
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=15
+KillMode=control-group
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ReadWritePaths=/var/lib/tap-runtime/agent /var/lib/tap-runtime/apps
+ProtectHome=read-only
+PrivateTmp=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

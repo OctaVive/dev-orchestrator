@@ -34,7 +34,31 @@ const branchID = "55555555-5555-4555-8555-555555555555"
 func pipelineFixture(t *testing.T, scenario string) (*storage.Store, storage.CloneIntent) {
 	t.Helper()
 	ctx := context.Background()
+	fixtureApp, fixtureDeployment, fixtureRepository, fixtureBranch, fixtureSlug := appID, deploymentID, jobID, branchID, "fixture"
+	if os.Getenv("M09_HANDOFF_DIRECTORY") != "" && scenario == "m08-compose" {
+		fixtureApp = "22222222-2222-4222-8222-222222222222"
+		fixtureDeployment = "77777777-7777-4777-8777-777777777777"
+		fixtureRepository = "88888888-8888-4888-8888-888888888888"
+		fixtureBranch = "99999999-9999-4999-8999-999999999999"
+		fixtureSlug = "fixture-two"
+	}
 	path := filepath.Join(t.TempDir(), "metadata.db")
+	// Explicit M09 handoff lab retains the real durable M07/M08 records. It never
+	// manufactures admissions or reads a workload archive on management.
+	if target := os.Getenv("M09_HANDOFF_DIRECTORY"); target != "" && (scenario == "m08-dockerfile" || scenario == "m08-compose") {
+		st, err := os.Lstat(target)
+		if os.Getenv("M07_DISPOSABLE_HOST") != "YES-I-AUTHORIZE-BUILD-LAB" || !filepath.IsAbs(target) || err != nil || !st.IsDir() || st.Mode()&0077 != 0 {
+			t.Fatal("private explicit handoff lab required")
+		}
+		target = filepath.Join(target, scenario)
+		if err = os.Mkdir(target, 0700); err != nil {
+			t.Fatal(err)
+		}
+		path = filepath.Join(target, "metadata.db")
+		if _, err = os.Lstat(path); !os.IsNotExist(err) {
+			t.Fatal("handoff state already exists")
+		}
+	}
 	s, e := storage.Open(ctx, path)
 	if e != nil {
 		t.Fatal(e)
@@ -47,19 +71,19 @@ func pipelineFixture(t *testing.T, scenario string) (*storage.Store, storage.Clo
 	defer db.Close()
 	queries := []string{
 		`INSERT INTO users(id,username,password_hash,created_at,updated_at) VALUES('` + userID + `','admin','fixture',0,0)`,
-		`INSERT INTO applications(id,slug,display_name,owner_id,created_at,updated_at) VALUES('` + appID + `','fixture','Fixture','` + userID + `',0,0)`,
-		`INSERT INTO git_repositories(id,canonical_url,allowed_origin,owner_id,created_at) VALUES('` + jobID + `','https://ok.m06.example/` + scenario + `.git','ok.m06.example','` + userID + `',0)`,
-		`INSERT INTO git_branches(id,repository_id,ref_name) VALUES('` + branchID + `','` + jobID + `','main')`,
+		`INSERT INTO applications(id,slug,display_name,owner_id,created_at,updated_at) VALUES('` + fixtureApp + `','` + fixtureSlug + `','Fixture','` + userID + `',0,0)`,
+		`INSERT INTO git_repositories(id,canonical_url,allowed_origin,owner_id,created_at) VALUES('` + fixtureRepository + `','https://ok.m06.example/` + scenario + `.git','ok.m06.example','` + userID + `',0)`,
+		`INSERT INTO git_branches(id,repository_id,ref_name) VALUES('` + fixtureBranch + `','` + fixtureRepository + `','main')`,
 	}
 	for _, q := range queries {
 		if _, e = db.ExecContext(ctx, q); e != nil {
 			t.Fatal(e)
 		}
 	}
-	if _, _, e = s.Create(ctx, storage.CreateDeployment{ID: deploymentID, AppID: appID, BranchID: branchID, SubmittedBy: userID, IdempotencyKey: "fixture-key-00001", RequestHash: strings.Repeat("a", 64), CorrelationID: jobID}); e != nil {
+	if _, _, e = s.Create(ctx, storage.CreateDeployment{ID: fixtureDeployment, AppID: fixtureApp, BranchID: fixtureBranch, SubmittedBy: userID, IdempotencyKey: "fixture-key-00001", RequestHash: strings.Repeat("a", 64), CorrelationID: jobID}); e != nil {
 		t.Fatal(e)
 	}
-	c := storage.Transition{DeploymentID: deploymentID, ExpectedState: domain.Submitted, ExpectedVersion: 1, ExpectedGeneration: 1, To: domain.Validating, Reason: storage.ReasonValidated, Actor: storage.Actor{Kind: "controller", ID: userID}, CorrelationID: jobID}
+	c := storage.Transition{DeploymentID: fixtureDeployment, ExpectedState: domain.Submitted, ExpectedVersion: 1, ExpectedGeneration: 1, To: domain.Validating, Reason: storage.ReasonValidated, Actor: storage.Actor{Kind: "controller", ID: userID}, CorrelationID: jobID}
 	if _, e = s.Advance(ctx, c); e != nil {
 		t.Fatal(e)
 	}
@@ -70,7 +94,7 @@ func pipelineFixture(t *testing.T, scenario string) (*storage.Store, storage.Clo
 		t.Fatal(e)
 	}
 	p := contracts.ClonePolicy{Version: 1, Hosts: []string{"ok.m06.example"}, Limits: contracts.DefaultCloneLimits()}
-	j := contracts.CloneJob{Version: 1, JobID: jobID, DeploymentID: deploymentID, LeaseID: jobID, Attempt: 1, Generation: 1, ExpiresAt: time.Now().UTC().Add(90 * time.Second), TemplateDigest: "sha256:" + strings.Repeat("a", 64), Policy: p, PolicyHash: p.Hash(), RepositoryURL: "https://ok.m06.example/" + scenario + ".git", Branch: "main", ConfigPath: "Dockerfile", BuildContext: "."}
+	j := contracts.CloneJob{Version: 1, JobID: jobID, DeploymentID: fixtureDeployment, LeaseID: jobID, Attempt: 1, Generation: 1, ExpiresAt: time.Now().UTC().Add(90 * time.Second), TemplateDigest: "sha256:" + strings.Repeat("a", 64), Policy: p, PolicyHash: p.Hash(), RepositoryURL: "https://ok.m06.example/" + scenario + ".git", Branch: "main", ConfigPath: "Dockerfile", BuildContext: "."}
 	return s, storage.CloneIntent{Job: j, ExpectedVersion: 3, Actor: storage.Actor{Kind: "controller", ID: userID}, CorrelationID: jobID}
 }
 
@@ -108,6 +132,10 @@ func runM07Pipeline(t *testing.T, scenario string) {
 		repo = "build-pids"
 	}
 	s, ci := pipelineFixture(t, repo)
+	runtimeAppID, deploymentID := appID, ci.Job.DeploymentID
+	if os.Getenv("M09_HANDOFF_DIRECTORY") != "" && scenario == "m08-compose" {
+		runtimeAppID = "22222222-2222-4222-8222-222222222222"
+	}
 	bc, e := provisioner.LoadLinuxConfig(os.Getenv("M04_HOST_CONFIG"))
 	if e != nil {
 		t.Fatal(e)
@@ -343,12 +371,14 @@ func runM07Pipeline(t *testing.T, scenario string) {
 			t.Fatal("metadata admission bridge", err)
 		}
 		m08Admissions[ref] = a
+		m09HandoffIntents[ref] = i
 		if scenario == "m08-dockerfile" {
 			if err = os.WriteFile(filepath.Join(filepath.Dir(os.Getenv("M07_CONTROL")), "m08-image"), []byte(ref), 0600); err != nil {
 				t.Fatal(err)
 			}
 		}
-		spec, err := configpolicy.Finalize(*r.Plan, configpolicy.Context{AppID: appID, DeploymentID: deploymentID, SHA: r.SHA, ContextID: r.ContextID, BuiltImages: map[string]string{"web": ref}, Ingress: contracts.Ingress{Service: "web", Port: 8080, HealthPath: "/health"}}, m08Resolver{})
+		builtImages := map[string]string{"web": ref}
+		spec, err := configpolicy.Finalize(*r.Plan, configpolicy.Context{AppID: runtimeAppID, DeploymentID: deploymentID, SHA: r.SHA, ContextID: r.ContextID, BuiltImages: builtImages, Ingress: contracts.Ingress{Service: "web", Port: 8080, HealthPath: "/health"}}, m08Resolver{})
 		if err != nil || configpolicy.ValidateRuntime(spec, m08Resolver{}) != nil {
 			t.Fatal("runtime finalization", err)
 		}
@@ -365,6 +395,23 @@ func runM07Pipeline(t *testing.T, scenario string) {
 			t.Fatal("independent agent validation", e)
 		}
 		t.Log("M08 normalized spec", configpolicy.SpecHash(spec), "services", len(spec.Services))
+		if target := os.Getenv("M09_HANDOFF_DIRECTORY"); target != "" && (scenario == "m08-dockerfile" || scenario == "m08-compose") {
+			var external []handoffImage
+			for _, service := range spec.Services {
+				if service.Image != ref {
+					external = append(external, handoffImage{m09HandoffIntents[service.Image], service.Image})
+				}
+			}
+			raw, err := json.Marshal(struct {
+				External []handoffImage           `json:"external,omitempty"`
+				Intent   storage.BuildIntent      `json:"intent"`
+				Spec     contracts.RuntimeSpecV2  `json:"spec"`
+				Result   contracts.ArtifactResult `json:"result"`
+			}{external, i, spec, result})
+			if err != nil || os.WriteFile(filepath.Join(target, scenario, "handoff.json"), raw, 0600) != nil {
+				t.Fatal("retain real M09 handoff")
+			}
+		}
 	}
 }
 
@@ -396,6 +443,12 @@ func (b tracedBackend) Ingest(ctx context.Context, j contracts.BuildJob, r artif
 	return result, e
 }
 
+type handoffImage struct {
+	Intent storage.BuildIntent `json:"intent"`
+	Image  string              `json:"image"`
+}
+
+var m09HandoffIntents = map[string]storage.BuildIntent{}
 var m08Admissions = map[string]configpolicy.Admission{}
 
 type m08Resolver struct{}

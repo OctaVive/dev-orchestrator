@@ -47,7 +47,7 @@ func TestRequiredEngineConfiguration(t *testing.T) {
 	if !strings.Contains(h.Tmpfs["/tmp"], "size=67108864") || h.LogConfig.Type != "local" || h.LogConfig.Config["max-file"] != "2" {
 		t.Fatal("unbounded writable/log storage")
 	}
-	if Verify(cfg, inspected(cfg), true) != nil {
+	if verifyConfiguration(cfg, inspected(cfg), true) != nil {
 		t.Fatal("baseline rejected")
 	}
 }
@@ -71,7 +71,7 @@ func TestInspectDetectsDrift(t *testing.T) {
 			cfg := fixtureConfig(t)
 			g := inspected(cfg)
 			change(&g)
-			if Verify(cfg, g, true) == nil {
+			if verifyConfiguration(cfg, g, true) == nil {
 				t.Fatal("engine drift accepted")
 			}
 		})
@@ -79,7 +79,7 @@ func TestInspectDetectsDrift(t *testing.T) {
 }
 func TestMissingEnforcementRefusesWithoutEngineCalls(t *testing.T) {
 	e := &Engine{}
-	if _, err := e.Probe(context.Background()); err != runtimeagent.ErrUnsupported {
+	if _, err := e.Probe(context.Background(), runtimeagent.Command{}, func() error { return nil }); err != runtimeagent.ErrUnsupported {
 		t.Fatal(err)
 	}
 }
@@ -147,5 +147,22 @@ func TestUnixClientResponseBoundsAndSanitizedErrors(t *testing.T) {
 	}
 	if _, e := NewClient("tcp://localhost:2375"); e == nil {
 		t.Fatal("TCP engine accepted")
+	}
+}
+
+func TestInspectEquivalentEmptyCollections(t *testing.T) {
+	cfg := fixtureConfig(t)
+	got := inspected(cfg)
+	got.HostConfig.Binds = []string{}
+	got.HostConfig.DNS = []string{}
+	got.HostConfig.DNSOptions = []string{}
+	got.HostConfig.DNSSearch = []string{}
+	got.HostConfig.Sysctls = map[string]string{}
+	if err := verifyConfiguration(cfg, got, true); err != nil {
+		t.Fatal("empty optional lists differ only in JSON encoding", err)
+	}
+	got.HostConfig.DNS = []string{"169.254.169.254"}
+	if err := verifyConfiguration(cfg, got, true); err == nil {
+		t.Fatal("nonempty unmanaged DNS admitted")
 	}
 }

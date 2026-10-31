@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"dev-orchestrator/internal/runtimeisolation"
 	"golang.org/x/sys/unix"
 )
 
@@ -20,10 +21,22 @@ const MaxBundle = 1 << 20
 var ErrDenied = errors.New("runtime_bundle_denied")
 
 // Harden injects the preloaded MAC profile even when Docker's rootless support
-// check suppresses its AppArmor option. It requires an existing private user
-// namespace per container; the daemon's user namespace must never be reused.
+// check suppresses its AppArmor option. The default entry requires explicit
+// private mappings. HardenApp additionally permits a measured enrolled app
+// namespace inherited from its dedicated daemon.
 // Bundle paths come from containerd, not from deployment commands.
-func Harden(bundle string) error {
+func Harden(bundle string) error { return harden(bundle, false) }
+
+// HardenApp is used only by fixed app engine units. Missing OCI namespace/map
+// fields are allowed solely after actual enrolled kernel isolation is verified.
+func HardenApp(bundle, app string) error {
+	e, err := runtimeisolation.ReadEnrollment(app)
+	if err != nil || runtimeisolation.VerifyInherited(e) != nil {
+		return ErrDenied
+	}
+	return harden(bundle, true)
+}
+func harden(bundle string, inherited bool) error {
 	if !filepath.IsAbs(bundle) || filepath.Clean(bundle) != bundle {
 		return ErrDenied
 	}
@@ -127,10 +140,13 @@ func Harden(bundle string) error {
 			return ErrDenied
 		}
 	}
-	if !seen["user"] {
+	if !seen["user"] && !inherited {
 		return ErrDenied
 	}
 	for _, key := range []string{"uidMappings", "gidMappings"} {
+		if inherited && !seen["user"] && (len(linux[key]) == 0 || string(linux[key]) == "null") {
+			continue
+		}
 		var mappings []struct{ ContainerID, HostID, Size int64 }
 		if json.Unmarshal(linux[key], &mappings) != nil || len(mappings) < 1 || len(mappings) > 8 {
 			return ErrDenied
@@ -140,6 +156,36 @@ func Harden(bundle string) error {
 				return ErrDenied
 			}
 		}
+	}
+	// Docker's managed /etc bind files must not provide an uncharged writable
+	// escape from the bounded tmpfs locations. Sources remain engine generated.
+	if len(spec["mounts"]) > 0 {
+		var mounts []map[string]json.RawMessage
+		if json.Unmarshal(spec["mounts"], &mounts) != nil || len(mounts) > 64 {
+			return ErrDenied
+		}
+		for _, mount := range mounts {
+			var destination string
+			if json.Unmarshal(mount["destination"], &destination) != nil {
+				return ErrDenied
+			}
+			if destination != "/etc/hosts" && destination != "/etc/hostname" && destination != "/etc/resolv.conf" {
+				continue
+			}
+			var options []string
+			if json.Unmarshal(mount["options"], &options) != nil {
+				return ErrDenied
+			}
+			bounded := []string{}
+			for _, option := range options {
+				if option != "rw" && option != "ro" {
+					bounded = append(bounded, option)
+				}
+			}
+			bounded = append(bounded, "ro")
+			mount["options"], _ = json.Marshal(bounded)
+		}
+		spec["mounts"], _ = json.Marshal(mounts)
 	}
 	linux["namespaces"], _ = json.Marshal(namespaces)
 	spec["linux"], _ = json.Marshal(linux)

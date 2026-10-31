@@ -3,7 +3,10 @@ package runtimeagent
 import (
 	"context"
 	"database/sql"
+	"dev-orchestrator/internal/contracts"
+	"encoding/json"
 	"errors"
+	"github.com/google/uuid"
 	"golang.org/x/sys/unix"
 	"net/url"
 	"os"
@@ -21,16 +24,25 @@ type Ledger struct {
 	lock                *os.File
 	mu                  sync.Mutex
 	worker, incarnation string
+	id                  string
 }
 
 const schema = `
-CREATE TABLE identity (singleton INTEGER PRIMARY KEY CHECK(singleton=1), worker TEXT NOT NULL, incarnation TEXT NOT NULL);
+CREATE TABLE runtime_profile (singleton INTEGER PRIMARY KEY CHECK(singleton=1), hash TEXT NOT NULL);
+CREATE TABLE runtime_outbox (command TEXT PRIMARY KEY REFERENCES commands(id), outcome BLOB NOT NULL);
+CREATE TABLE command_specs (command TEXT PRIMARY KEY REFERENCES commands(id), body BLOB NOT NULL);
+CREATE TABLE candidate_capacity (owner TEXT PRIMARY KEY REFERENCES commands(id), app TEXT NOT NULL, memory INTEGER NOT NULL, cpu INTEGER NOT NULL, pids INTEGER NOT NULL);
+CREATE TABLE restart_budgets (owner TEXT NOT NULL REFERENCES commands(id), service TEXT NOT NULL, maximum INTEGER NOT NULL CHECK(maximum BETWEEN 0 AND 3), used INTEGER NOT NULL CHECK(used BETWEEN 0 AND maximum), PRIMARY KEY(owner,service));
+CREATE TABLE backend_capacity (singleton INTEGER PRIMARY KEY CHECK(singleton=1), apps INTEGER NOT NULL, memory INTEGER NOT NULL, disk INTEGER NOT NULL);
+CREATE TABLE backend_reservations (app TEXT PRIMARY KEY, socket TEXT NOT NULL UNIQUE, data_root TEXT NOT NULL UNIQUE, reservation BLOB NOT NULL, memory INTEGER NOT NULL, disk INTEGER NOT NULL);
+CREATE TABLE backends (app TEXT PRIMARY KEY REFERENCES backend_reservations(app), socket TEXT NOT NULL UNIQUE, data_root TEXT NOT NULL UNIQUE, daemon TEXT NOT NULL UNIQUE, userns TEXT NOT NULL UNIQUE, binding BLOB NOT NULL, memory INTEGER NOT NULL, disk INTEGER NOT NULL);
+CREATE TABLE identity (singleton INTEGER PRIMARY KEY CHECK(singleton=1), worker TEXT NOT NULL, incarnation TEXT NOT NULL, ledger_id TEXT NOT NULL);
 CREATE TABLE commands (id TEXT PRIMARY KEY, nonce TEXT NOT NULL UNIQUE, hash TEXT NOT NULL, app TEXT NOT NULL, deployment TEXT NOT NULL, generation INTEGER NOT NULL, spec_hash TEXT NOT NULL, operation TEXT NOT NULL, state TEXT NOT NULL CHECK(state IN ('pending','done','uncertain')), outcome BLOB);
 CREATE TABLE resources (owner TEXT NOT NULL REFERENCES commands(id), id TEXT PRIMARY KEY, kind TEXT NOT NULL, service TEXT NOT NULL, expected BLOB NOT NULL);
 CREATE TABLE fences (app TEXT PRIMARY KEY, generation INTEGER NOT NULL, deployment TEXT NOT NULL, spec_hash TEXT NOT NULL);
 CREATE TABLE targets (id TEXT PRIMARY KEY REFERENCES commands(id), stopped INTEGER NOT NULL DEFAULT 0 CHECK(stopped IN(0,1)));
 PRAGMA application_id=1413566546;
-PRAGMA user_version=1;
+PRAGMA user_version=3;
 `
 
 func OpenLedger(ctx context.Context, path, worker, incarnation string) (*Ledger, error) {
@@ -103,14 +115,32 @@ func OpenLedger(ctx context.Context, path, worker, incarnation string) (*Ledger,
 			if _, e := tx.ExecContext(ctx, schema); e != nil {
 				return ErrLedger
 			}
-			if _, e := tx.ExecContext(ctx, "INSERT INTO identity VALUES(1,?,?)", worker, incarnation); e != nil {
+			if _, e := tx.ExecContext(ctx, "INSERT INTO identity VALUES(1,?,?,?)", worker, incarnation, uuid.NewString()); e != nil {
 				return ErrLedger
 			}
-		} else if app != 1413566546 || version != 1 {
+		} else if app != 1413566546 || (version != 1 && version != 2 && version != 3) {
 			return ErrLedger
 		}
+		if version == 1 {
+			if _, e := tx.ExecContext(ctx, backendMigration); e != nil {
+				return ErrLedger
+			}
+		}
+		if version == 1 || version == 2 {
+			if _, e := tx.ExecContext(ctx, "CREATE TABLE runtime_profile (singleton INTEGER PRIMARY KEY CHECK(singleton=1), hash TEXT NOT NULL); CREATE TABLE runtime_outbox (command TEXT PRIMARY KEY REFERENCES commands(id), outcome BLOB NOT NULL); CREATE TABLE command_specs (command TEXT PRIMARY KEY REFERENCES commands(id), body BLOB NOT NULL); CREATE TABLE candidate_capacity (owner TEXT PRIMARY KEY REFERENCES commands(id), app TEXT NOT NULL, memory INTEGER NOT NULL, cpu INTEGER NOT NULL, pids INTEGER NOT NULL); CREATE TABLE restart_budgets (owner TEXT NOT NULL REFERENCES commands(id), service TEXT NOT NULL, maximum INTEGER NOT NULL CHECK(maximum BETWEEN 0 AND 3), used INTEGER NOT NULL CHECK(used BETWEEN 0 AND maximum), PRIMARY KEY(owner,service)); PRAGMA user_version=3;"); e != nil {
+				return ErrLedger
+			}
+		}
+		if version == 1 || version == 2 {
+			if _, err := tx.ExecContext(ctx, "ALTER TABLE identity ADD COLUMN ledger_id TEXT"); err != nil {
+				return ErrLedger
+			}
+			if _, err := tx.ExecContext(ctx, "UPDATE identity SET ledger_id=?", uuid.NewString()); err != nil {
+				return ErrLedger
+			}
+		}
 		var w, i string
-		if tx.QueryRowContext(ctx, "SELECT worker,incarnation FROM identity WHERE singleton=1").Scan(&w, &i) != nil || w != worker || i != incarnation {
+		if tx.QueryRowContext(ctx, "SELECT worker,incarnation,ledger_id FROM identity WHERE singleton=1").Scan(&w, &i, &l.id) != nil || w != worker || i != incarnation || !contracts.ValidJobID(l.id) {
 			return ErrLedger
 		}
 		return nil
@@ -172,6 +202,9 @@ func (l *Ledger) reserve(ctx context.Context, c Command) (Result, bool, error) {
 			if decodeResult(raw, &previous) != nil {
 				return ErrLedger
 			}
+			if _, err := tx.ExecContext(ctx, "INSERT INTO runtime_outbox VALUES(?,?) ON CONFLICT(command) DO NOTHING", c.ID, raw); err != nil {
+				return ErrLedger
+			}
 			cached = true
 			return nil
 		}
@@ -217,6 +250,15 @@ func (l *Ledger) reserve(ctx context.Context, c Command) (Result, bool, error) {
 		if _, e = tx.ExecContext(ctx, "INSERT INTO commands(id,nonce,hash,app,deployment,generation,spec_hash,operation,state) VALUES(?,?,?,?,?,?,?,?,'pending')", c.ID, c.Nonce, c.Hash(), c.AppID, c.DeploymentID, c.Generation, c.SpecHash, c.Operation); e != nil {
 			return ErrConflict
 		}
+		if c.Operation == "create" || c.Operation == "prepare" || c.Operation == "probe" {
+			raw, e := json.Marshal(c)
+			if e != nil || len(raw) > 64<<10 {
+				return ErrLedger
+			}
+			if _, e = tx.ExecContext(ctx, "INSERT INTO command_specs VALUES(?,?)", c.ID, raw); e != nil {
+				return ErrLedger
+			}
+		}
 		if c.Operation == "create" {
 			if _, e = tx.ExecContext(ctx, "INSERT INTO targets(id) VALUES(?)", c.ID); e != nil {
 				return ErrLedger
@@ -235,16 +277,22 @@ func (l *Ledger) finish(ctx context.Context, id string, r Result, uncertain bool
 	if uncertain {
 		state = "uncertain"
 	}
-	res, e := l.db.ExecContext(ctx, "UPDATE commands SET state=?,outcome=? WHERE id=? AND state='pending'", state, b, id)
-	if e != nil {
-		return ErrLedger
-	}
-	n, e := res.RowsAffected()
-	if e != nil || n != 1 {
-		return ErrLedger
-	}
-	return nil
+	return l.transaction(ctx, func(tx *sql.Tx) error {
+		res, e := tx.ExecContext(ctx, "UPDATE commands SET state=?,outcome=? WHERE id=? AND state='pending'", state, b, id)
+		if e != nil {
+			return ErrLedger
+		}
+		n, e := res.RowsAffected()
+		if e != nil || n != 1 {
+			return ErrLedger
+		}
+		if _, e = tx.ExecContext(ctx, "INSERT INTO runtime_outbox VALUES(?,?)", id, b); e != nil {
+			return ErrLedger
+		}
+		return nil
+	})
 }
+
 func (l *Ledger) current(ctx context.Context, c Command) bool {
 	var gen int64
 	var d, h string
@@ -304,4 +352,55 @@ func (l *Ledger) ForgetResource(ctx context.Context, owner, id string) error {
 		return ErrLedger
 	}
 	return nil
+}
+
+// ID is matched against the provisioner's immutable enrollment anchor by the
+// process service. Losing a ledger cannot enroll a fresh replay state implicitly.
+func (l *Ledger) ID() string { return l.id }
+
+// OriginalTarget returns only an exact locally successful create whose resource
+// IDs remain owned. It is not a fresh execution authorization; supervisors must
+// recheck current target approval/lease and stopped/generation/restart fences.
+func (l *Ledger) OriginalTarget(ctx context.Context, id string) (Command, error) {
+	var raw, outcome []byte
+	var state string
+	if l.db.QueryRowContext(ctx, "SELECT s.body,c.state,c.outcome FROM command_specs s JOIN commands c ON c.id=s.command WHERE s.command=? AND c.operation='create'", id).Scan(&raw, &state, &outcome) != nil || state != "done" {
+		return Command{}, ErrUncertain
+	}
+	c, err := DecodeBytes(raw)
+	var result Result
+	if err != nil || c.ID != id || c.WorkerID != l.worker || c.Incarnation != l.incarnation || decodeResult(outcome, &result) != nil || result.Code != "ok" {
+		return Command{}, ErrDenied
+	}
+	return c, nil
+}
+
+func (l *Ledger) TargetStopped(ctx context.Context, id string) (bool, error) {
+	var stopped int
+	if l.db.QueryRowContext(ctx, "SELECT stopped FROM targets WHERE id=?", id).Scan(&stopped) != nil {
+		return false, ErrLedger
+	}
+	return stopped == 1, nil
+}
+func (l *Ledger) FenceStop(ctx context.Context, id string) error {
+	if !contracts.ValidJobID(id) {
+		return ErrDenied
+	}
+	r, err := l.db.ExecContext(ctx, "UPDATE targets SET stopped=1 WHERE id=?", id)
+	if err != nil {
+		return ErrLedger
+	}
+	n, err := r.RowsAffected()
+	if err != nil || n != 1 {
+		return ErrLedger
+	}
+	return nil
+}
+func (l *Ledger) Dispatch(ctx context.Context, work func() error) error {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	if ctx.Err() != nil {
+		return ErrDenied
+	}
+	return work()
 }

@@ -1,0 +1,1427 @@
+[    0.000000] Linux version 6.12.113+deb13-amd64 (debian-kernel@lists.debian.org) (x86_64-linux-gnu-gcc-14 (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44) #1 SMP PREEMPT_DYNAMIC Debian 6.12.113-1 (2026-10-15)
+[    0.000000] Command line: root=/dev/vda rw console=ttyS0 apparmor=1 security=apparmor
+[    0.000000] BIOS-provided physical RAM map:
+[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x000000000009fbff] usable
+[    0.000000] BIOS-e820: [mem 0x000000000009fc00-0x000000000009ffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000000f0000-0x00000000000fffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x000000005ffdbfff] usable
+[    0.000000] BIOS-e820: [mem 0x000000005ffdc000-0x000000005fffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000b0000000-0x00000000bfffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fed1c000-0x00000000fed1ffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000feffc000-0x00000000feffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fffc0000-0x00000000ffffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x000000fd00000000-0x000000ffffffffff] reserved
+[    0.000000] NX (Execute Disable) protection: active
+[    0.000000] APIC: Static calls initialized
+[    0.000000] SMBIOS 2.8 present.
+[    0.000000] DMI: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[    0.000000] DMI: Memory slots populated: 1/1
+[    0.000000] Hypervisor detected: KVM
+[    0.000000] last_pfn = 0x5ffdc max_arch_pfn = 0x400000000
+[    0.000000] kvm-clock: Using msrs 4b564d01 and 4b564d00
+[    0.000001] kvm-clock: using sched offset of 610386799 cycles
+[    0.000002] clocksource: kvm-clock: mask: 0xffffffffffffffff max_cycles: 0x1cd42e4dffb, max_idle_ns: 881590591483 ns
+[    0.000005] tsc: Detected 3599.998 MHz processor
+[    0.000975] last_pfn = 0x5ffdc max_arch_pfn = 0x400000000
+[    0.001190] MTRR map: 4 entries (3 fixed + 1 variable; max 19), built from 8 variable MTRRs
+[    0.001199] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT  
+[    0.003756] found SMP MP-table at [mem 0x000f5480-0x000f548f]
+[    0.003769] Using GB pages for direct mapping
+[    0.003971] RAMDISK: [mem 0x5dbe8000-0x5ffcffff]
+[    0.005843] ACPI: Early table checksum verification disabled
+[    0.005846] ACPI: RSDP 0x00000000000F52C0 000014 (v00 BOCHS )
+[    0.005850] ACPI: RSDT 0x000000005FFE23AC 000038 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.005854] ACPI: FACP 0x000000005FFE219C 0000F4 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.005858] ACPI: DSDT 0x000000005FFE0040 00215C (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.005860] ACPI: FACS 0x000000005FFE0000 000040
+[    0.005862] ACPI: APIC 0x000000005FFE2290 000080 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.005865] ACPI: HPET 0x000000005FFE2310 000038 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.005867] ACPI: MCFG 0x000000005FFE2348 00003C (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.005869] ACPI: WAET 0x000000005FFE2384 000028 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.005871] ACPI: Reserving FACP table memory at [mem 0x5ffe219c-0x5ffe228f]
+[    0.005872] ACPI: Reserving DSDT table memory at [mem 0x5ffe0040-0x5ffe219b]
+[    0.005873] ACPI: Reserving FACS table memory at [mem 0x5ffe0000-0x5ffe003f]
+[    0.005873] ACPI: Reserving APIC table memory at [mem 0x5ffe2290-0x5ffe230f]
+[    0.005874] ACPI: Reserving HPET table memory at [mem 0x5ffe2310-0x5ffe2347]
+[    0.005875] ACPI: Reserving MCFG table memory at [mem 0x5ffe2348-0x5ffe2383]
+[    0.005875] ACPI: Reserving WAET table memory at [mem 0x5ffe2384-0x5ffe23ab]
+[    0.006746] No NUMA configuration found
+[    0.006747] Faking a node at [mem 0x0000000000000000-0x000000005ffdbfff]
+[    0.006755] NODE_DATA(0) allocated [mem 0x5dbbd680-0x5dbe7fff]
+[    0.006984] Zone ranges:
+[    0.006984]   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+[    0.006985]   DMA32    [mem 0x0000000001000000-0x000000005ffdbfff]
+[    0.006987]   Normal   empty
+[    0.006987]   Device   empty
+[    0.006988] Movable zone start for each node
+[    0.006990] Early memory node ranges
+[    0.006990]   node   0: [mem 0x0000000000001000-0x000000000009efff]
+[    0.006992]   node   0: [mem 0x0000000000100000-0x000000005ffdbfff]
+[    0.006993] Initmem setup node 0 [mem 0x0000000000001000-0x000000005ffdbfff]
+[    0.007361] On node 0, zone DMA: 1 pages in unavailable ranges
+[    0.008527] On node 0, zone DMA: 97 pages in unavailable ranges
+[    0.047594] On node 0, zone DMA32: 36 pages in unavailable ranges
+[    0.048729] ACPI: PM-Timer IO Port: 0x608
+[    0.048758] ACPI: LAPIC_NMI (acpi_id[0xff] dfl dfl lint[0x1])
+[    0.048857] IOAPIC[0]: apic_id 0, version 17, address 0xfec00000, GSI 0-23
+[    0.048860] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
+[    0.048861] ACPI: INT_SRC_OVR (bus 0 bus_irq 5 global_irq 5 high level)
+[    0.048862] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+[    0.048863] ACPI: INT_SRC_OVR (bus 0 bus_irq 10 global_irq 10 high level)
+[    0.048864] ACPI: INT_SRC_OVR (bus 0 bus_irq 11 global_irq 11 high level)
+[    0.048867] ACPI: Using ACPI (MADT) for SMP configuration information
+[    0.048868] ACPI: HPET id: 0x8086a201 base: 0xfed00000
+[    0.048871] TSC deadline timer available
+[    0.048875] CPU topo: Max. logical packages:   1
+[    0.048876] CPU topo: Max. logical dies:       1
+[    0.048877] CPU topo: Max. dies per package:   1
+[    0.048881] CPU topo: Max. threads per core:   1
+[    0.048881] CPU topo: Num. cores per package:     2
+[    0.048882] CPU topo: Num. threads per package:   2
+[    0.048883] CPU topo: Allowing 2 present CPUs plus 0 hotplug CPUs
+[    0.048914] kvm-guest: APIC: eoi() replaced with kvm_guest_apic_eoi_write()
+[    0.048948] kvm-guest: KVM setup pv remote TLB flush
+[    0.048971] kvm-guest: setup PV sched yield
+[    0.048978] PM: hibernation: Registered nosave memory: [mem 0x00000000-0x00000fff]
+[    0.048980] PM: hibernation: Registered nosave memory: [mem 0x0009f000-0x000fffff]
+[    0.048981] [mem 0x60000000-0xafffffff] available for PCI devices
+[    0.048982] Booting paravirtualized kernel on KVM
+[    0.048984] clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645519600211568 ns
+[    0.053671] setup_percpu: NR_CPUS:8192 nr_cpumask_bits:2 nr_cpu_ids:2 nr_node_ids:1
+[    0.073637] percpu: Embedded 66 pages/cpu s233472 r8192 d28672 u1048576
+[    0.073731] kvm-guest: PV spinlocks enabled
+[    0.073734] PV qspinlock hash table entries: 256 (order: 0, 4096 bytes, linear)
+[    0.073736] Kernel command line: root=/dev/vda rw console=ttyS0 apparmor=1 security=apparmor
+[    0.073796] random: crng init done
+[    0.093777] Dentry cache hash table entries: 262144 (order: 9, 2097152 bytes, linear)
+[    0.094000] Inode-cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+[    0.094076] Fallback order for Node 0: 0 
+[    0.094079] Built 1 zonelists, mobility grouping on.  Total pages: 393082
+[    0.094080] Policy zone: DMA32
+[    0.094087] mem auto-init: stack:all(zero), heap alloc:on, heap free:off
+[    0.108517] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=2, Nodes=1
+[    0.121558] ftrace: allocating 45248 entries in 180 pages
+[    0.121560] ftrace: allocated 180 pages with 4 groups
+[    0.125521] Dynamic Preempt: voluntary
+[    0.126037] rcu: Preemptible hierarchical RCU implementation.
+[    0.126038] rcu: 	RCU restricting CPUs from NR_CPUS=8192 to nr_cpu_ids=2.
+[    0.126039] 	Trampoline variant of Tasks RCU enabled.
+[    0.126040] 	Rude variant of Tasks RCU enabled.
+[    0.126040] 	Tracing variant of Tasks RCU enabled.
+[    0.126041] rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+[    0.126041] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=2
+[    0.126144] RCU Tasks: Setting shift to 1 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=2.
+[    0.126146] RCU Tasks Rude: Setting shift to 1 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=2.
+[    0.126147] RCU Tasks Trace: Setting shift to 1 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=2.
+[    0.136699] NR_IRQS: 524544, nr_irqs: 440, preallocated irqs: 16
+[    0.137646] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.137660] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+[    0.178148] Console: colour VGA+ 80x25
+[    0.178253] printk: legacy console [ttyS0] enabled
+[    0.431795] ACPI: Core revision 20240827
+[    0.433555] clocksource: hpet: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604467 ns
+[    0.436881] APIC: Switch to symmetric I/O mode setup
+[    0.439465] x2apic enabled
+[    0.441446] APIC: Switched APIC routing to: physical x2apic
+[    0.443367] kvm-guest: APIC: send_IPI_mask() replaced with kvm_send_ipi_mask()
+[    0.445853] kvm-guest: APIC: send_IPI_mask_allbutself() replaced with kvm_send_ipi_mask_allbutself()
+[    0.449031] kvm-guest: setup PV IPIs
+[    0.454393] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[    0.456518] clocksource: tsc-early: mask: 0xffffffffffffffff max_cycles: 0x33e451ab1a6, max_idle_ns: 440795278720 ns
+[    0.460089] Calibrating delay loop (skipped) preset value.. 7199.99 BogoMIPS (lpj=14399992)
+[    0.464659] x86/cpu: User Mode Instruction Prevention (UMIP) activated
+[    0.468984] Last level iTLB entries: 4KB 512, 2MB 255, 4MB 127
+[    0.470965] Last level dTLB entries: 4KB 512, 2MB 255, 4MB 127, 1GB 0
+[    0.472114] Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer sanitization
+[    0.476089] Spectre V2 : Mitigation: Retpolines
+[    0.477616] Spectre V2 : Spectre v2 / SpectreRSB: Filling RSB on context switch and VMEXIT
+[    0.480088] Spectre V2 : Enabling Speculation Barrier for firmware calls
+[    0.482323] active return thunk: retbleed_return_thunk
+[    0.484088] RETBleed: Mitigation: untrained return thunk
+[    0.485874] Spectre V2 : mitigation: Enabling conditional Indirect Branch Prediction Barrier
+[    0.488089] Speculative Store Bypass: Mitigation: Speculative Store Bypass disabled via prctl
+[    0.492168] x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'
+[    0.494734] x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'
+[    0.496089] x86/fpu: Supporting XSAVE feature 0x004: 'AVX registers'
+[    0.498281] x86/fpu: xstate_offset[2]:  576, xstate_sizes[2]:  256
+[    0.500091] x86/fpu: Enabled xstate features 0x7, context size is 832 bytes, using 'compacted' format.
+[    0.523213] Freeing SMP alternatives memory: 40K
+[    0.524090] pid_max: default: 32768 minimum: 301
+[    0.525741] LSM: initializing lsm=lockdown,capability,landlock,yama,apparmor,bpf,ipe,ima,evm
+[    0.528161] landlock: Up and running.
+[    0.529401] Yama: disabled by default; enable with sysctl kernel.yama.*
+[    0.532338] AppArmor: AppArmor initialized
+[    0.533889] LSM support for eBPF active
+[    0.536309] Mount-cache hash table entries: 4096 (order: 3, 32768 bytes, linear)
+[    0.538947] Mountpoint-cache hash table entries: 4096 (order: 3, 32768 bytes, linear)
+[    0.544225] smpboot: CPU0: AMD Ryzen 5 3600 6-Core Processor (family: 0x17, model: 0x71, stepping: 0x0)
+[    0.550519] Performance Events: Fam17h+ core perfctr, AMD PMU driver.
+[    0.552105] ... version:                0
+[    0.553458] ... bit width:              48
+[    0.554860] ... generic registers:      6
+[    0.556097] ... value mask:             0000ffffffffffff
+[    0.557874] ... max period:             00007fffffffffff
+[    0.559686] ... fixed-purpose events:   0
+[    0.560100] ... event mask:             000000000000003f
+[    0.562009] signal: max sigframe size: 1776
+[    0.563777] rcu: Hierarchical SRCU implementation.
+[    0.564133] rcu: 	Max phase no-delay instances is 1000.
+[    0.566577] Timer migration: 1 hierarchy levels; 8 children per group; 1 crossnode level
+[    0.573592] smp: Bringing up secondary CPUs ...
+[    0.577423] smpboot: x86: Booting SMP configuration:
+[    0.579169] .... node  #0, CPUs:      #1
+[    0.580280] smp: Brought up 1 node, 2 CPUs
+[    0.584101] smpboot: Total of 2 processors activated (14399.99 BogoMIPS)
+[    0.775505] node 0 deferred pages initialised in 184ms
+[    0.776152] Memory: 1457412K/1572328K available (16384K kernel code, 2499K rwdata, 11820K rodata, 4172K init, 4892K bss, 110908K reserved, 0K cma-reserved)
+[    0.781010] devtmpfs: initialized
+[    0.781629] x86/mm: Memory block size: 128MB
+[    0.784372] futex hash table entries: 512 (order: 3, 32768 bytes, linear)
+[    0.788279] pinctrl core: initialized pinctrl subsystem
+[    0.797643] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.799855] DMA: preallocated 256 KiB GFP_KERNEL pool for atomic allocations
+[    0.800116] DMA: preallocated 256 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.802763] DMA: preallocated 256 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.804114] audit: initializing netlink subsys (disabled)
+[    0.805977] audit: type=2000 audit(1793380745.698:1): state=initialized audit_enabled=0 res=1
+[    0.805977] thermal_sys: Registered thermal governor 'fair_share'
+[    0.807596] thermal_sys: Registered thermal governor 'bang_bang'
+[    0.808113] thermal_sys: Registered thermal governor 'step_wise'
+[    0.810144] thermal_sys: Registered thermal governor 'user_space'
+[    0.812102] thermal_sys: Registered thermal governor 'power_allocator'
+[    0.816104] cpuidle: using governor ladder
+[    0.820099] cpuidle: using governor menu
+[    0.820914] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+[    0.824416] PCI: ECAM [mem 0xb0000000-0xbfffffff] (base 0xb0000000) for domain 0000 [bus 00-ff]
+[    0.827368] PCI: ECAM [mem 0xb0000000-0xbfffffff] reserved as E820 entry
+[    0.832116] PCI: Using configuration type 1 for base access
+[    0.834251] kprobes: kprobe jump-optimization is enabled. All kprobes are optimized if possible.
+[    0.850919] HugeTLB: registered 1.00 GiB page size, pre-allocated 0 pages
+[    0.852098] HugeTLB: 16380 KiB vmemmap can be freed for a 1.00 GiB page
+[    0.854355] HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+[    0.856097] HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
+[    0.858314] ACPI: Added _OSI(Module Device)
+[    0.860099] ACPI: Added _OSI(Processor Device)
+[    0.861655] ACPI: Added _OSI(Processor Aggregator Device)
+[    0.864355] ACPI: 1 ACPI AML tables successfully acquired and loaded
+[    0.867079] ACPI: Interpreter enabled
+[    0.868112] ACPI: PM: (supports S0 S3 S4 S5)
+[    0.869573] ACPI: Using IOAPIC for interrupt routing
+[    0.871315] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
+[    0.872101] PCI: Using E820 reservations for host bridge windows
+[    0.874342] ACPI: Enabled 2 GPEs in block 00 to 3F
+[    0.878175] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
+[    0.880102] acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig ASPM ClockPM Segments MSI HPX-Type3]
+[    0.883215] acpi PNP0A08:00: _OSC: platform does not support [PCIeHotplug LTR]
+[    0.884149] acpi PNP0A08:00: _OSC: OS now controls [SHPCHotplug PME AER PCIeCapability]
+[    0.887189] PCI host bridge to bus 0000:00
+[    0.888107] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
+[    0.891857] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
+[    0.892113] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
+[    0.896104] pci_bus 0000:00: root bus resource [mem 0x60000000-0xafffffff window]
+[    0.898710] pci_bus 0000:00: root bus resource [mem 0xc0000000-0xfebfffff window]
+[    0.900101] pci_bus 0000:00: root bus resource [mem 0x100000000-0x8ffffffff window]
+[    0.902753] pci_bus 0000:00: root bus resource [bus 00-ff]
+[    0.904273] pci 0000:00:00.0: [8086:29c0] type 00 class 0x060000 conventional PCI endpoint
+[    0.908402] pci 0000:00:01.0: [1234:1111] type 00 class 0x030000 conventional PCI endpoint
+[    0.913162] pci 0000:00:01.0: BAR 0 [mem 0xfd000000-0xfdffffff pref]
+[    0.918734] pci 0000:00:01.0: BAR 2 [mem 0xfebf0000-0xfebf0fff]
+[    0.926846] pci 0000:00:01.0: ROM [mem 0xfebe0000-0xfebeffff pref]
+[    0.928714] pci 0000:00:01.0: Video device with shadowed ROM at [mem 0x000c0000-0x000dffff]
+[    0.934410] pci 0000:00:02.0: [1af4:1001] type 00 class 0x010000 conventional PCI endpoint
+[    0.937261] pci 0000:00:02.0: BAR 0 [io  0xc000-0xc07f]
+[    0.940202] pci 0000:00:02.0: BAR 1 [mem 0xfebf1000-0xfebf1fff]
+[    0.948104] pci 0000:00:02.0: BAR 4 [mem 0xfe000000-0xfe003fff 64bit pref]
+[    0.955071] pci 0000:00:1f.0: [8086:2918] type 00 class 0x060100 conventional PCI endpoint
+[    0.957632] pci 0000:00:1f.0: quirk: [io  0x0600-0x067f] claimed by ICH6 ACPI/GPIO/TCO
+[    0.960960] pci 0000:00:1f.2: [8086:2922] type 00 class 0x010601 conventional PCI endpoint
+[    0.966616] pci 0000:00:1f.2: BAR 4 [io  0xc0c0-0xc0df]
+[    0.969079] pci 0000:00:1f.2: BAR 5 [mem 0xfebf2000-0xfebf2fff]
+[    0.973697] pci 0000:00:1f.3: [8086:2930] type 00 class 0x0c0500 conventional PCI endpoint
+[    0.978058] pci 0000:00:1f.3: BAR 4 [io  0x0700-0x073f]
+[    0.985251] ACPI: PCI: Interrupt link LNKA configured for IRQ 10
+[    0.987483] ACPI: PCI: Interrupt link LNKB configured for IRQ 10
+[    0.988234] ACPI: PCI: Interrupt link LNKC configured for IRQ 11
+[    0.990455] ACPI: PCI: Interrupt link LNKD configured for IRQ 11
+[    0.992338] ACPI: PCI: Interrupt link LNKE configured for IRQ 10
+[    0.994498] ACPI: PCI: Interrupt link LNKF configured for IRQ 10
+[    0.996245] ACPI: PCI: Interrupt link LNKG configured for IRQ 11
+[    1.000360] ACPI: PCI: Interrupt link LNKH configured for IRQ 11
+[    1.002477] ACPI: PCI: Interrupt link GSIA configured for IRQ 16
+[    1.004112] ACPI: PCI: Interrupt link GSIB configured for IRQ 17
+[    1.006144] ACPI: PCI: Interrupt link GSIC configured for IRQ 18
+[    1.008107] ACPI: PCI: Interrupt link GSID configured for IRQ 19
+[    1.012133] ACPI: PCI: Interrupt link GSIE configured for IRQ 20
+[    1.014265] ACPI: PCI: Interrupt link GSIF configured for IRQ 21
+[    1.016107] ACPI: PCI: Interrupt link GSIG configured for IRQ 22
+[    1.018184] ACPI: PCI: Interrupt link GSIH configured for IRQ 23
+[    1.022358] iommu: Default domain type: Translated
+[    1.024099] iommu: DMA domain TLB invalidation policy: lazy mode
+[    1.027863] pps_core: LinuxPPS API ver. 1 registered
+[    1.028124] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    1.031230] PTP clock support registered
+[    1.040241] EDAC MC: Ver: 3.0.0
+[    1.048127] NetLabel: Initializing
+[    1.049605] NetLabel:  domain hash size = 128
+[    1.051640] NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
+[    1.052210] NetLabel:  unlabeled traffic allowed by default
+[    1.054975] PCI: Using ACPI for IRQ routing
+[    1.256683] pci 0000:00:01.0: vgaarb: setting as boot VGA device
+[    1.258816] pci 0000:00:01.0: vgaarb: bridge control possible
+[    1.260086] pci 0000:00:01.0: vgaarb: VGA device added: decodes=io+mem,owns=io+mem,locks=none
+[    1.264103] vgaarb: loaded
+[    1.265336] hpet0: at MMIO 0xfed00000, IRQs 2, 8, 0
+[    1.267098] hpet0: 3 comparators, 64-bit 100.000000 MHz counter
+[    1.276235] clocksource: Switched to clocksource kvm-clock
+[    1.290548] VFS: Disk quotas dquot_6.6.0
+[    1.292356] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    1.298142] AppArmor: AppArmor Filesystem Enabled
+[    1.300675] pnp: PnP ACPI init
+[    1.302306] system 00:05: [mem 0xb0000000-0xbfffffff window] has been reserved
+[    1.309370] pnp: PnP ACPI: found 6 devices
+[    1.326016] clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
+[    1.329438] NET: Registered PF_INET protocol family
+[    1.334483] IP idents hash table entries: 32768 (order: 6, 262144 bytes, linear)
+[    1.386524] tcp_listen_portaddr_hash hash table entries: 1024 (order: 2, 16384 bytes, linear)
+[    1.389479] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    1.392138] TCP established hash table entries: 16384 (order: 5, 131072 bytes, linear)
+[    1.394932] TCP bind hash table entries: 16384 (order: 7, 524288 bytes, linear)
+[    1.397527] TCP: Hash tables configured (established 16384 bind 16384)
+[    1.399973] MPTCP token hash table entries: 2048 (order: 4, 49152 bytes, linear)
+[    1.402658] UDP hash table entries: 1024 (order: 3, 32768 bytes, linear)
+[    1.405029] UDP-Lite hash table entries: 1024 (order: 3, 32768 bytes, linear)
+[    1.407666] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    1.409749] NET: Registered PF_XDP protocol family
+[    1.411461] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
+[    1.413640] pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
+[    1.415816] pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
+[    1.418169] pci_bus 0000:00: resource 7 [mem 0x60000000-0xafffffff window]
+[    1.420550] pci_bus 0000:00: resource 8 [mem 0xc0000000-0xfebfffff window]
+[    1.422881] pci_bus 0000:00: resource 9 [mem 0x100000000-0x8ffffffff window]
+[    1.425575] PCI: CLS 0 bytes, default 64
+[    1.427576] clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x33e451ab1a6, max_idle_ns: 440795278720 ns
+[    1.428714] Trying to unpack rootfs image as initramfs...
+[    1.435762] Initialise system trusted keyrings
+[    1.435772] Key type blacklist registered
+[    1.444325] workingset: timestamp_bits=36 max_order=19 bucket_order=0
+[    1.446680] zbud: loaded
+[    1.447825] fuse: init (API version 7.41)
+[    1.450896] integrity: Platform Keyring initialized
+[    1.454101] integrity: Machine keyring initialized
+[    1.500570] Key type asymmetric registered
+[    1.503020] Asymmetric key parser 'x509' registered
+[    1.717582] Freeing initrd memory: 36768K
+[    1.725291] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 246)
+[    1.727960] io scheduler mq-deadline registered
+[    1.731638] ledtrig-cpu: registered to indicate activity on CPUs
+[    1.733690] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+[    1.737053] ACPI: \_SB_.GSIG: Enabled at IRQ 22
+[    1.741485] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+[    1.744615] 00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+[    1.747927] Linux agpgart interface v0.103
+[    1.750269] i8042: PNP: PS/2 Controller [PNP0303:KBD,PNP0f13:MOU] at 0x60,0x64 irq 1,12
+[    1.754901] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    1.756661] serio: i8042 AUX port at 0x60,0x64 irq 12
+[    1.758609] mousedev: PS/2 mouse device common for all mice
+[    1.761137] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input0
+[    1.762512] rtc_cmos 00:04: RTC can wake from S4
+[    1.767272] rtc_cmos 00:04: registered as rtc0
+[    1.768852] rtc_cmos 00:04: setting system clock to 2026-10-30T17:19:06 UTC (1793380746)
+[    1.771406] rtc_cmos 00:04: alarms up to one day, y3k, 242 bytes nvram, hpet irqs
+[    1.773682] amd_pstate: the _CPC object is not present in SBIOS or ACPI disabled
+[    1.776476] NET: Registered PF_INET6 protocol family
+[    1.816761] Segment Routing with IPv6
+[    1.818071] In-situ OAM (IOAM) with IPv6
+[    1.819476] mip6: Mobile IPv6
+[    1.820587] NET: Registered PF_PACKET protocol family
+[    1.824191] mpls_gso: MPLS GSO support
+[    1.826306] IPI shorthand broadcast: enabled
+[    1.830148] registered taskstats version 1
+[    1.832129] Loading compiled-in X.509 certificates
+[    1.853997] Loaded X.509 cert 'Build time autogenerated kernel key: 29317ac4c2db579bcd19a2136bf2b1ce59aadf18'
+[    1.867499] Demotion targets for Node 0: null
+[    1.874937] Key type .fscrypt registered
+[    1.876385] Key type fscrypt-provisioning registered
+[    1.905020] Key type encrypted registered
+[    1.906265] AppArmor: AppArmor sha256 policy hashing enabled
+[    1.908262] ima: No TPM chip found, activating TPM-bypass!
+[    1.909971] ima: Allocated hash algorithm: sha256
+[    1.911473] ima: No architecture policies found
+[    1.912870] evm: Initialising EVM extended attributes:
+[    1.914388] evm: security.selinux
+[    1.915404] evm: security.SMACK64 (disabled)
+[    1.916690] evm: security.SMACK64EXEC (disabled)
+[    1.918053] evm: security.SMACK64TRANSMUTE (disabled)
+[    1.919622] evm: security.SMACK64MMAP (disabled)
+[    1.921020] evm: security.apparmor
+[    1.922031] evm: security.ima
+[    1.922945] evm: security.capability
+[    1.924000] evm: HMAC attrs: 0x1
+[    1.995900] RAS: Correctable Errors collector initialized.
+[    2.010500] Unstable clock detected, switching default tracing clock to "global"
+[    2.010500] If you want to keep using the local clock, then add:
+[    2.010500]   "trace_clock=local"
+[    2.010500] on the kernel command line
+[    2.018237] clk: Disabling unused clocks
+[    2.019542] PM: genpd: Disabling unused power domains
+[    2.045047] Freeing unused decrypted memory: 2028K
+[    2.080466] Freeing unused kernel image (initmem) memory: 4172K
+[    2.081648] Write protecting the kernel read-only data: 28672k
+[    2.089911] Freeing unused kernel image (rodata/data gap) memory: 468K
+[    2.131927] x86/mm: Checked W+X mappings: passed, no W+X pages found.
+[    2.133184] Run /init as init process
+Loading, please wait...
+Starting systemd-udevd version 257.13-1~deb13u1
+[    2.247863] lpc_ich 0000:00:1f.0: I/O space for GPIO uninitialized
+[    2.260002] virtio_blk virtio0: 2/0/0 default/read/poll queues
+[    2.287929] input: VirtualPS/2 VMware VMMouse as /devices/platform/i8042/serio1/input/input3
+[    2.289976] input: VirtualPS/2 VMware VMMouse as /devices/platform/i8042/serio1/input/input2
+[    2.292020] ACPI: \_SB_.GSIA: Enabled at IRQ 16
+[    2.293265] i801_smbus 0000:00:1f.3: SMBus using PCI interrupt
+[    2.295806] i2c i2c-0: Memory type 0x07 not supported yet, not instantiating SPD
+[    2.310225] virtio_blk virtio0: [vda] 8388608 512-byte logical blocks (4.29 GB/4.00 GiB)
+[    2.312266] SCSI subsystem initialized
+[    2.321852] iTCO_vendor_support: vendor-support=0
+[    2.331849] iTCO_wdt iTCO_wdt.1.auto: Found a ICH9 TCO device (Version=2, TCOBASE=0x0660)
+[    2.336947] iTCO_wdt iTCO_wdt.1.auto: initialized. heartbeat=30 sec (nowayout=0)
+[    2.378060] ahci 0000:00:1f.2: AHCI vers 0001.0000, 32 command slots, 1.5 Gbps, SATA mode
+[    2.379627] ahci 0000:00:1f.2: 6/6 ports implemented (port mask 0x3f)
+[    2.380902] ahci 0000:00:1f.2: flags: 64bit ncq only 
+[    2.386213] scsi host0: ahci
+[    2.387441] scsi host1: ahci
+[    2.388740] scsi host2: ahci
+[    2.390662] scsi host3: ahci
+[    2.392159] scsi host4: ahci
+[    2.393275] scsi host5: ahci
+[    2.394254] ata1: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2100 irq 27 lpm-pol 1
+[    2.395883] ata2: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2180 irq 27 lpm-pol 1
+[    2.397484] ata3: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2200 irq 27 lpm-pol 1
+[    2.399087] ata4: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2280 irq 27 lpm-pol 1
+[    2.400632] ata5: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2300 irq 27 lpm-pol 1
+[    2.402244] ata6: SATA max UDMA/133 abar m4096@0xfebf2000 port 0xfebf2380 irq 27 lpm-pol 1
+[    2.738481] ata6: SATA link down (SStatus 0 SControl 300)
+[    2.740120] ata3: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[    2.742045] ata4: SATA link down (SStatus 0 SControl 300)
+[    2.743818] ata5: SATA link down (SStatus 0 SControl 300)
+[    2.745248] ata3.00: LPM support broken, forcing max_power
+[    2.746413] ata3.00: ATAPI: QEMU DVD-ROM, 2.5+, max UDMA/100
+[    2.747648] ata3.00: applying bridge limits
+[    2.748887] ata1: SATA link down (SStatus 0 SControl 300)
+[    2.750635] ata2: SATA link down (SStatus 0 SControl 300)
+[    2.751941] ata3.00: LPM support broken, forcing max_power
+[    2.753121] ata3.00: configured for UDMA/100
+[    2.755156] scsi 2:0:0:0: CD-ROM            QEMU     QEMU DVD-ROM     2.5+ PQ: 0 ANSI: 5
+[    2.839010] sr 2:0:0:0: [sr0] scsi3-mmc drive: 4x/4x cd/rw xa/form2 tray
+[    2.910790] cdrom: Uniform CD-ROM driver Revision: 3.20
+Begin: Loading essential drivers ... done.
+Begin: Running /scripts/init-premount ... done.
+Begin: Mounting root file system ... Begin: Running /scripts/local-top ... done.
+Begin: Running /scripts/local-premount ... Begin: Waiting for suspend/resume device ... Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+Begin: Running /scripts/local-block ... done.
+done.
+Gave up waiting for suspend/resume device
+done.
+Begin: Will now check root file system ... fsck from util-linux 2.41.5
+[/sbin/fsck.ext4 (1) -- /dev/vda] fsck.ext4 -a -C0 /dev/vda 
+/dev/vda: clean, 14969/262144 files, 319778/1048576 blocks
+done.
+[   34.533602] EXT4-fs (vda): mounted filesystem 9982f305-46ab-440e-914e-707686998aa2 r/w with ordered data mode. Quota mode: none.
+done.
+Begin: Running /scripts/local-bottom ... done.
+Begin: Running /scripts/init-bottom ... done.
+[   34.678236] systemd[1]: Inserted module 'autofs4'
+[!p]104[?7h[   34.724349] systemd[1]: systemd 257.13-1~deb13u1 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE)
+[   34.731114] systemd[1]: Detected virtualization kvm.
+[   34.732241] systemd[1]: Detected architecture x86-64.
+
+[0;1;39mWelcome to [0m[1mDebian GNU/Linux 13 (trixie)[0m[0;1;39m![0m
+
+[   34.739237] systemd[1]: Hostname set to <m09-feasibility>.
+[   35.017562] systemd[1]: bpf-restrict-fs: LSM BPF program attached
+[   35.157313] systemd[1]: Queued start job for default target graphical.target.
+[   35.199632] systemd[1]: Created slice system-getty.slice - Slice /system/getty.
+[[0;32m  OK  [0m] Created slice [0;1;39msystem-getty.slice[0m - Slice /system/getty.
+[   35.203878] systemd[1]: Created slice system-modprobe.slice - Slice /system/modprobe.
+[[0;32m  OK  [0m] Created slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+[   35.208259] systemd[1]: Created slice system-serial\x2dgetty.slice - Slice /system/serial-getty.
+[[0;32m  OK  [0m] Created slice [0;1;39msystem-serial\x2dget…slice[0m - Slice /system/serial-getty.
+[   35.213141] systemd[1]: Created slice user.slice - User and Session Slice.
+[[0;32m  OK  [0m] Created slice [0;1;39muser.slice[0m - User and Session Slice.
+[   35.216885] systemd[1]: Started systemd-ask-password-console.path - Dispatch Password Requests to Console Directory Watch.
+[[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+[   35.221948] systemd[1]: Started systemd-ask-password-wall.path - Forward Password Requests to Wall Directory Watch.
+[[0;32m  OK  [0m] Started [0;1;39msystemd-ask-password-wall.…[0md Requests to Wall Directory Watch.
+[   35.227049] systemd[1]: Set up automount proc-sys-fs-binfmt_misc.automount - Arbitrary Executable File Formats File System Automount Point.
+[[0;32m  OK  [0m] Set up automount [0;1;39mproc-sys-fs-binfm…[0mormats File System Automount Point.
+[   35.232348] systemd[1]: Expecting device dev-ttyS0.device - /dev/ttyS0...
+         Expecting device [0;1;39mdev-ttyS0.device[0m - /dev/ttyS0...
+[   35.235568] systemd[1]: Reached target paths.target - Path Units.
+[[0;32m  OK  [0m] Reached target [0;1;39mpaths.target[0m - Path Units.
+[   35.238845] systemd[1]: Reached target remote-fs.target - Remote File Systems.
+[[0;32m  OK  [0m] Reached target [0;1;39mremote-fs.target[0m - Remote File Systems.
+[   35.242769] systemd[1]: Reached target slices.target - Slice Units.
+[[0;32m  OK  [0m] Reached target [0;1;39mslices.target[0m - Slice Units.
+[   35.245996] systemd[1]: Reached target swap.target - Swaps.
+[[0;32m  OK  [0m] Reached target [0;1;39mswap.target[0m - Swaps.
+[   35.249687] systemd[1]: Listening on systemd-creds.socket - Credential Encryption/Decryption.
+[[0;32m  OK  [0m] Listening on [0;1;39msystemd-creds.socket[0m - Credential Encryption/Decryption.
+[   35.253934] systemd[1]: Listening on systemd-initctl.socket - initctl Compatibility Named Pipe.
+[[0;32m  OK  [0m] Listening on [0;1;39msystemd-initctl.socke…[0m- initctl Compatibility Named Pipe.
+[   35.258264] systemd[1]: Listening on systemd-journald-dev-log.socket - Journal Socket (/dev/log).
+[[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald-dev-…socket[0m - Journal Socket (/dev/log).
+[   35.262693] systemd[1]: Listening on systemd-journald.socket - Journal Sockets.
+[[0;32m  OK  [0m] Listening on [0;1;39msystemd-journald.socket[0m - Journal Sockets.
+[   35.266337] systemd[1]: systemd-pcrextend.socket - TPM PCR Measurements skipped, unmet condition check ConditionSecurity=measured-uki
+[   35.268903] systemd[1]: systemd-pcrlock.socket - Make TPM PCR Policy skipped, unmet condition check ConditionSecurity=measured-uki
+[   35.272155] systemd[1]: Mounting dev-hugepages.mount - Huge Pages File System...
+         Mounting [0;1;39mdev-hugepages.mount[0m - Huge Pages File System...
+[   35.278518] systemd[1]: Mounting dev-mqueue.mount - POSIX Message Queue File System...
+         Mounting [0;1;39mdev-mqueue.mount[0m - POSIX Message Queue File System...
+[   35.304108] systemd[1]: Mounting run-lock.mount - Legacy Locks Directory /run/lock...
+         Mounting [0;1;39mrun-lock.mount[0m - Legacy Locks Directory /run/lock...
+[   35.310084] systemd[1]: Mounting sys-kernel-debug.mount - Kernel Debug File System...
+         Mounting [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System...
+[   35.318615] systemd[1]: Mounting sys-kernel-tracing.mount - Kernel Trace File System...
+         Mounting [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System...
+[   35.326527] systemd[1]: Mounting tmp.mount - Temporary Directory /tmp...
+         Mounting [0;1;39mtmp.mount[0m - Temporary Directory /tmp...
+[   35.330538] systemd[1]: Starting kmod-static-nodes.service - Create List of Static Device Nodes...
+         Starting [0;1;39mkmod-static-nodes.service[0m…eate List of Static Device Nodes...
+[   35.338500] systemd[1]: Starting modprobe@configfs.service - Load Kernel Module configfs...
+         Starting [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs...
+[   35.345551] systemd[1]: Starting modprobe@drm.service - Load Kernel Module drm...
+         Starting [0;1;39mmodprobe@drm.service[0m - Load Kernel Module drm...
+[   35.352572] systemd[1]: Starting modprobe@efi_pstore.service - Load Kernel Module efi_pstore...
+         Starting [0;1;39mmodprobe@efi_pstore.servi…[0m - Load Kernel Module efi_pstore...
+[   35.363156] systemd[1]: Starting modprobe@fuse.service - Load Kernel Module fuse...
+         Starting [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse...
+[   35.372750] systemd[1]: systemd-hibernate-clear.service - Clear Stale Hibernate Storage Info skipped, unmet condition check ConditionPathExists=/sys/firmware/efi/efivars/HibernateLocation-8cf2644b-4b0b-428f-9387-6d876050dc67
+[   35.394406] systemd[1]: Starting systemd-journald.service - Journal Service...
+         Starting [0;1;39msystemd-journald.service[0m - Journal Service...
+[   35.416248] systemd[1]: Starting systemd-modules-load.service - Load Kernel Modules...
+         Starting [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules...
+[   35.422755] systemd[1]: systemd-pcrmachine.service - TPM PCR Machine ID Measurement skipped, unmet condition check ConditionSecurity=measured-uki
+[   35.428714] ACPI: bus type drm_connector registered
+[   35.454545] systemd[1]: Starting systemd-remount-fs.service - Remount Root and Kernel File Systems...
+         Starting [0;1;39msystemd-remount-fs.servic…[0munt Root and Kernel File Systems...
+[   35.462686] systemd[1]: systemd-tpm2-setup-early.service - Early TPM SRK Setup skipped, unmet condition check ConditionSecurity=measured-uki
+[   35.468640] tun: Universal TUN/TAP device driver, 1.6
+[   35.470637] systemd[1]: Mounted dev-hugepages.mount - Huge Pages File System.
+[[0;32m  OK  [0m] Mounted [0;1;39mdev-hugepages.mount[0m - Huge Pages File System.
+[   35.478599] systemd[1]: Mounted dev-mqueue.mount - POSIX Message Queue File System.
+[[0;32m  OK  [0m] Mounted [0;1;39mdev-mqueue.mount[0m - POSIX Message Queue File System.
+[   35.483242] systemd[1]: Mounted run-lock.mount - Legacy Locks Directory /run/lock.
+[[0;32m  OK  [0m] Mounted [0;1;39mrun-lock.mount[0m - Legacy Locks Directory /run/lock.
+[   35.487228] systemd[1]: Mounted sys-kernel-debug.mount - Kernel Debug File System.
+[[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-debug.mount[0m - Kernel Debug File System.
+[   35.491297] systemd[1]: Mounted sys-kernel-tracing.mount - Kernel Trace File System.
+[[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-tracing.mount[0m - Kernel Trace File System.
+[   35.495333] systemd-journald[425]: Collecting audit messages is disabled.
+[   35.496808] systemd[1]: Mounted tmp.mount - Temporary Directory /tmp.
+[[0;32m  OK  [0m] Mounted [0;1;39mtmp.mount[0m - Temporary Directory /tmp.
+[   35.505371] systemd[1]: Finished kmod-static-nodes.service - Create List of Static Device Nodes.
+[[0;32m  OK  [0m] Finished [0;1;39mkmod-static-nodes.service[0m…Create List of Static Device Nodes.
+[   35.512629] systemd[1]: modprobe@configfs.service: Deactivated successfully.
+[   35.514281] systemd[1]: Finished modprobe@configfs.service - Load Kernel Module configfs.
+[[0;32m  OK  [0m] Finished [0;1;39mmodprobe@configfs.service[0m - Load Kernel Module configfs.
+[   35.519759] systemd[1]: modprobe@drm.service: Deactivated successfully.
+[   35.521380] systemd[1]: Finished modprobe@drm.service - Load Kernel Module drm.
+[[0;32m  OK  [0m] Finished [0;1;39mmodprobe@drm.service[0m - Load Kernel Module drm.
+[   35.528978] systemd[1]: modprobe@efi_pstore.service: Deactivated successfully.
+[   35.530753] systemd[1]: Finished modprobe@efi_pstore.service - Load Kernel Module efi_pstore.
+[[0;32m  OK  [0m] Finished [0;1;39mmodprobe@efi_pstore.service[0m - Load Kernel Module efi_pstore.
+[   35.535844] systemd[1]: modprobe@fuse.service: Deactivated successfully.
+[   35.539319] systemd[1]: Finished modprobe@fuse.service - Load Kernel Module fuse.
+[[0;32m  OK  [0m] Finished [0;1;39mmodprobe@fuse.service[0m - Load Kernel Module fuse.
+[   35.543619] systemd[1]: Finished systemd-remount-fs.service - Remount Root and Kernel File Systems.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-remount-fs.servic…[0mmount Root and Kernel File Systems.
+[   35.548924] systemd[1]: Mounting sys-fs-fuse-connections.mount - FUSE Control File System...
+[   35.553824] bridge: filtering via arp/ip/ip6tables is no longer available by default. Update your scripts to load br_netfilter if you need this.
+         Mounting [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System...
+[   35.566267] Bridge firewalling registered
+[   35.583222] systemd[1]: Mounting sys-kernel-config.mount - Kernel Configuration File System...
+[   35.280761] systemd-modules-load[426]: Inserted module 'tun'
+[   35.284299] systemd-modules-load[426]: Module 'fuse' is built in
+[   35.288240] systemd-modules-load[426]: Inserted module 'bridge'
+         Mounting [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System...
+[   35.599468] systemd[1]: systemd-pstore.service - Platform Persistent Storage Archival skipped, unmet condition check ConditionDirectoryNotEmpty=/sys/fs/pstore
+[   35.294516] systemd-modules-load[426]: Inserted module 'br_netfilter'
+[   35.614596] systemd[1]: Starting systemd-random-seed.service - Load/Save OS Random Seed...
+         Starting [0;1;39msystemd-random-seed.service[0m - Load/Save OS Random Seed...
+[   35.317551] systemd-modules-load[426]: Inserted module 'nf_tables'
+[   35.653687] systemd[1]: Starting systemd-tmpfiles-setup-dev-early.service - Create Static Device Nodes in /dev gracefully...
+         Starting [0;1;39msystemd-tmpfiles-setup-de…[0m Device Nodes in /dev gracefully...
+[   35.659710] systemd[1]: systemd-tpm2-setup.service - TPM SRK Setup skipped, unmet condition check ConditionSecurity=measured-uki
+[   35.664832] systemd[1]: Started systemd-journald.service - Journal Service.
+[[0;32m  OK  [0m] Started [0;1;39msystemd-journald.service[0m - Journal Service.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+[   35.395515] systemd[1]: Finished systemd-modules-load.service - Load Kernel Modules.
+[[0;32m  OK  [0m] Mounted [0;1;39msys-fs-fuse-connections.mount[0m - FUSE Control File System.
+[[0;32m  OK  [0m] Mounted [0;1;39msys-kernel-config.mount[0m - Kernel Configuration File System.
+[   35.399097] systemd[1]: Mounted sys-fs-fuse-connections.mount - FUSE Control File System.
+[   35.406342] systemd[1]: Mounted sys-kernel-config.mount - Kernel Configuration File System.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mic Device Nodes in /dev gracefully.
+[   35.409471] systemd[1]: Finished systemd-tmpfiles-setup-dev-early.service - Create Static Device Nodes in /dev gracefully.
+         Starting [0;1;39msystemd-journal-flush.ser…[0msh Journal to Persistent Storage...
+[   35.417519] systemd[1]: Starting systemd-journal-flush.service - Flush Journal to Persistent Storage...
+         Starting [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables...
+[   35.424187] systemd[1]: Starting systemd-sysctl.service - Apply Kernel Variables...
+[   35.439911] systemd[1]: Starting systemd-sysusers.service - Create System Users...
+         Starting [0;1;39msystemd-sysusers.service[0m - Create System Users...[   35.747325] systemd-journald[425]: Received client request to flush runtime journal.
+
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-random-seed.service[0m - Load/Save OS Random Seed.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+[   35.475548] systemd[1]: Finished systemd-random-seed.service - Load/Save OS Random Seed.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-sysusers.service[0m - Create System Users.
+[   35.479976] systemd[1]: Finished systemd-sysctl.service - Apply Kernel Variables.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-flush.ser…[0mlush Journal to Persistent Storage.
+[   35.484445] systemd[1]: Finished systemd-sysusers.service - Create System Users.
+[   35.486623] systemd[1]: Finished systemd-journal-flush.service - Flush Journal to Persistent Storage.
+         Starting [0;1;39msystemd-tmpfiles-setup-de…[0meate Static Device Nodes in /dev...
+[   35.491306] systemd[1]: Starting systemd-tmpfiles-setup-dev.service - Create Static Device Nodes in /dev...
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup-de…[0mCreate Static Device Nodes in /dev.
+[   35.506627] systemd[1]: Finished systemd-tmpfiles-setup-dev.service - Create Static Device Nodes in /dev.
+[[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+[[0;32m  OK  [0m] Reached target [0;1;39mlocal-fs.target[0m - Local File Systems.
+[   35.515667] systemd[1]: Reached target local-fs-pre.target - Preparation for Local File Systems.
+[[0;32m  OK  [0m] Listening on [0;1;39msystemd-sysext.socket[0m… System Extension Image Management.
+[   35.520505] systemd[1]: Reached target local-fs.target - Local File Systems.
+         Starting [0;1;39mapparmor.service[0m - Load AppArmor profiles...
+[   35.524145] systemd[1]: Listening on systemd-sysext.socket - System Extension Image Management.
+[   35.528291] systemd[1]: Starting apparmor.service - Load AppArmor profiles...
+[   35.531670] systemd[1]: systemd-binfmt.service - Set Up Additional Binary Formats skipped, no trigger condition checks were met.
+[   35.535190] systemd[1]: Starting systemd-tmpfiles-setup.service - Create System Files and Directories...
+         Starting [0;1;39msystemd-tmpfiles-setup.se…[0mate System Files and Directories...
+[   35.577637] systemd-tmpfiles[466]: [0;1;39m/usr/lib/tmpfiles.d/legacy.conf:14: Duplicate line for path "/run/lock", ignoring.[0m
+[   35.583107] apparmor.systemd[465]: Restarting AppArmor
+[   35.584702] apparmor.systemd[465]: Reloading AppArmor profiles
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-tmpfiles-setup.se…[0mreate System Files and Directories.
+[   35.587677] systemd[1]: Finished systemd-tmpfiles-setup.service - Create System Files and Directories.
+         Starting [0;1;39mldconfig.service[0m - Rebuild Dynamic Linker Cache...
+[   35.595974] systemd[1]: Starting ldconfig.service - Rebuild Dynamic Linker Cache...
+[   35.604537] systemd[1]: systemd-firstboot.service - First Boot Wizard skipped, unmet condition check ConditionFirstBoot=yes
+[   35.613417] systemd[1]: first-boot-complete.target - First Boot Complete skipped, unmet condition check ConditionFirstBoot=yes
+         Starting [0;1;39msystemd-journal-catalog-u…ervice[0m - Rebuild Journal Catalog...
+[   35.620178] systemd[1]: Starting systemd-journal-catalog-update.service - Rebuild Journal Catalog...
+[   35.624199] systemd[1]: systemd-machine-id-commit.service - Save Transient machine-id to Disk skipped, unmet condition check ConditionPathIsMountPoint=/etc/machine-id
+[   35.933347] audit: type=1400 audit(1793380780.660:2): apparmor="STATUS" operation="profile_load" profile="unconfined" name="1password" pid=476 comm="apparmor_parser"
+[   35.939281] audit: type=1400 audit(1793380780.660:3): apparmor="STATUS" operation="profile_load" profile="unconfined" name="Discord" pid=477 comm="apparmor_parser"
+[   35.942184] audit: type=1400 audit(1793380780.664:4): apparmor="STATUS" operation="profile_load" profile="unconfined" name="QtWebEngineProcess" pid=479 comm="apparmor_parser"
+[   35.945737] audit: type=1400 audit(1793380780.664:5): apparmor="STATUS" operation="profile_load" profile="unconfined" name=4D6F6E676F444220436F6D70617373 pid=478 comm="apparmor_parser"
+[   35.950855] audit: type=1400 audit(1793380780.664:6): apparmor="STATUS" operation="profile_load" profile="unconfined" name="balena-etcher" pid=481 comm="apparmor_parser"
+[   35.954032] audit: type=1400 audit(1793380780.676:7): apparmor="STATUS" operation="profile_load" profile="unconfined" name="brave" pid=482 comm="apparmor_parser"
+[   35.956972] audit: type=1400 audit(1793380780.676:8): apparmor="STATUS" operation="profile_load" profile="unconfined" name="buildah" pid=483 comm="apparmor_parser"
+[   35.961856] audit: type=1400 audit(1793380780.680:9): apparmor="STATUS" operation="profile_load" profile="unconfined" name="busybox" pid=484 comm="apparmor_parser"
+[   35.661756] s[   35.965108] audit: type=1400 audit(1793380780.688:10): apparmor="STATUS" operation="profile_load" profile="unconfined" name="cam" pid=485 comm="apparmor_parser"
+ystemd[1]: Finished systemd-journal-catalog-update.service - Rebuild Journal Cat[   35.969353] audit: type=1400 audit(1793380780.696:11): apparmor="STATUS" operation="profile_load" profile="unconfined" name="ch-checkns" pid=486 comm="apparmor_parser"
+alog.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-journal-catalog-u….service[0m - Rebuild Journal Catalog.
+[[0;32m  OK  [0m] Finished [0;1;39mldconfig.service[0m - Rebuild Dynamic Linker Cache.
+[   35.890673] systemd[1]: Finished ldconfig.service - Rebuild Dynamic Linker Cache.
+[   35.896260] systemd[1]: Starting systemd-update-done.service - Update is Completed...
+         Starting [0;1;39msystemd-update-done.service[0m - Update is Completed...
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-update-done.service[0m - Update is Completed.
+[   35.941319] systemd[1]: Finished systemd-update-done.service - Update is Completed.
+[[0;32m  OK  [0m] Finished [0;1;39mapparmor.service[0m - Load AppArmor profiles.
+[   36.188776] systemd[1]: Finished apparmor.service - Load AppArmor profiles.
+[[0;32m  OK  [0m] Reached target [0;1;39msysinit.target[0m - System Initialization.
+[   36.193430] systemd[1]: Reached target sysinit.target - System Initialization.
+[[0;32m  OK  [0m] Started [0;1;39mapt-daily.timer[0m - Daily apt download activities.
+[   36.198833] systemd[1]: Started apt-daily.timer - Daily apt download activities.
+[[0;32m  OK  [0m] Started [0;1;39mapt-daily-upgrade.timer[0m - …y apt upgrade and clean activities.
+[   36.203890] systemd[1]: Started apt-daily-upgrade.timer - Daily apt upgrade and clean activities.
+[   36.209750] systemd[1]: Started dpkg-db-backup.timer - Daily dpkg database backup timer.
+[[0;32m  OK  [0m] Started [0;1;39mdpkg-db-backup.timer[0m - Daily dpkg database backup timer.
+[[0;32m  OK  [0m] Started [0;1;39mfstrim.timer[0m - Discard unused filesystem blocks once a week.
+[   36.214218] systemd[1]: Started fstrim.timer - Discard unused filesystem blocks once a week.
+[[0;32m  OK  [0m] Started [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+[   36.218747] systemd[1]: Started systemd-tmpfiles-clean.timer - Daily Cleanup of Temporary Directories.
+[[0;32m  OK  [0m] Reached target [0;1;39mtimers.target[0m - Timer Units.
+[   36.223418] systemd[1]: Reached target timers.target - Timer Units.
+[[0;32m  OK  [0m] Listening on [0;1;39mdbus.socket[0m - D-Bus System Message Bus Socket.
+[   36.227063] systemd[1]: Listening on dbus.socket - D-Bus System Message Bus Socket.
+[[0;32m  OK  [0m] Listening on [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+[   36.231413] systemd[1]: Listening on systemd-hostnamed.socket - Hostname Service Socket.
+[[0;32m  OK  [0m] Reached target [0;1;39msockets.target[0m - Socket Units.
+[   36.235723] systemd[1]: Reached target sockets.target - Socket Units.
+[   36.239955] systemd[1]: systemd-pcrphase-sysinit.service - TPM PCR Barrier (Initialization) skipped, unmet condition check ConditionSecurity=measured-uki
+[   36.240091] systemd[1]: Reached target basic.target - Basic System.
+[[0;32m  OK  [0m] Reached target [0;1;39mbasic.target[0m - Basic System.
+[   36.246701] systemd[1]: [0;1;39mSystem is tainted: unmerged-bin[0m
+[   36.249131] systemd[1]: Starting dbus.service - D-Bus System Message Bus...
+         Starting [0;1;39mdbus.service[0m - D-Bus System Message Bus...
+[   36.252915] systemd[1]: getty-static.service - getty on tty2-tty6 if dbus and logind are not available skipped, unmet condition check ConditionPathExists=!/usr/bin/dbus-daemon
+         Starting [0;1;39msystemd-logind.service[0m - User Login Management...
+[   36.271752] systemd[1]: Starting systemd-logind.service - User Login Management...
+[   36.276749] systemd[1]: systemd-pcrphase.service - TPM PCR Barrier (User) skipped, unmet condition check ConditionSecurity=measured-uki
+[   36.283097] systemd[1]: Starting systemd-user-sessions.service - Permit User Sessions...
+         Starting [0;1;39msystemd-user-sessions.service[0m - Permit User Sessions...
+[[0;32m  OK  [0m] Started [0;1;39mdbus.service[0m - D-Bus System Message Bus.
+[   36.287920] systemd[1]: Started dbus.service - D-Bus System Message Bus.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-user-sessions.service[0m - Permit User Sessions.
+[   36.294143] systemd[1]: Finished systemd-user-sessions.service - Permit User Sessions.
+[   36.300133] systemd[1]: Started getty@tty1.service - Getty on tty1.
+[[0;32m  OK  [0m] Started [0;1;39mgetty@tty1.service[0m - Getty on tty1.
+[   36.308279] systemd[1]: Starting m09-feasibility.service - M09 isolated runtime feasibility...
+         Starting [0;1;39mm09-feasibility.service[0m - M09 isolated runtime feasibility...
+[   36.324464] systemd-logind[580]: New seat seat0.
+[[0;32m  OK  [0m] Started [0;1;39msystemd-logind.service[0m - User Login Management.
+[   36.328955] systemd[1]: Started systemd-logind.service - User Login Management.
++ set -eu
++ [ -f /etc/m09-disposable-guest ]
++ exec
++ trap finish EXIT
++ chmod 0666 /dev/net/tun /dev/fuse
++ mkdir -p /run/user/1000
++ chown 1000:1000 /run/user/1000
++ chmod 0700 /run/user/1000
++ systemctl start user@1000.service
+[[0;32m  OK  [0m] Created slice [0;1;39muser-1000.slice[0m - User Slice of UID 1000.
+[   36.357314] systemd[1]: Created slice user-1000.slice - User Slice of UID 1000.
+[   36.362506] systemd[1]: Starting user-runtime-dir@1000.service - User Runtime Directory /run/user/1000...
+         Starting [0;1;39muser-runtime-dir@1000.ser…[0mRuntime Directory /run/user/1000...
+[   36.387504] systemd[1]: Finished user-runtime-dir@1000.service - User Runtime Directory /run/user/1000.
+[[0;32m  OK  [0m] Finished [0;1;39muser-runtime-dir@1000.ser…[0mr Runtime Directory /run/user/1000.
+         Starting [0;1;39muser@1000.service[0m - User Manager for UID 1000...
+[   36.398298] systemd[1]: Starting user@1000.service - User Manager for UID 1000...
+[   36.439503] (systemd)[599]: pam_unix(systemd-user:session): session opened for user runtime(uid=1000) by runtime(uid=0)
+[   36.449828] systemd-logind[580]: New session 1 of user runtime.
+[   36.514370] systemd[599]: Queued start job for default target default.target.
+[   36.537043] systemd[599]: Created slice app.slice - User Application Slice.
+[   36.539016] systemd[599]: Reached target paths.target - Paths.
+[   36.540692] systemd[599]: Reached target timers.target - Timers.
+[   36.542426] systemd[599]: Starting dbus.socket - D-Bus User Message Bus Socket...
+[   36.551327] systemd[599]: Listening on dbus.socket - D-Bus User Message Bus Socket.
+[[0;32m  OK  [0m] Started [0;1;39muser@1000.service[0m - User Manager for UID 1000.
++ runuser -u runtime -- env XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus systemctl --user start m09-app-a.service
+[   36.558591] systemd[599]: Reached target sockets.target - Sockets.
+[   36.560460] systemd[599]: Reached target basic.target - Basic System.
+[   36.562298] systemd[599]: Reached target default.target - Main User Target.
+[   36.564299] runuser[608]: pam_unix(runuser:session): session opened for user runtime(uid=1000) by (uid=0)
+[   36.566791] systemd[599]: Startup finished in 81ms.
+[   36.568236] systemd[1]: Started user@1000.service - User Manager for UID 1000.
+[   36.572529] systemd[599]: Started m09-app-a.service - M09 application a rootless isolation prototype.
+[   36.574949] runuser[608]: pam_unix(runuser:session): session closed for user runtime
++ seq 1 45
+[   36.580297] dockerd-rootless.sh[610]: + [ -w /run/user/1000 ]
++ [ -S /run/user/1000/app-a.sock ]
++ sleep 1
+[   36.583092] dockerd-rootless.sh[610]: + [ -d /home/runtime ]
+[   36.584811] dockerd-rootless.sh[610]: + rootlesskit=
+[   36.586306] dockerd-rootless.sh[610]: + command -v docker-rootlesskit
+[   36.588103] dockerd-rootless.sh[610]: + command -v rootlesskit
+[   36.589696] dockerd-rootless.sh[610]: + rootlesskit=rootlesskit
+[   36.591705] dockerd-rootless.sh[610]: + break
+[   36.594011] dockerd-rootless.sh[610]: + [ -z rootlesskit ]
+[   36.595859] dockerd-rootless.sh[610]: + : /run/user/1000/containerd-rootless
+[   36.598722] dockerd-rootless.sh[610]: + [ -e /run/user/1000/containerd-rootless ]
+[   36.602311] dockerd-rootless.sh[610]: + : /run/user/1000/app-a-rootlesskit
+[   36.606247] dockerd-rootless.sh[610]: + :
+[   36.609297] dockerd-rootless.sh[610]: + :
+[   36.612162] dockerd-rootless.sh[610]: + :
+[   36.615625] dockerd-rootless.sh[610]: + : auto
+[   36.619905] dockerd-rootless.sh[610]: + : auto
+[   36.621405] dockerd-rootless.sh[610]: + :
+[   36.623026] dockerd-rootless.sh[610]: + : true
+[   36.625078] dockerd-rootless.sh[610]: + net=
+[   36.627225] dockerd-rootless.sh[610]: + port_driver=
+[   36.630035] dockerd-rootless.sh[610]: + mtu=
+[   36.633340] dockerd-rootless.sh[610]: + [ -z  ]
+[   36.637126] dockerd-rootless.sh[610]: + command -v slirp4netns
+[   36.643082] dockerd-rootless.sh[613]: +
+[   36.646586] dockerd-rootless.sh[612]: + slirp4netns --help
+[   36.648579] dockerd-rootless.sh[613]: grep -qw -- --netns-type
+[   36.651519] dockerd-rootless.sh[610]: + net=slirp4netns
+[   36.654691] dockerd-rootless.sh[610]: + [ -z slirp4netns ]
+[   36.658794] dockerd-rootless.sh[610]: + [ -z slirp4netns ]
+[   36.661973] dockerd-rootless.sh[610]: + [ -z slirp4netns ]
+[   36.666483] dockerd-rootless.sh[610]: + [ slirp4netns = host ]
+[   36.672087] dockerd-rootless.sh[610]: + [ -z  ]
+[   36.673962] dockerd-rootless.sh[610]: + mtu=65520
+[   36.676111] dockerd-rootless.sh[610]: + [ -z  ]
+[   36.678601] dockerd-rootless.sh[610]: + [ slirp4netns = pasta ]
+[   36.682114] dockerd-rootless.sh[610]: + port_driver=builtin
+[   36.685615] dockerd-rootless.sh[610]: + host_loopback=--disable-host-loopback
+[   36.690692] dockerd-rootless.sh[610]: + [  = false ]
+[   36.693921] dockerd-rootless.sh[610]: + dockerd=dockerd
+[   36.697643] dockerd-rootless.sh[610]: + [ -z  ]
+[   36.699565] dockerd-rootless.sh[610]: + _DOCKERD_ROOTLESS_CHILD=1
+[   36.702170] dockerd-rootless.sh[610]: + export _DOCKERD_ROOTLESS_CHILD
+[   36.704488] dockerd-rootless.sh[615]: + id -u
+[   36.706412] dockerd-rootless.sh[610]: + [ 1000 = 0 ]
+[   36.709187] dockerd-rootless.sh[610]: + command -v selinuxenabled
+[   36.713329] dockerd-rootless.sh[610]: + DOCKERD_ROOTLESS_ROOTLESSKIT_FLAGS=--detach-netns
+[   36.719574] dockerd-rootless.sh[610]: + exec rootlesskit --state-dir=/run/user/1000/app-a-rootlesskit --net=slirp4netns --mtu=65520 --slirp4netns-sandbox=auto --slirp4netns-seccomp=auto --disable-host-loopback --port-driver=builtin --copy-up=/etc --copy-up=/run --propagation=rslave --detach-netns /usr/local/bin/dockerd-rootless.sh --rootless --host=unix:///run/user/1000/app-a.sock --data-root=/home/runtime/app-a-data --exec-root=/run/user/1000/app-a-exec --pidfile=/run/user/1000/app-a.pid --storage-driver=fuse-overlayfs --exec-opt native.cgroupdriver=systemd --add-runtime=tap-runc=/usr/local/bin/tap-runc
+[   36.914763] dockerd-rootless.sh[655]: + [ -w /run/user/1000 ]
+[   36.916967] dockerd-rootless.sh[655]: + [ -d /home/runtime ]
+[   36.918519] dockerd-rootless.sh[655]: + rootlesskit=
+[   36.920909] dockerd-rootless.sh[655]: + command -v docker-rootlesskit
+[   36.922893] dockerd-rootless.sh[655]: + command -v rootlesskit
+[   36.924609] dockerd-rootless.sh[655]: + rootlesskit=rootlesskit
+[   36.926240] dockerd-rootless.sh[655]: + break
+[   36.927509] dockerd-rootless.sh[655]: + [ -z rootlesskit ]
+[   36.929030] dockerd-rootless.sh[655]: + : /run/user/1000/containerd-rootless
+[   36.931053] dockerd-rootless.sh[655]: + [ -e /run/user/1000/containerd-rootless ]
+[   36.933349] dockerd-rootless.sh[655]: + : /run/user/1000/app-a-rootlesskit
+[   36.936435] dockerd-rootless.sh[655]: + :
+[   36.937906] dockerd-rootless.sh[655]: + :
+[   36.939423] dockerd-rootless.sh[655]: + :
+[   36.940970] dockerd-rootless.sh[655]: + : auto
+[   36.942754] dockerd-rootless.sh[655]: + : auto
+[   36.945143] dockerd-rootless.sh[655]: + :
+[   36.946335] dockerd-rootless.sh[655]: + : true
+[   36.947741] dockerd-rootless.sh[655]: + net=
+[   36.949428] dockerd-rootless.sh[655]: + port_driver=
+[   36.951092] dockerd-rootless.sh[655]: + mtu=
+[   36.952668] dockerd-rootless.sh[655]: + [ -z  ]
+[   36.954979] dockerd-rootless.sh[655]: + command -v slirp4netns
+[   36.957144] dockerd-rootless.sh[658]: + slirp4netns --help
+[   36.958880] dockerd-rootless.sh[659]: + grep -qw -- --netns-type
+[   36.961520] dockerd-rootless.sh[655]: + net=slirp4netns
+[   36.963211] dockerd-rootless.sh[655]: + [ -z slirp4netns ]
+[   36.964926] dockerd-rootless.sh[655]: + [ -z slirp4netns ]
+[   36.967124] dockerd-rootless.sh[655]: + [ -z slirp4netns ]
+[   36.968791] dockerd-rootless.sh[655]: + [ slirp4netns = host ]
+[   36.970952] dockerd-rootless.sh[655]: + [ -z  ]
+[   36.973305] dockerd-rootless.sh[655]: + mtu=65520
+[   36.975022] dockerd-rootless.sh[655]: + [ -z  ]
+[   36.976776] dockerd-rootless.sh[655]: + [ slirp4netns = pasta ]
+[   36.978850] dockerd-rootless.sh[655]: + port_driver=builtin
+[   36.981020] dockerd-rootless.sh[655]: + host_loopback=--disable-host-loopback
+[   36.983271] dockerd-rootless.sh[655]: + [  = false ]
+[   36.985184] dockerd-rootless.sh[655]: + dockerd=dockerd
+[   36.986787] dockerd-rootless.sh[655]: + [ -z 1 ]
+[   36.988347] dockerd-rootless.sh[655]: + [ 1 = 1 ]
+[   36.990107] dockerd-rootless.sh[655]: + rm -f /run/docker /run/containerd /run/xtables.lock
+[   36.993399] dockerd-rootless.sh[655]: + [ -n  ]
+[   36.995294] dockerd-rootless.sh[665]: + stat -c %T -f /etc
+[   36.997926] dockerd-rootless.sh[655]: + [ tmpfs = tmpfs ]
+[   36.999752] dockerd-rootless.sh[655]: + [ -L /etc/ssl ]
+[   37.001950] dockerd-rootless.sh[655]: + mount_directory /etc/ssl --rbind
+[   37.004111] dockerd-rootless.sh[655]: + [ -z 1 ]
+[   37.006420] dockerd-rootless.sh[655]: + DIRECTORY=/etc/ssl
+[   37.008145] dockerd-rootless.sh[655]: + [ ! -d /etc/ssl ]
+[   37.009885] dockerd-rootless.sh[666]: + realpath /etc/ssl
+[   37.011394] dockerd-rootless.sh[655]: + DIRECTORY_REALPATH=/etc/.ro932981787/ssl
+[   37.013392] dockerd-rootless.sh[655]: + MOUNT_OPTIONS=--rbind
+[   37.015268] dockerd-rootless.sh[655]: + rm -rf /etc/ssl
+[   37.017080] dockerd-rootless.sh[655]: + mkdir -p /etc/ssl
+[   37.018867] dockerd-rootless.sh[655]: + mount --rbind /etc/.ro932981787/ssl /etc/ssl
+[   37.021069] dockerd-rootless.sh[655]: + netns=/proc/self/ns/net
+[   37.023194] dockerd-rootless.sh[655]: + netns=/run/user/1000/app-a-rootlesskit/netns
+[   37.025546] dockerd-rootless.sh[655]: + nsenter -n/run/user/1000/app-a-rootlesskit/netns sysctl -w net.ipv4.ip_forward=1
+[   37.029096] dockerd-rootless.sh[670]: net.ipv4.ip_forward = 1
+[   37.031139] dockerd-rootless.sh[655]: + nsenter -n/run/user/1000/app-a-rootlesskit/netns sysctl -w net.ipv6.conf.all.forwarding=1
+[   37.034414] dockerd-rootless.sh[671]: net.ipv6.conf.all.forwarding = 1
+[   37.036215] dockerd-rootless.sh[655]: + exec dockerd --rootless --host=unix:///run/user/1000/app-a.sock --data-root=/home/runtime/app-a-data --exec-root=/run/user/1000/app-a-exec --pidfile=/run/user/1000/app-a.pid --storage-driver=fuse-overlayfs --exec-opt native.cgroupdriver=systemd --add-runtime=tap-runc=/usr/local/bin/tap-runc
+[   37.098337] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.131489142Z" level=info msg="Starting up"
+[   37.101450] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.132210802Z" level=warning msg="Running in rootless mode. This mode has feature limitations."
+[   37.104947] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.132220532Z" level=info msg="Running with RootlessKit integration"
+[   37.108205] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.132482832Z" level=info msg="containerd not running, starting managed containerd"
+[   37.112686] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.133520803Z" level=info msg="started new containerd process" address=/run/user/1000/app-a-exec/containerd/containerd.sock module=libcontainerd pid=678
+[   37.192215] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.225239715Z" level=info msg="starting containerd" revision=77c84241c7cbdd9b4eca2591793e3d4f4317c590 version=v2.2.3
+[   37.210994] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244461725Z" level=warning msg="Configuration migrated from version 2, use `containerd config migrate` to avoid migration" t="3.89µs"
+[   37.215684] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244504575Z" level=info msg="loading plugin" id=io.containerd.content.v1.content type=io.containerd.content.v1
+[   37.221495] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244545335Z" level=info msg="loading plugin" id=io.containerd.image-verifier.v1.bindir type=io.containerd.image-verifier.v1
+[   37.257474] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244557145Z" level=info msg="loading plugin" id=io.containerd.internal.v1.opt type=io.containerd.internal.v1
+[   37.262697] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244589515Z" level=warning msg="failed to load plugin" error="mkdir /opt/containerd: permission denied" id=io.containerd.internal.v1.opt type=io.containerd.internal.v1
+[   37.268903] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244599805Z" level=info msg="loading plugin" id=io.containerd.warning.v1.deprecations type=io.containerd.warning.v1
+[   37.275457] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244609305Z" level=info msg="loading plugin" id=io.containerd.mount-handler.v1.erofs type=io.containerd.mount-handler.v1
+[   37.280478] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244620155Z" level=info msg="loading plugin" id=io.containerd.snapshotter.v1.blockfile type=io.containerd.snapshotter.v1
+[   37.287095] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244693665Z" level=info msg="skip loading plugin" error="no scratch file generator: skip plugin" id=io.containerd.snapshotter.v1.blockfile type=io.containerd.snapshotter.v1
+[   37.315330] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244703135Z" level=info msg="loading plugin" id=io.containerd.snapshotter.v1.devmapper type=io.containerd.snapshotter.v1
+[   37.333408] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244712145Z" level=info msg="skip loading plugin" error="devmapper not configured: skip plugin" id=io.containerd.snapshotter.v1.devmapper type=io.containerd.snapshotter.v1
+[   37.341931] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244720095Z" level=info msg="loading plugin" id=io.containerd.snapshotter.v1.erofs type=io.containerd.snapshotter.v1
+[   37.346772] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244918825Z" level=info msg="skip loading plugin" error="EROFS unsupported, please `modprobe erofs`: skip plugin" id=io.containerd.snapshotter.v1.erofs type=io.containerd.snapshotter.v1
+[   37.352916] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244930225Z" level=info msg="loading plugin" id=io.containerd.snapshotter.v1.native type=io.containerd.snapshotter.v1
+[   37.356955] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.244984935Z" level=info msg="loading plugin" id=io.containerd.snapshotter.v1.overlayfs type=io.containerd.snapshotter.v1
+[   37.361432] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.245176805Z" level=info msg="loading plugin" id=io.containerd.snapshotter.v1.zfs type=io.containerd.snapshotter.v1
+[   37.365819] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.245203775Z" level=info msg="skip loading plugin" error="lstat /home/runtime/app-a-data/containerd/daemon/io.containerd.snapshotter.v1.zfs: no such file or directory: skip plugin" id=io.containerd.snapshotter.v1.zfs type=io.containerd.snapshotter.v1
+[   37.387862] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.245211795Z" level=info msg="loading plugin" id=io.containerd.event.v1.exchange type=io.containerd.event.v1
+[   37.392395] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.249893768Z" level=info msg="loading plugin" id=io.containerd.monitor.task.v1.cgroups type=io.containerd.monitor.task.v1
+[   37.397079] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.250500259Z" level=info msg="loading plugin" id=io.containerd.metadata.v1.bolt type=io.containerd.metadata.v1
+[   37.421179] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.250553159Z" level=info msg="metadata content store policy set" policy=shared
+[   37.425230] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.290288881Z" level=info msg="loading plugin" id=io.containerd.gc.v1.scheduler type=io.containerd.gc.v1
+[   37.430182] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.290437281Z" level=info msg="loading plugin" id=io.containerd.nri.v1.nri type=io.containerd.nri.v1
+[   37.437302] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.290477601Z" level=info msg="built-in NRI default validator is disabled"
+[   37.447924] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.290484581Z" level=info msg="runtime interface created"
+[   37.450920] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.290536161Z" level=info msg="created NRI interface"
+[   37.453599] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.290549321Z" level=info msg="loading plugin" id=io.containerd.differ.v1.erofs type=io.containerd.differ.v1
+[   37.457777] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.290662131Z" level=info msg="skip loading plugin" error="failed to check mkfs.erofs availability: failed to run mkfs.erofs --help: exec: \"mkfs.erofs\": executable file not found in $PATH: skip plugin" id=io.containerd.differ.v1.erofs type=io.containerd.differ.v1
+[   37.470138] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.290674081Z" level=info msg="loading plugin" id=io.containerd.mount-manager.v1.bolt type=io.containerd.mount-manager.v1
+[   37.477832] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.290942541Z" level=info msg="loading plugin" id=io.containerd.differ.v1.walking type=io.containerd.differ.v1
+[   37.483215] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.290961251Z" level=info msg="loading plugin" id=io.containerd.lease.v1.manager type=io.containerd.lease.v1
+[   37.488309] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.290971581Z" level=info msg="loading plugin" id=io.containerd.service.v1.containers-service type=io.containerd.service.v1
+[   37.493348] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.290981551Z" level=info msg="loading plugin" id=io.containerd.service.v1.content-service type=io.containerd.service.v1
+[   37.501882] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291090251Z" level=info msg="loading plugin" id=io.containerd.service.v1.diff-service type=io.containerd.service.v1
+[   37.509104] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291102851Z" level=info msg="loading plugin" id=io.containerd.service.v1.images-service type=io.containerd.service.v1
+[   37.516537] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291112411Z" level=info msg="loading plugin" id=io.containerd.service.v1.introspection-service type=io.containerd.service.v1
+[   37.523686] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291120241Z" level=info msg="loading plugin" id=io.containerd.service.v1.namespaces-service type=io.containerd.service.v1
+[   37.529903] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291128461Z" level=info msg="loading plugin" id=io.containerd.service.v1.snapshots-service type=io.containerd.service.v1
+[   37.533960] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291136031Z" level=info msg="loading plugin" id=io.containerd.shim.v1.manager type=io.containerd.shim.v1
+[   37.537662] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291194731Z" level=info msg="loading plugin" id=io.containerd.runtime.v2.task type=io.containerd.runtime.v2
+[   37.541435] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291325051Z" level=info msg="loading plugin" id=io.containerd.service.v1.tasks-service type=io.containerd.service.v1
+[   37.545410] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291388801Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.containers type=io.containerd.grpc.v1
+[   37.549328] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291401641Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.content type=io.containerd.grpc.v1
+[   37.553114] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291409581Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.diff type=io.containerd.grpc.v1
+[   37.556766] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291418771Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.events type=io.containerd.grpc.v1
+[   37.560444] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291426621Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.images type=io.containerd.grpc.v1
+[   37.564227] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291489631Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.introspection type=io.containerd.grpc.v1
+[   37.568058] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291499121Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.leases type=io.containerd.grpc.v1
+[   37.571737] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291517461Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.mounts type=io.containerd.grpc.v1
+[   37.575432] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291527301Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.namespaces type=io.containerd.grpc.v1
+[   37.579214] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291589591Z" level=info msg="loading plugin" id=io.containerd.sandbox.store.v1.local type=io.containerd.sandbox.store.v1
+[   37.583278] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291602011Z" level=info msg="loading plugin" id=io.containerd.transfer.v1.local type=io.containerd.transfer.v1
++ [ -S /run/user/1000/app-a.sock ]
++ break
++ seq 1 30
+[   37.587302] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291622441Z" level=info msg="loading plugin" id=io.containerd.cri.v1.images type=io.containerd.cri.v1
++ runuser -u runtime -- env DOCKER_HOST=unix:///run/user/1000/app-a.sock docker info
+[   37.595002] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291699011Z" level=info msg="Get image filesystem path \"/home/runtime/app-a-data/containerd/daemon/io.containerd.snapshotter.v1.overlayfs\" for snapshotter \"overlayfs\""
+[   37.603860] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291711891Z" level=info msg="Start snapshots syncer"
+[   37.610886] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.291920571Z" level=info msg="loading plugin" id=io.containerd.cri.v1.runtime type=io.containerd.cri.v1
+[   37.615439] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.292746752Z" level=info msg="starting cri plugin" config="{\"containerd\":{\"defaultRuntimeName\":\"runc\",\"runtimes\":{\"runc\":{\"runtimeType\":\"io.containerd.runc.v2\",\"runtimePath\":\"\",\"PodAnnotations\":null,\"ContainerAnnotations\":null,\"options\":{\"BinaryName\":\"\",\"CriuImagePath\":\"\",\"CriuWorkPath\":\"\",\"IoGid\":0,\"IoUid\":0,\"NoNewKeyring\":false,\"Root\":\"\",\"ShimCgroup\":\"\",\"SystemdCgroup\":false},\"privileged_without_host_devices\":false,\"privileged_without_host_devices_all_devices_allowed\":false,\"cgroupWritable\":false,\"baseRuntimeSpec\":\"\",\"cniConfDir\":\"\",\"cniMaxConfNum\":0,\"snapshotter\":\"\",\"sandboxer\":\"podsandbox\",\"io_type\":\"\"}},\"ignoreBlockIONotEnabledErrors\":false,\"ignoreRdtNotEnabledErrors\":false},\"cni\":{\"binDir\":\"\",\"binDirs\":[\"/opt/cni/bin\"],\"confDir\":\"/etc/cni/net.d\",\"maxConfNum\":1,\"setupSerially\":false,\"confTemplate\":\"\",\"ipPref\":\"\",\"useInternalLoopback\":false},\"enableSelinux\":false,\"selinuxCategoryRange\":1024,\"maxContainerLogLineSize\":16384,\"disableApparmor\":false,\"restrictOOMScoreAdj\":false,\"disableProcMount\":false,\"unsetSeccompProfile\":\"\",\"tolerateMissingHugetlbController\":true,\"disableHugetlbController\":true,\"device_ownership_from_security_context\":false,\"ignoreImageDefinedVolumes\":false,\"netnsMountsUnderStateDir\":false,\"enableUnprivilegedPorts\":true,\"enableUnprivilegedICMP\":true,\"enableCDI\":true,\"cdiSpecDirs\":[\"/etc/cdi\",\"/var/run/cdi\"],\"drainExecSyncIOTimeout\":\"0s\",\"ignoreDeprecationWarnings\":null,\"containerdRootDir\":\"/home/runtime/app-a-data/containerd/daemon\",\"containerdEndpoint\":\"/run/user/1000/app-a-exec/containerd/containerd.sock\",\"rootDir\":\"/home/runtime/app-a-data/containerd/daemon/io.containerd.grpc.v1.cri\",\"stateDir\":\"/run/user/1000/app-a-exec/containerd/daemon/io.containerd.grpc.v1.cri\"}"
+[   37.704714] runuser[711]: pam_unix(runuser:session): session opened for user runtime(uid=1000) by (uid=0)
+[   37.712317] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.292836942Z" level=info msg="loading plugin" id=io.containerd.podsandbox.controller.v1.podsandbox type=io.containerd.podsandbox.controller.v1
+[   37.722568] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293059182Z" level=info msg="loading plugin" id=io.containerd.sandbox.controller.v1.shim type=io.containerd.sandbox.controller.v1
+[   37.729654] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293357522Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.sandbox-controllers type=io.containerd.grpc.v1
+[   37.747111] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293375212Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.sandboxes type=io.containerd.grpc.v1
+[   37.754897] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293383592Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.snapshots type=io.containerd.grpc.v1
+[   37.762380] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293391292Z" level=info msg="loading plugin" id=io.containerd.streaming.v1.manager type=io.containerd.streaming.v1
+[   37.767202] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293400172Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.streaming type=io.containerd.grpc.v1
+[   37.772135] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293409142Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.tasks type=io.containerd.grpc.v1
+[   37.775836] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293417292Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.transfer type=io.containerd.grpc.v1
+[   37.781535] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293434062Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.version type=io.containerd.grpc.v1
+[   37.797313] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293442652Z" level=info msg="loading plugin" id=io.containerd.monitor.container.v1.restart type=io.containerd.monitor.container.v1
+[   37.801608] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293892113Z" level=info msg="loading plugin" id=io.containerd.tracing.processor.v1.otlp type=io.containerd.tracing.processor.v1
+[   37.806491] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293909233Z" level=info msg="skip loading plugin" error="skip plugin: tracing endpoint not configured" id=io.containerd.tracing.processor.v1.otlp type=io.containerd.tracing.processor.v1
+[   37.816405] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293916273Z" level=info msg="loading plugin" id=io.containerd.internal.v1.tracing type=io.containerd.internal.v1
+[   37.825077] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.293924043Z" level=info msg="skip loading plugin" error="skip plugin: tracing endpoint not configured" id=io.containerd.internal.v1.tracing type=io.containerd.internal.v1
+[   37.832263] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.294019623Z" level=info msg="loading plugin" id=io.containerd.ttrpc.v1.otelttrpc type=io.containerd.ttrpc.v1
+[   37.838573] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.294034153Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.healthcheck type=io.containerd.grpc.v1
+[   37.843873] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.295048043Z" level=info msg=serving... address=/run/user/1000/app-a-exec/containerd/containerd-debug.sock
+[   37.849758] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.295116393Z" level=info msg=serving... address=/run/user/1000/app-a-exec/containerd/containerd.sock.ttrpc
+[   37.857080] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.295139833Z" level=info msg=serving... address=/run/user/1000/app-a-exec/containerd/containerd.sock
+[   37.864504] dockerd-rootless.sh[678]: time="2026-10-30T17:19:42.295153313Z" level=info msg="containerd successfully booted in 0.071788s"
+[   37.864617] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.308414391Z" level=info msg="OTEL tracing is not configured, using no-op tracer provider"
+[   37.864921] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.309045481Z" level=info msg="CDI directory does not exist, skipping" dir=/var/run/cdi
+[   37.865227] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.309056721Z" level=info msg="CDI directory does not exist, skipping" dir=/home/runtime/.config/cdi
+[   37.865547] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.309062481Z" level=info msg="CDI directory does not exist, skipping" dir=/run/user/1000/cdi
+[   37.865922] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.309067661Z" level=info msg="CDI directory does not exist, skipping" dir=/etc/cdi
+[   37.866238] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.483080048Z" level=info msg="Creating a containerd client" address=/run/user/1000/app-a-exec/containerd/containerd.sock timeout=1m0s
+[   37.866575] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.492809273Z" level=info msg="Loading containers: start."
+[   37.866898] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.493023603Z" level=info msg="NRI is disabled"
+[   37.867210] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.493039033Z" level=info msg="[graphdriver] trying configured driver: fuse-overlayfs"
+[   37.867542] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.495684615Z" level=info msg="Restoring containers: start."
+[   37.867869] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.647750949Z" level=info msg="Deleting nftables IPv4 rules" error="exit status 1" output="Error: Could not process rule: No such file or directory\ndelete table ip docker-bridges"
+[   37.868962] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.746222134Z" level=info msg="Deleting nftables IPv6 rules" error="exit status 1" output="Error: Could not process rule: No such file or directory\ndelete table ip6 docker-bridges"
+[   37.869259] dockerd-rootless.sh[655]: time="2026-10-30T17:19:42.746258334Z" level=info msg="skipping firewalld management for rootless mode"
+[   38.526052] Initializing XFRM netlink socket
+[   38.314072] dockerd-rootless.sh[655]: time="2026-10-30T17:19:43.347389318Z" level=info msg="Loading containers: done."
+[   38.374505] dockerd-rootless.sh[655]: time="2026-10-30T17:19:43.407921131Z" level=warning msg="WARNING: IPv4 forwarding is disabled"
+[   38.381308] dockerd-rootless.sh[655]: time="2026-10-30T17:19:43.407953091Z" level=info msg="Docker daemon" commit=ff8d90ae containerd-snapshotter=false storage-driver=fuse-overlayfs version=29.5.0
+[   38.388308] dockerd-rootless.sh[655]: time="2026-10-30T17:19:43.409037921Z" level=info msg="Initializing buildkit"
+[   38.416683] dockerd-rootless.sh[655]: time="2026-10-30T17:19:43.450140904Z" level=info msg="Completed buildkit initialization"
+[   38.424332] dockerd-rootless.sh[655]: time="2026-10-30T17:19:43.457320708Z" level=info msg="Daemon has completed initialization"
+[   38.426383] dockerd-rootless.sh[655]: time="2026-10-30T17:19:43.457357898Z" level=info msg="API listen on /run/user/1000/app-a.sock"
+[   38.504820] runuser[711]: pam_unix(runuser:session): session closed for user runtime
++ break
++ runuser -u runtime -- env XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus systemctl --user start m09-app-b.service
+[   38.512882] runuser[892]: pam_unix(runuser:session): session opened for user runtime(uid=1000) by (uid=0)
+[   38.525349] systemd[599]: Started m09-app-b.service - M09 application b rootless isolation prototype.
+[   38.533385] runuser[892]: pam_unix(runuser:session): session closed for user runtime
++ seq 1 45
++ [ -S /run/user/1000/app-b.sock ]
++ sleep 1
+[   38.573319] dockerd-rootless.sh[894]: + [ -w /run/user/1000 ]
+[   38.573420] dockerd-rootless.sh[894]: + [ -d /home/runtime ]
+[   38.573802] dockerd-rootless.sh[894]: + rootlesskit=
+[   38.574087] dockerd-rootless.sh[894]: + command -v docker-rootlesskit
+[   38.574414] dockerd-rootless.sh[894]: + command -v rootlesskit
+[   38.574719] dockerd-rootless.sh[894]: + rootlesskit=rootlesskit
+[   38.575037] dockerd-rootless.sh[894]: + break
+[   38.575348] dockerd-rootless.sh[894]: + [ -z rootlesskit ]
+[   38.575663] dockerd-rootless.sh[894]: + : /run/user/1000/containerd-rootless
+[   38.575977] dockerd-rootless.sh[894]: + [ -e /run/user/1000/containerd-rootless ]
+[   38.576626] dockerd-rootless.sh[894]: + : /run/user/1000/app-b-rootlesskit
+[   38.576931] dockerd-rootless.sh[894]: + :
+[   38.577250] dockerd-rootless.sh[894]: + :
+[   38.577558] dockerd-rootless.sh[894]: + :
+[   38.578226] dockerd-rootless.sh[894]: + : auto
+[   38.578541] dockerd-rootless.sh[894]: + : auto
+[   38.578854] dockerd-rootless.sh[894]: + :
+[   38.579180] dockerd-rootless.sh[894]: + : true
+[   38.579493] dockerd-rootless.sh[894]: + net=
+[   38.579809] dockerd-rootless.sh[894]: + port_driver=
+[   38.580455] dockerd-rootless.sh[894]: + mtu=
+[   38.580762] dockerd-rootless.sh[894]: + [ -z  ]
+[   38.581084] dockerd-rootless.sh[894]: + command -v slirp4netns
+[   38.604263] dockerd-rootless.sh[898]: + grep -qw -- --netns-type
+[   38.606335] dockerd-rootless.sh[897]: + slirp4netns --help
+[   38.608062] dockerd-rootless.sh[894]: + net=slirp4netns
+[   38.608141] dockerd-rootless.sh[894]: + [ -z slirp4netns ]
+[   38.608513] dockerd-rootless.sh[894]: + [ -z slirp4netns ]
+[   38.608822] dockerd-rootless.sh[894]: + [ -z slirp4netns ]
+[   38.609139] dockerd-rootless.sh[894]: + [ slirp4netns = host ]
+[   38.609492] dockerd-rootless.sh[894]: + [ -z  ]
+[   38.609763] dockerd-rootless.sh[894]: + mtu=65520
+[   38.610452] dockerd-rootless.sh[894]: + [ -z  ]
+[   38.610747] dockerd-rootless.sh[894]: + [ slirp4netns = pasta ]
+[   38.611066] dockerd-rootless.sh[894]: + port_driver=builtin
+[   38.611378] dockerd-rootless.sh[894]: + host_loopback=--disable-host-loopback
+[   38.611691] dockerd-rootless.sh[894]: + [  = false ]
+[   38.612058] dockerd-rootless.sh[894]: + dockerd=dockerd
+[   38.612332] dockerd-rootless.sh[894]: + [ -z  ]
+[   38.612642] dockerd-rootless.sh[894]: + _DOCKERD_ROOTLESS_CHILD=1
+[   38.612959] dockerd-rootless.sh[894]: + export _DOCKERD_ROOTLESS_CHILD
+[   38.628710] dockerd-rootless.sh[899]: + id -u
+[   38.630000] dockerd-rootless.sh[894]: + [ 1000 = 0 ]
+[   38.631918] dockerd-rootless.sh[894]: + command -v selinuxenabled
+[   38.634218] dockerd-rootless.sh[894]: + DOCKERD_ROOTLESS_ROOTLESSKIT_FLAGS=--detach-netns
+[   38.637507] dockerd-rootless.sh[894]: + exec rootlesskit --state-dir=/run/user/1000/app-b-rootlesskit --net=slirp4netns --mtu=65520 --slirp4netns-sandbox=auto --slirp4netns-seccomp=auto --disable-host-loopback --port-driver=builtin --copy-up=/etc --copy-up=/run --propagation=rslave --detach-netns /usr/local/bin/dockerd-rootless.sh --rootless --host=unix:///run/user/1000/app-b.sock --data-root=/home/runtime/app-b-data --exec-root=/run/user/1000/app-b-exec --pidfile=/run/user/1000/app-b.pid --storage-driver=fuse-overlayfs --exec-opt native.cgroupdriver=systemd --add-runtime=tap-runc=/usr/local/bin/tap-runc
+[   38.946304] dockerd-rootless.sh[939]: + [ -w /run/user/1000 ]
+[   38.946426] dockerd-rootless.sh[939]: + [ -d /home/runtime ]
+[   38.946762] dockerd-rootless.sh[939]: + rootlesskit=
+[   38.947138] dockerd-rootless.sh[939]: + command -v docker-rootlesskit
+[   38.947392] dockerd-rootless.sh[939]: + command -v rootlesskit
+[   38.947702] dockerd-rootless.sh[939]: + rootlesskit=rootlesskit
+[   38.949335] dockerd-rootless.sh[939]: + break
+[   38.950927] dockerd-rootless.sh[939]: + [ -z rootlesskit ]
+[   38.951535] dockerd-rootless.sh[939]: + : /run/user/1000/containerd-rootless
+[   38.951840] dockerd-rootless.sh[939]: + [ -e /run/user/1000/containerd-rootless ]
+[   38.952476] dockerd-rootless.sh[939]: + : /run/user/1000/app-b-rootlesskit
+[   38.952781] dockerd-rootless.sh[939]: + :
+[   38.953097] dockerd-rootless.sh[939]: + :
+[   38.953408] dockerd-rootless.sh[939]: + :
+[   38.953719] dockerd-rootless.sh[939]: + : auto
+[   38.954075] dockerd-rootless.sh[939]: + : auto
+[   38.954379] dockerd-rootless.sh[939]: + :
+[   38.954692] dockerd-rootless.sh[939]: + : true
+[   38.955004] dockerd-rootless.sh[939]: + net=
+[   38.955325] dockerd-rootless.sh[939]: + port_driver=
+[   38.955636] dockerd-rootless.sh[939]: + mtu=
+[   38.955946] dockerd-rootless.sh[939]: + [ -z  ]
+[   38.956912] dockerd-rootless.sh[939]: + command -v slirp4netns
+[   38.968511] dockerd-rootless.sh[946]: + grep -qw -- --netns-type
+[   38.975469] dockerd-rootless.sh[945]: + slirp4netns --help
+[   38.979035] dockerd-rootless.sh[939]: + net=slirp4netns
+[   38.979147] dockerd-rootless.sh[939]: + [ -z slirp4netns ]
+[   38.979450] dockerd-rootless.sh[939]: + [ -z slirp4netns ]
+[   38.979761] dockerd-rootless.sh[939]: + [ -z slirp4netns ]
+[   38.980407] dockerd-rootless.sh[939]: + [ slirp4netns = host ]
+[   38.980717] dockerd-rootless.sh[939]: + [ -z  ]
+[   38.981084] dockerd-rootless.sh[939]: + mtu=65520
+[   38.981352] dockerd-rootless.sh[939]: + [ -z  ]
+[   38.981664] dockerd-rootless.sh[939]: + [ slirp4netns = pasta ]
+[   38.982004] dockerd-rootless.sh[939]: + port_driver=builtin
+[   38.982346] dockerd-rootless.sh[939]: + host_loopback=--disable-host-loopback
+[   38.982677] dockerd-rootless.sh[939]: + [  = false ]
+[   38.982974] dockerd-rootless.sh[939]: + dockerd=dockerd
+[   38.995412] dockerd-rootless.sh[939]: + [ -z 1 ]
+[   38.995487] dockerd-rootless.sh[939]: + [ 1 = 1 ]
+[   38.995810] dockerd-rootless.sh[939]: + rm -f /run/docker /run/containerd /run/xtables.lock
+[   39.000693] dockerd-rootless.sh[939]: + [ -n  ]
+[   39.000931] dockerd-rootless.sh[948]: + stat -c %T -f /etc
+[   39.004251] dockerd-rootless.sh[939]: + [ tmpfs = tmpfs ]
+[   39.004318] dockerd-rootless.sh[939]: + [ -L /etc/ssl ]
+[   39.004648] dockerd-rootless.sh[939]: + mount_directory /etc/ssl --rbind
+[   39.004961] dockerd-rootless.sh[939]: + [ -z 1 ]
+[   39.005279] dockerd-rootless.sh[939]: + DIRECTORY=/etc/ssl
+[   39.005583] dockerd-rootless.sh[939]: + [ ! -d /etc/ssl ]
+[   39.006041] dockerd-rootless.sh[949]: + realpath /etc/ssl
+[   39.013959] dockerd-rootless.sh[939]: + DIRECTORY_REALPATH=/etc/.ro3342937010/ssl
+[   39.016121] dockerd-rootless.sh[939]: + MOUNT_OPTIONS=--rbind
+[   39.017742] dockerd-rootless.sh[939]: + rm -rf /etc/ssl
+[   39.019325] dockerd-rootless.sh[939]: + mkdir -p /etc/ssl
+[   39.020890] dockerd-rootless.sh[939]: + mount --rbind /etc/.ro3342937010/ssl /etc/ssl
+[   39.023388] dockerd-rootless.sh[939]: + netns=/proc/self/ns/net
+[   39.025664] dockerd-rootless.sh[939]: + netns=/run/user/1000/app-b-rootlesskit/netns
+[   39.029542] dockerd-rootless.sh[939]: + nsenter -n/run/user/1000/app-b-rootlesskit/netns sysctl -w net.ipv4.ip_forward=1
+[   39.036731] dockerd-rootless.sh[953]: net.ipv4.ip_forward = 1
+[   39.041062] dockerd-rootless.sh[939]: + nsenter -n/run/user/1000/app-b-rootlesskit/netns sysctl -w net.ipv6.conf.all.forwarding=1
+[   39.047210] dockerd-rootless.sh[954]: net.ipv6.conf.all.forwarding = 1
+[   39.049916] dockerd-rootless.sh[939]: + exec dockerd --rootless --host=unix:///run/user/1000/app-b.sock --data-root=/home/runtime/app-b-data --exec-root=/run/user/1000/app-b-exec --pidfile=/run/user/1000/app-b.pid --storage-driver=fuse-overlayfs --exec-opt native.cgroupdriver=systemd --add-runtime=tap-runc=/usr/local/bin/tap-runc
+[   39.168609] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.201845062Z" level=info msg="Starting up"
+[   39.171379] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.202475892Z" level=warning msg="Running in rootless mode. This mode has feature limitations."
+[   39.177919] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.202486232Z" level=info msg="Running with RootlessKit integration"
+[   39.184599] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.202611932Z" level=info msg="containerd not running, starting managed containerd"
+[   39.195533] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.210602617Z" level=info msg="started new containerd process" address=/run/user/1000/app-b-exec/containerd/containerd.sock module=libcontainerd pid=961
+[   39.249908] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.283142187Z" level=info msg="starting containerd" revision=77c84241c7cbdd9b4eca2591793e3d4f4317c590 version=v2.2.3
+[   39.268469] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.301942487Z" level=warning msg="Configuration migrated from version 2, use `containerd config migrate` to avoid migration" t="4µs"
+[   39.276168] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.308998542Z" level=info msg="loading plugin" id=io.containerd.content.v1.content type=io.containerd.content.v1
+[   39.276244] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.309094522Z" level=info msg="loading plugin" id=io.containerd.image-verifier.v1.bindir type=io.containerd.image-verifier.v1
+[   39.276270] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.309108652Z" level=info msg="loading plugin" id=io.containerd.internal.v1.opt type=io.containerd.internal.v1
+[   39.276592] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.309187572Z" level=warning msg="failed to load plugin" error="mkdir /opt/containerd: permission denied" id=io.containerd.internal.v1.opt type=io.containerd.internal.v1
+[   39.276923] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.309201612Z" level=info msg="loading plugin" id=io.containerd.warning.v1.deprecations type=io.containerd.warning.v1
+[   39.277218] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.309213292Z" level=info msg="loading plugin" id=io.containerd.mount-handler.v1.erofs type=io.containerd.mount-handler.v1
+[   39.277531] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.309222892Z" level=info msg="loading plugin" id=io.containerd.snapshotter.v1.blockfile type=io.containerd.snapshotter.v1
+[   39.277841] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.309397582Z" level=info msg="skip loading plugin" error="no scratch file generator: skip plugin" id=io.containerd.snapshotter.v1.blockfile type=io.containerd.snapshotter.v1
+[   39.278185] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.309409692Z" level=info msg="loading plugin" id=io.containerd.snapshotter.v1.devmapper type=io.containerd.snapshotter.v1
+[   39.278491] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.309417952Z" level=info msg="skip loading plugin" error="devmapper not configured: skip plugin" id=io.containerd.snapshotter.v1.devmapper type=io.containerd.snapshotter.v1
+[   39.278802] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.309462382Z" level=info msg="loading plugin" id=io.containerd.snapshotter.v1.erofs type=io.containerd.snapshotter.v1
+[   39.320148] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.353613286Z" level=info msg="skip loading plugin" error="EROFS unsupported, please `modprobe erofs`: skip plugin" id=io.containerd.snapshotter.v1.erofs type=io.containerd.snapshotter.v1
+[   39.320294] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.353656126Z" level=info msg="loading plugin" id=io.containerd.snapshotter.v1.native type=io.containerd.snapshotter.v1
+[   39.329206] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.362695841Z" level=info msg="loading plugin" id=io.containerd.snapshotter.v1.overlayfs type=io.containerd.snapshotter.v1
+[   39.333533] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.367012354Z" level=info msg="loading plugin" id=io.containerd.snapshotter.v1.zfs type=io.containerd.snapshotter.v1
+[   39.333711] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.367224084Z" level=info msg="skip loading plugin" error="lstat /home/runtime/app-b-data/containerd/daemon/io.containerd.snapshotter.v1.zfs: no such file or directory: skip plugin" id=io.containerd.snapshotter.v1.zfs type=io.containerd.snapshotter.v1
+[   39.334080] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.367591004Z" level=info msg="loading plugin" id=io.containerd.event.v1.exchange type=io.containerd.event.v1
+[   39.334413] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.367916494Z" level=info msg="loading plugin" id=io.containerd.monitor.task.v1.cgroups type=io.containerd.monitor.task.v1
+[   39.335567] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.368421064Z" level=info msg="loading plugin" id=io.containerd.metadata.v1.bolt type=io.containerd.metadata.v1
+[   39.335865] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.368557544Z" level=info msg="metadata content store policy set" policy=shared
+[   39.339035] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.372536286Z" level=info msg="loading plugin" id=io.containerd.gc.v1.scheduler type=io.containerd.gc.v1
+[   39.339566] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.373113767Z" level=info msg="loading plugin" id=io.containerd.nri.v1.nri type=io.containerd.nri.v1
+[   39.339829] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.373351537Z" level=info msg="built-in NRI default validator is disabled"
+[   39.340640] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.373975907Z" level=info msg="runtime interface created"
+[   39.340736] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.373987327Z" level=info msg="created NRI interface"
+[   39.341062] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.373996767Z" level=info msg="loading plugin" id=io.containerd.differ.v1.erofs type=io.containerd.differ.v1
+[   39.341490] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.374133617Z" level=info msg="skip loading plugin" error="failed to check mkfs.erofs availability: failed to run mkfs.erofs --help: exec: \"mkfs.erofs\": executable file not found in $PATH: skip plugin" id=io.containerd.differ.v1.erofs type=io.containerd.differ.v1
+[   39.342123] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.374146907Z" level=info msg="loading plugin" id=io.containerd.mount-manager.v1.bolt type=io.containerd.mount-manager.v1
+[   39.343340] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.376823318Z" level=info msg="loading plugin" id=io.containerd.differ.v1.walking type=io.containerd.differ.v1
+[   39.343668] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.376843128Z" level=info msg="loading plugin" id=io.containerd.lease.v1.manager type=io.containerd.lease.v1
+[   39.344354] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.376853398Z" level=info msg="loading plugin" id=io.containerd.service.v1.containers-service type=io.containerd.service.v1
+[   39.344663] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.376864278Z" level=info msg="loading plugin" id=io.containerd.service.v1.content-service type=io.containerd.service.v1
+[   39.344968] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.377642879Z" level=info msg="loading plugin" id=io.containerd.service.v1.diff-service type=io.containerd.service.v1
+[   39.345698] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.378938500Z" level=info msg="loading plugin" id=io.containerd.service.v1.images-service type=io.containerd.service.v1
+[   39.346044] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.378958590Z" level=info msg="loading plugin" id=io.containerd.service.v1.introspection-service type=io.containerd.service.v1
+[   39.346342] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.378968730Z" level=info msg="loading plugin" id=io.containerd.service.v1.namespaces-service type=io.containerd.service.v1
+[   39.346647] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.379024760Z" level=info msg="loading plugin" id=io.containerd.service.v1.snapshots-service type=io.containerd.service.v1
+[   39.347662] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.379035390Z" level=info msg="loading plugin" id=io.containerd.shim.v1.manager type=io.containerd.shim.v1
+[   39.347967] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.380574941Z" level=info msg="loading plugin" id=io.containerd.runtime.v2.task type=io.containerd.runtime.v2
+[   39.348650] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.380827511Z" level=info msg="loading plugin" id=io.containerd.service.v1.tasks-service type=io.containerd.service.v1
+[   39.446113] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.380846731Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.containers type=io.containerd.grpc.v1
+[   39.446371] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.380916611Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.content type=io.containerd.grpc.v1
+[   39.446682] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.380924861Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.diff type=io.containerd.grpc.v1
+[   39.446994] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.380933831Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.events type=io.containerd.grpc.v1
+[   39.447314] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.380943181Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.images type=io.containerd.grpc.v1
+[   39.447638] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.380951951Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.introspection type=io.containerd.grpc.v1
+[   39.447963] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.381890032Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.leases type=io.containerd.grpc.v1
+[   39.449554] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.381904582Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.mounts type=io.containerd.grpc.v1
+[   39.451147] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.381913662Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.namespaces type=io.containerd.grpc.v1
+[   39.451749] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.381923612Z" level=info msg="loading plugin" id=io.containerd.sandbox.store.v1.local type=io.containerd.sandbox.store.v1
+[   39.452378] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.381977712Z" level=info msg="loading plugin" id=io.containerd.transfer.v1.local type=io.containerd.transfer.v1
+[   39.452682] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.382000702Z" level=info msg="loading plugin" id=io.containerd.cri.v1.images type=io.containerd.cri.v1
+[   39.452996] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.382029812Z" level=info msg="Get image filesystem path \"/home/runtime/app-b-data/containerd/daemon/io.containerd.snapshotter.v1.overlayfs\" for snapshotter \"overlayfs\""
+[   39.453313] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.382532882Z" level=info msg="Start snapshots syncer"
+[   39.453624] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.382555002Z" level=info msg="loading plugin" id=io.containerd.cri.v1.runtime type=io.containerd.cri.v1
+[   39.453982] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.383171823Z" level=info msg="starting cri plugin" config="{\"containerd\":{\"defaultRuntimeName\":\"runc\",\"runtimes\":{\"runc\":{\"runtimeType\":\"io.containerd.runc.v2\",\"runtimePath\":\"\",\"PodAnnotations\":null,\"ContainerAnnotations\":null,\"options\":{\"BinaryName\":\"\",\"CriuImagePath\":\"\",\"CriuWorkPath\":\"\",\"IoGid\":0,\"IoUid\":0,\"NoNewKeyring\":false,\"Root\":\"\",\"ShimCgroup\":\"\",\"SystemdCgroup\":false},\"privileged_without_host_devices\":false,\"privileged_without_host_devices_all_devices_allowed\":false,\"cgroupWritable\":false,\"baseRuntimeSpec\":\"\",\"cniConfDir\":\"\",\"cniMaxConfNum\":0,\"snapshotter\":\"\",\"sandboxer\":\"podsandbox\",\"io_type\":\"\"}},\"ignoreBlockIONotEnabledErrors\":false,\"ignoreRdtNotEnabledErrors\":false},\"cni\":{\"binDir\":\"\",\"binDirs\":[\"/opt/cni/bin\"],\"confDir\":\"/etc/cni/net.d\",\"maxConfNum\":1,\"setupSerially\":false,\"confTemplate\":\"\",\"ipPref\":\"\",\"useInternalLoopback\":false},\"enableSelinux\":false,\"selinuxCategoryRange\":1024,\"maxContainerLogLineSize\":16384,\"disableApparmor\":false,\"restrictOOMScoreAdj\":false,\"disableProcMount\":false,\"unsetSeccompProfile\":\"\",\"tolerateMissingHugetlbController\":true,\"disableHugetlbController\":true,\"device_ownership_from_security_context\":false,\"ignoreImageDefinedVolumes\":false,\"netnsMountsUnderStateDir\":false,\"enableUnprivilegedPorts\":true,\"enableUnprivilegedICMP\":true,\"enableCDI\":true,\"cdiSpecDirs\":[\"/etc/cdi\",\"/var/run/cdi\"],\"drainExecSyncIOTimeout\":\"0s\",\"ignoreDeprecationWarnings\":null,\"containerdRootDir\":\"/home/runtime/app-b-data/containerd/daemon\",\"containerdEndpoint\":\"/run/user/1000/app-b-exec/containerd/containerd.sock\",\"rootDir\":\"/home/runtime/app-b-data/containerd/daemon/io.containerd.grpc.v1.cri\",\"stateDir\":\"/run/user/1000/app-b-exec/containerd/daemon/io.containerd.grpc.v1.cri\"}"
+[   39.537808] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.383507983Z" level=info msg="loading plugin" id=io.containerd.podsandbox.controller.v1.podsandbox type=io.containerd.podsandbox.controller.v1
+[   39.538155] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.383542453Z" level=info msg="loading plugin" id=io.containerd.sandbox.controller.v1.shim type=io.containerd.sandbox.controller.v1
+[   39.538479] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.383907073Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.sandbox-controllers type=io.containerd.grpc.v1
+[   39.538831] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.383926623Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.sandboxes type=io.containerd.grpc.v1
+[   39.539142] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.383936763Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.snapshots type=io.containerd.grpc.v1
+[   39.539495] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.383944743Z" level=info msg="loading plugin" id=io.containerd.streaming.v1.manager type=io.containerd.streaming.v1
+[   39.539776] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.383953513Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.streaming type=io.containerd.grpc.v1
+[   39.541366] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384013013Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.tasks type=io.containerd.grpc.v1
+[   39.543302] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384022463Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.transfer type=io.containerd.grpc.v1
+[   39.543595] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384033903Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.version type=io.containerd.grpc.v1
+[   39.543904] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384041133Z" level=info msg="loading plugin" id=io.containerd.monitor.container.v1.restart type=io.containerd.monitor.container.v1
+[   39.545511] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384347993Z" level=info msg="loading plugin" id=io.containerd.tracing.processor.v1.otlp type=io.containerd.tracing.processor.v1
+[   39.546138] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384364823Z" level=info msg="skip loading plugin" error="skip plugin: tracing endpoint not configured" id=io.containerd.tracing.processor.v1.otlp type=io.containerd.tracing.processor.v1
+[   39.546444] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384372123Z" level=info msg="loading plugin" id=io.containerd.internal.v1.tracing type=io.containerd.internal.v1
+[   39.546776] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384379393Z" level=info msg="skip loading plugin" error="skip plugin: tracing endpoint not configured" id=io.containerd.internal.v1.tracing type=io.containerd.internal.v1
+[   39.547083] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384385603Z" level=info msg="loading plugin" id=io.containerd.ttrpc.v1.otelttrpc type=io.containerd.ttrpc.v1
+[   39.547396] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384625983Z" level=info msg="loading plugin" id=io.containerd.grpc.v1.healthcheck type=io.containerd.grpc.v1
+[   39.547708] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384862043Z" level=info msg=serving... address=/run/user/1000/app-b-exec/containerd/containerd-debug.sock
+[   39.549501] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384945304Z" level=info msg=serving... address=/run/user/1000/app-b-exec/containerd/containerd.sock.ttrpc
+[   39.549642] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.384970974Z" level=info msg=serving... address=/run/user/1000/app-b-exec/containerd/containerd.sock
+[   39.549969] dockerd-rootless.sh[961]: time="2026-10-30T17:19:44.385033864Z" level=info msg="containerd successfully booted in 0.102975s"
++ [ -S /run/user/1000/app-b.sock ]
++ break
++ seq 1 30
++ runuser -u runtime -- env DOCKER_HOST=unix:///run/user/1000/app-b.sock docker[   39.632730] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.666263910Z" level=info msg="OTEL tracing is not configured, using no-op tracer provider"
+[   39.633324] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.666869280Z" level=info msg="CDI directory does not exist, skipping" dir=/var/run/cdi
+[   39.633488] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.666968070Z" level=info msg="CDI directory does not exist, skipping" dir=/home/runtime/.config/cdi
+[   39.633681] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.666979470Z" level=info msg="CDI directory does not exist, skipping" dir=/run/user/1000/cdi
+[   39.634010] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.666986010Z" level=info msg="CDI directory does not exist, skipping" dir=/etc/cdi
+ info
+[   39.710371] runuser[985]: pam_unix(runuser:session): session opened for user runtime(uid=1000) by (uid=0)
+[   39.716401] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.749766206Z" level=info msg="Creating a containerd client" address=/run/user/1000/app-b-exec/containerd/containerd.sock timeout=1m0s
+[   39.721853] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.755337489Z" level=info msg="Loading containers: start."
+[   39.722535] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.755373279Z" level=info msg="NRI is disabled"
+[   39.723915] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.755544710Z" level=info msg="[graphdriver] trying configured driver: fuse-overlayfs"
+[   39.725046] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.757715281Z" level=info msg="Restoring containers: start."
+[   39.748428] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.781887714Z" level=info msg="Deleting nftables IPv4 rules" error="exit status 1" output="Error: Could not process rule: No such file or directory\ndelete table ip docker-bridges"
+[   39.776362] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.809860470Z" level=info msg="Deleting nftables IPv6 rules" error="exit status 1" output="Error: Could not process rule: No such file or directory\ndelete table ip6 docker-bridges"
+[   39.782528] dockerd-rootless.sh[939]: time="2026-10-30T17:19:44.809934450Z" level=info msg="skipping firewalld management for rootless mode"
+[   40.024751] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.058070167Z" level=info msg="Loading containers: done."
+[   40.030394] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.063918431Z" level=warning msg="WARNING: IPv4 forwarding is disabled"
+[   40.034180] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.063956161Z" level=info msg="Docker daemon" commit=ff8d90ae containerd-snapshotter=false storage-driver=fuse-overlayfs version=29.5.0
+[   40.038832] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.064041651Z" level=info msg="Initializing buildkit"
+[   40.054251] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.087774414Z" level=info msg="Completed buildkit initialization"
+[   40.064548] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.097996399Z" level=info msg="Daemon has completed initialization"
+[   40.067785] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.098043479Z" level=info msg="API listen on /run/user/1000/app-b.sock"
+[   40.077682] runuser[985]: pam_unix(runuser:session): session closed for user runtime
++ break
++ /opt/m09/backendprobe
+M09-BACKEND-VERIFIED app=11111111-1111-4111-8111-111111111111 namespace=user:[4026532174] binding=sha256:c6d72d98f0cf6a43e223acce32ce051b2d53004c8a5e3396ffcee546e7e3c7cc
+M09-BACKEND-VERIFIED app=22222222-2222-4222-8222-222222222222 namespace=user:[4026532241] binding=sha256:60723436d02e109ebe9d73bd3c1b1c11e691c8417fb1e1d520f4374ca21b61d0
+M09-BACKEND-DENIED app=11111111-1111-4111-8111-111111111111 field=start
+M09-BACKEND-DENIED app=11111111-1111-4111-8111-111111111111 field=mapping
+M09-BACKEND-DENIED app=11111111-1111-4111-8111-111111111111 field=namespace
+M09-BACKEND-DENIED app=11111111-1111-4111-8111-111111111111 field=boot
+M09-BACKEND-DENIED app=22222222-2222-4222-8222-222222222222 field=start
+M09-BACKEND-DENIED app=22222222-2222-4222-8222-222222222222 field=mapping
+M09-BACKEND-DENIED app=22222222-2222-4222-8222-222222222222 field=namespace
+M09-BACKEND-DENIED app=22222222-2222-4222-8222-222222222222 field=boot
+M09-BACKEND-OBSERVATION-COMPLETE scope=identity-only-not-R01
++ finish
++ rc=0
++ runuser -u runtime -- env XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus systemctl --user stop m09-app-a.service
+[   40.292629] runuser[1185]: pam_unix(runuser:session): session opened for user runtime(uid=1000) by (uid=0)
+[   40.300057] systemd[599]: Stopping m09-app-a.service - M09 application a rootless isolation prototype...
+[   40.302681] dockerd-rootless.sh[655]: time="2026-10-30T17:19:45.333361670Z" level=info msg="Processing signal 'terminated'"
+[   40.305966] dockerd-rootless.sh[655]: time="2026-10-30T17:19:45.339215263Z" level=info msg="Processing signal 'terminated'"
+[   40.308843] dockerd-rootless.sh[655]: time="2026-10-30T17:19:45.339335963Z" level=error msg="Failed to get event" error="rpc error: code = Unavailable desc = error reading from server: EOF" module=libcontainerd namespace=moby
+[   40.313859] dockerd-rootless.sh[655]: time="2026-10-30T17:19:45.339358673Z" level=info msg="Waiting for containerd to be ready to restart event processing" module=libcontainerd namespace=moby
+[   40.318175] dockerd-rootless.sh[655]: time="2026-10-30T17:19:45.339438553Z" level=error msg="Failed to get event" error="rpc error: code = Unavailable desc = error reading from server: EOF" module=libcontainerd namespace=plugins.moby
+[   40.323513] dockerd-rootless.sh[655]: time="2026-10-30T17:19:45.339447233Z" level=info msg="Waiting for containerd to be ready to restart event processing" module=libcontainerd namespace=plugins.moby
+[   40.328069] systemd[599]: Stopped m09-app-a.service - M09 application a rootless isolation prototype.
++ runuser -u runtime -- env XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus systemctl --user stop m09-app-b.service
+[   40.333866] runuser[1185]: pam_unix(runuser:session): session closed for user runtime
+[   40.335977] dockerd-rootless.sh[655]: time="2026-10-30T17:19:45.341280914Z" level=warning msg="Error while testing if containerd API is ready" error="Canceled: context canceled while waiting for connections to become ready"
+[   40.341593] dockerd-rootless.sh[655]: time="2026-10-30T17:19:45.341297634Z" level=info msg="stopping event stream following graceful shutdown" error="context canceled" module=libcontainerd namespace=plugins.moby
+[   40.346362] dockerd-rootless.sh[655]: time="2026-10-30T17:19:45.341309174Z" level=info msg="stopping healthcheck following graceful shutdown" module=libcontainerd
+[   40.351280] dockerd-rootless.sh[655]: time="2026-10-30T17:19:45.341396444Z" level=info msg="Daemon shutdown complete"
+[   40.354802] systemd[599]: m09-app-a.service: Consumed 1.434s CPU time, 215.2M memory peak.
+[   40.357271] runuser[1188]: pam_unix(runuser:session): session opened for user runtime(uid=1000) by (uid=0)
+[   40.359896] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.374673643Z" level=info msg="Processing signal 'terminated'"
+[   40.363158] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.375024943Z" level=info msg="Processing signal 'terminated'"
+[   40.366097] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.375142734Z" level=error msg="Failed to get event" error="rpc error: code = Unavailable desc = error reading from server: EOF" module=libcontainerd namespace=moby
+[   40.370993] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.375155604Z" level=info msg="Waiting for containerd to be ready to restart event processing" module=libcontainerd namespace=moby
+[   40.375259] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.375222174Z" level=error msg="Failed to get event" error="rpc error: code = Unavailable desc = error reading from server: EOF" module=libcontainerd namespace=plugins.moby
+[   40.380316] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.375230314Z" level=info msg="Waiting for containerd to be ready to restart event processing" module=libcontainerd namespace=plugins.moby
+[   40.384760] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.376710484Z" level=warning msg="Error while testing if containerd API is ready" error="Canceled: grpc: the client connection is closing"
+[   40.389137] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.377002055Z" level=warning msg="Error while testing if containerd API is ready" error="Canceled: context canceled while waiting for connections to become ready"
+[   40.394015] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.377050905Z" level=info msg="stopping event stream following graceful shutdown" error="context canceled" module=libcontainerd namespace=plugins.moby
+[   40.398649] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.377061835Z" level=info msg="stopping event stream following graceful shutdown" error="context canceled" module=libcontainerd namespace=moby
+[   40.403240] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.377068535Z" level=info msg="stopping healthcheck following graceful shutdown" module=libcontainerd
+[   40.406954] dockerd-rootless.sh[939]: time="2026-10-30T17:19:45.377160005Z" level=info msg="Daemon shutdown complete"
+[   40.409823] systemd[599]: Stopping m09-app-b.service - M09 application b rootless isolation prototype...
+[   40.412348] systemd[599]: Stopped m09-app-b.service - M09 application b rootless isolation prototype.
+[   40.414763] systemd[599]: m09-app-b.service: Consumed 1.275s CPU time, 65.3M memory peak.
+[   40.481713] runuser[1188]: pam_unix(runuser:session): session closed for user runtime
++ echo M09-BACKEND-OBSERVATION-END rc=0
+M09-BACKEND-OBSERVATION-END rc=0
++ sync
++ systemctl poweroff --no-block
+[   40.497084] systemd-logind[580]: [0;1;39mThe system will power off now![0m
+[   40.499724] systemd-logind[580]: [0;1;39mSystem is powering down.[0m
+[   40.504545] systemd[1]: Unnecessary job was removed for dev-ttyS0.device - /dev/ttyS0.
+[[0;32m  OK  [0m] Removed slice [0;1;39msystem-modprobe.slice[0m - Slice /system/modprobe.
+[[0;32m  OK  [0m] Stopped target [0;1;39mtimers.target[0m - Timer Units.
+[[0;32m  OK  [0m] Stopped [0;1;39mapt-daily-upgrade.timer[0m - …y apt upgrade and clean activities.
+[[0;32m  OK  [0m] Stopped [0;1;39mapt-daily.timer[0m - Daily apt download activities.
+[[0;32m  OK  [0m] Stopped [0;1;39mdpkg-db-backup.timer[0m - Daily dpkg database backup timer.
+[[0;32m  OK  [0m] Stopped [0;1;39mfstrim.timer[0m - Discard unused filesystem blocks once a week.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-tmpfiles-clean.tim…[0my Cleanup of Temporary Directories.
+         Stopping [0;1;39mgetty@tty1.service[0m - Getty on tty1...
+[[0;32m  OK  [0m] Removed slice [0;1;39msystem-serial\x2dget…slice[0m - Slice /system/serial-getty.
+         Stopping [0;1;39msystemd-random-seed.service[0m - Load/Save OS Random Seed...
+         Stopping [0;1;39muser@1000.service[0m - User Manager for UID 1000...
+[[0;32m  OK  [0m] Stopped [0;1;39mgetty@tty1.service[0m - Getty on tty1.
+[   40.538265] systemd[1]: Removed slice system-modprobe.slice - Slice /system/modprobe.
+[   40.540571] systemd[1]: Stopped target timers.target - Timer Units.
+[   40.542742] systemd[1]: apt-daily-upgrade.timer: Deactivated successfully.
+[   40.544916] systemd[1]: Stopped apt-daily-upgrade.timer - Daily apt upgrade and clean activities.
+[   40.547484] systemd[1]: apt-daily.timer: Deactivated successfully.
+[   40.549413] systemd[1]: Stopped apt-daily.timer - Daily apt download activities.
+[   40.551676] systemd[1]: dpkg-db-backup.timer: Deactivated successfully.
+[   40.553695] systemd[1]: Stopped dpkg-db-backup.timer - Daily dpkg database backup timer.
+[   40.556118] systemd[1]: fstrim.timer: Deactivated successfully.
+[   40.557933] systemd[1]: Stopped fstrim.timer - Discard unused filesystem blocks once a week.
+[   40.560533] systemd[1]: systemd-tmpfiles-clean.timer: Deactivated successfully.
+[   40.562733] systemd[1]: Stopped systemd-tmpfiles-clean.timer - Daily Cleanup of Temporary Directories.
+[   40.566486] systemd[1]: Stopping getty@tty1.service - Getty on tty1...
+[   40.589815] systemd[1]: Removed slice system-serial\x2dgetty.slice - Slice /system/serial-getty.
+[   40.592193] systemd[1]: Stopping systemd-random-seed.service - Load/Save OS Random Seed...
+[   40.594297] systemd[1]: Stopping user@1000.service - User Manager for UID 1000...
+[   40.596255] systemd[1]: getty@tty1.service: Deactivated successfully.
+[   40.597931] systemd[1]: Stopped getty@tty1.service - Getty on tty1.
+[   40.599638] systemd[599]: Activating special unit exit.target...
+[   40.601244] systemd[599]: Stopped target default.target - Main User Target.
+[   40.603051] systemd[599]: Stopped target basic.target - Basic System.
+[   40.608154] systemd[599]: Stopped target paths.target - Paths.
+[   40.608381] (sd-pam)[601]: pam_unix(systemd-user:session): session closed for user runtime
+[   40.608624] systemd[599]: Stopped target sockets.target - Sockets.
+[   40.608907] (sd-pam)[601]: [0;1;31mpam_systemd(systemd-user:session): Failed to release session: No session '1' known[0m
+[   40.609261] systemd[599]: Stopped target timers.target - Timers.
+[   40.609529] systemd[599]: Closed dbus.socket - D-Bus User Message Bus Socket.
+[   40.609838] systemd[599]: Removed slice app.slice - User Application Slice.
+[   40.610192] systemd[599]: app.slice: Consumed 2.718s CPU time, 274.8M memory peak.
+[   40.610498] systemd[599]: Reached target shutdown.target - Shutdown.
+[   40.610807] systemd[599]: Finished systemd-exit.service - Exit the Session.
+[   40.611131] systemd[599]: Reached target exit.target - Exit the Session.
+[   40.611442] systemd[1]: [0;1;38:5:185mm09-feasibility.service: Main process exited, code=killed, status=15/TERM[0m
+[   40.611773] systemd[1]: [0;1;38:5:185mm09-feasibility.service: Failed with result 'signal'.[0m
+[   40.612451] systemd-logind[580]: Removed session 1.
+[   40.612722] systemd[1]: Stopped m09-feasibility.service - M09 isolated runtime feasibility.
+[[0;32m  OK  [0m] Stopped [0;1;39mm09-feasibility.service[0m - M09 isolated runtime feasibility.
+[   40.637623] systemd[1]: user@1000.service: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped [0;1;39muser@1000.service[0m - User Manager for UID 1000.
+[   40.639513] systemd[1]: Stopped user@1000.service - User Manager for UID 1000.
+[   40.643608] systemd[1]: user@1000.service: Consumed 2.811s CPU time, 280.2M memory peak.
+[   40.646223] systemd[1]: systemd-random-seed.service: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-random-seed.service[0m - Load/Save OS Random Seed.
+[   40.648541] systemd[1]: Stopped systemd-random-seed.service - Load/Save OS Random Seed.
+[[0;32m  OK  [0m] Removed slice [0;1;39msystem-getty.slice[0m - Slice /system/getty.
+[   40.833425] systemd[1]: Removed slice system-getty.slice - Slice /system/getty.
+         Stopping [0;1;39msystemd-user-sessions.service[0m - Permit User Sessions...
+[   40.842309] systemd[1]: Stopping systemd-user-sessions.service - Permit User Sessions...
+         Stopping [0;1;39muser-runtime-dir@1000.ser…[0mRuntime Directory /run/user/1000...
+[   40.859266] systemd[1]: Stopping user-runtime-dir@1000.service - User Runtime Directory /run/user/1000...
+[   40.865985] systemd[1]: systemd-user-sessions.service: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-user-sessions.service[0m - Permit User Sessions.
+[   40.870272] systemd[1]: Stopped systemd-user-sessions.service - Permit User Sessions.
+[[0;32m  OK  [0m] Unmounted [0;1;39mrun-user-1000.mount[0m - /run/user/1000.
+[   40.874297] systemd[1]: run-user-1000.mount: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped [0;1;39muser-runtime-dir@1000.serv…[0mr Runtime Directory /run/user/1000.
+[   40.878436] systemd[1]: Unmounted run-user-1000.mount - /run/user/1000.
+[[0;32m  OK  [0m] Removed slice [0;1;39muser-1000.slice[0m - User Slice of UID 1000.
+[   40.882196] systemd[1]: user-runtime-dir@1000.service: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped target [0;1;39mremote-fs.target[0m - Remote File Systems.
+[   40.886201] systemd[1]: Stopped user-runtime-dir@1000.service - User Runtime Directory /run/user/1000.
+         Stopping [0;1;39mdbus.service[0m - D-Bus System Message Bus...
+[   40.890456] systemd[1]: Removed slice user-1000.slice - User Slice of UID 1000.
+         Stopping [0;1;39msystemd-logind.service[0m - User Login Management...
+[   40.894314] systemd[1]: user-1000.slice: Consumed 2.828s CPU time, 280.3M memory peak.
+[   40.896457] systemd[1]: Stopped target remote-fs.target - Remote File Systems.
+[   40.898439] systemd[1]: Stopping dbus.service - D-Bus System Message Bus...
+[   40.900361] systemd[1]: Stopping systemd-logind.service - User Login Management...
+[   40.904587] systemd[1]: dbus.service: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped [0;1;39mdbus.service[0m - D-Bus System Message Bus.
+[   40.908299] systemd[1]: Stopped dbus.service - D-Bus System Message Bus.
+[   40.913138] systemd[1]: systemd-logind.service: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-logind.service[0m - User Login Management.
+[   40.917083] systemd[1]: Stopped systemd-logind.service - User Login Management.
+[[0;32m  OK  [0m] Stopped target [0;1;39mbasic.target[0m - Basic System.
+[[0;32m  OK  [0m] Stopped target [0;1;39mpaths.target[0m - Path Units.
+[   40.922544] systemd[1]: Stopped target basic.target - Basic System.
+[   40.924398] systemd[1]: Stopped target paths.target - Path Units.
+[   40.926153] systemd[1]: systemd-ask-password-console.path: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-ask-password-conso…[0mequests to Console Directory Watch.
+[   40.936146] systemd[1]: Stopped systemd-ask-password-console.path - Dispatch Password Requests to Console Directory Watch.
+[   40.941328] systemd[1]: systemd-ask-password-wall.path: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-ask-password-wall.…[0md Requests to Wall Directory Watch.
+[   40.958551] systemd[1]: Stopped systemd-ask-password-wall.path - Forward Password Requests to Wall Directory Watch.
+[[0;32m  OK  [0m] Stopped target [0;1;39mslices.target[0m - Slice Units.
+[   40.963089] systemd[1]: Stopped target slices.target - Slice Units.
+[[0;32m  OK  [0m] Removed slice [0;1;39muser.slice[0m - User and Session Slice.
+[[0;32m  OK  [0m] Stopped target [0;1;39msockets.target[0m - Socket Units.
+[[0;32m  OK  [0m] Closed [0;1;39mdbus.socket[0m - D-Bus System Message Bus Socket.
+[[0;32m  OK  [0m] Closed [0;1;39msystemd-hostnamed.socket[0m - Hostname Service Socket.
+[[0;32m  OK  [0m] Stopped target [0;1;39msysinit.target[0m - System Initialization.
+[   40.966847] systemd[1]: Removed slice user.slice - User and Session Slice.
+[[0;32m  OK  [0m] Unset automount [0;1;39mproc-sys-fs-binfmt…[0mormats File System Automount Point.
+[   40.978266] systemd[1]: user.slice: Consumed 2.828s CPU time, 280.3M memory peak.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-sysctl.service[0m - Apply Kernel Variables.
+[   40.982330] systemd[1]: Stopped target sockets.target - Socket Units.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-modules-load.service[0m - Load Kernel Modules.
+[   40.986205] systemd[1]: dbus.socket: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-update-done.service[0m - Update is Completed.
+[   40.989924] systemd[1]: Closed dbus.socket - D-Bus System Message Bus Socket.
+[[0;32m  OK  [0m] Stopped [0;1;39mldconfig.service[0m - Rebuild Dynamic Linker Cache.
+[   40.993898] systemd[1]: systemd-hostnamed.socket: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-journal-catalog-up….service[0m - Rebuild Journal Catalog.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-tmpfiles-setup.ser…[0mreate System Files and Directories.
+[[0;32m  OK  [0m] Stopped target [0;1;39mlocal-fs.target[0m - Local File Systems.
+[   41.002565] systemd[1]: Closed systemd-hostnamed.socket - Hostname Service Socket.
+[[0;32m  OK  [0m] Stopped target [0;1;39mlocal-fs-pre.target[0m…Preparation for Local File Systems.
+[   41.006969] systemd[1]: Stopped target sysinit.target - System Initialization.
+         Unmounting [0;1;39mrun-lock.mount[0m - Legacy Locks Directory /run/lock...
+[   41.010938] systemd[1]: proc-sys-fs-binfmt_misc.automount: Deactivated successfully.
+[   41.013059] systemd[1]: Unset automount proc-sys-fs-binfmt_misc.automount - Arbitrary Executable File Formats File System Automount Point.
+         Unmounting [0;1;39mtmp.mount[0m - Temporary Directory /tmp...
+[   41.017900] systemd[1]: systemd-sysctl.service: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-tmpfiles-setup-dev…[0mCreate Static Device Nodes in /dev.
+[   41.022667] systemd[1]: Stopped systemd-sysctl.service - Apply Kernel Variables.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-sysusers.service[0m - Create System Users.
+[   41.026723] systemd[1]: systemd-modules-load.service: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-remount-fs.service[0m…mount Root and Kernel File Systems.
+[   41.031104] systemd[1]: Stopped systemd-modules-load.service - Load Kernel Modules.
+[[0;32m  OK  [0m] Stopped [0;1;39msystemd-tmpfiles-setup-dev…[0mic Device Nodes in /dev gracefully.
+[   41.035578] systemd[1]: systemd-update-done.service: Deactivated successfully.
+[   41.037608] systemd[1]: Stopped systemd-update-done.service - Update is Completed.
+[   41.039717] systemd[1]: ldconfig.service: Deactivated successfully.
+[   41.041512] systemd[1]: Stopped ldconfig.service - Rebuild Dynamic Linker Cache.
+[   41.043522] systemd[1]: systemd-journal-catalog-update.service: Deactivated successfully.
+[   41.045721] systemd[1]: Stopped systemd-journal-catalog-update.service - Rebuild Journal Catalog.
+[   41.048120] systemd[1]: systemd-tmpfiles-setup.service: Deactivated successfully.
+[   41.050158] systemd[1]: Stopped systemd-tmpfiles-setup.service - Create System Files and Directories.
+[   41.052619] systemd[1]: Stopped target local-fs.target - Local File Systems.
+[   41.054588] systemd[1]: Stopped target local-fs-pre.target - Preparation for Local File Systems.
+[   41.057055] systemd[1]: Unmounting run-lock.mount - Legacy Locks Directory /run/lock...
+[[0;32m  OK  [0m] Unmounted [0;1;39mrun-lock.mount[0m - Legacy Locks Directory /run/lock.
+[   41.061551] systemd[1]: Unmounting tmp.mount - Temporary Directory /tmp...
+[[0;32m  OK  [0m] Unmounted [0;1;39mtmp.mount[0m - Temporary Directory /tmp.
+[   41.065308] systemd[1]: systemd-tmpfiles-setup-dev.service: Deactivated successfully.
+[[0;32m  OK  [0m] Stopped target [0;1;39mswap.target[0m - Swaps.
+[[0;32m  OK  [0m] Reached target [0;1;39mshutdown.target[0m - System Shutdown.
+[   41.068952] systemd[1]: Stopped systemd-tmpfiles-setup-dev.service - Create Static Device Nodes in /dev.
+[[0;32m  OK  [0m] Reached target [0;1;39mumount.target[0m - Unmount All Filesystems.
+[[0;32m  OK  [0m] Reached target [0;1;39mfinal.target[0m - Late Shutdown Services.
+[   41.075203] systemd[1]: systemd-sysusers.service: Deactivated successfully.
+[[0;32m  OK  [0m] Finished [0;1;39msystemd-poweroff.service[0m - System Power Off.
+[   41.081000] systemd[1]: Stopped systemd-sysusers.service - Create System Users.
+[[0;32m  OK  [0m] Reached target [0;1;39mpoweroff.target[0m - System Power Off.
+[   41.084926] systemd[1]: systemd-remount-fs.service: Deactivated successfully.
+[   41.086936] systemd[1]: Stopped systemd-remount-fs.service - Remount Root and Kernel File Systems.
+[   41.089533] systemd[1]: systemd-tmpfiles-setup-dev-early.service: Deactivated successfully.
+[   41.091727] systemd[1]: Stopped systemd-tmpfiles-setup-dev-early.service - Create Static Device Nodes in /dev gracefully.
+[   41.094652] systemd[1]: run-lock.mount: Deactivated successfully.
+[   41.096403] systemd[1]: Unmounted run-lock.mount - Legacy Locks Directory /run/lock.
+[   41.098496] systemd[1]: tmp.mount: Deactivated successfully.
+[   41.100092] systemd[1]: Unmounted tmp.mount - Temporary Directory /tmp.
+[   41.101982] systemd[1]: Stopped target swap.target - Swaps.
+[   41.103549] systemd[1]: Reached target shutdown.target - System Shutdown.
+[   41.105433] systemd[1]: Reached target umount.target - Unmount All Filesystems.
+[   41.107442] systemd[1]: Reached target final.target - Late Shutdown Services.
+[   41.109379] systemd[1]: systemd-poweroff.service: Deactivated successfully.
+[   41.111331] systemd[1]: Finished systemd-poweroff.service - System Power Off.
+[   41.113386] systemd[1]: Reached target poweroff.target - System Power Off.
+[   41.115338] systemd[1]: [0;1;39mShutting down.[0m
+[   41.483271] systemd-shutdown[1]: Syncing filesystems and block devices.
+[   41.486074] systemd-shutdown[1]: Sending SIGTERM to remaining processes...
+[   41.489583] systemd-journald[425]: Received SIGTERM from PID 1 (systemd-shutdow).
+[   41.511047] systemd-shutdown[1]: Sending SIGKILL to remaining processes...
+[   41.514076] systemd-shutdown[1]: Unmounting file systems.
+[   41.515576] (sd-umount)[1217]: Unmounting '/run/credentials/systemd-journald.service'.
+[   41.517783] (sd-remount)[1218]: Remounting '/' read-only with options ''.
+[   41.543289] EXT4-fs (vda): re-mounted 9982f305-46ab-440e-914e-707686998aa2 ro.
+[   41.545827] systemd-shutdown[1]: All filesystems unmounted.
+[   41.546944] systemd-shutdown[1]: Deactivating swaps.
+[   41.547895] systemd-shutdown[1]: All swaps deactivated.
+[   41.548898] systemd-shutdown[1]: Detaching loop devices.
+[   41.551004] systemd-shutdown[1]: All loop devices detached.
+[   41.552056] systemd-shutdown[1]: Stopping MD devices.
+[   41.553064] systemd-shutdown[1]: All MD devices stopped.
+[   41.554058] systemd-shutdown[1]: Detaching DM devices.
+[   41.555131] systemd-shutdown[1]: All DM devices detached.
+[   41.556145] systemd-shutdown[1]: All filesystems, swaps, loop devices, MD devices and DM devices detached.
+[   41.558268] systemd-shutdown[1]: Syncing filesystems and block devices.
+[   41.559595] systemd-shutdown[1]: Powering off.
+[   41.562558] ACPI: PM: Preparing to enter system sleep state S5
+[   41.563813] reboot: Power down

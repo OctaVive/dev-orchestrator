@@ -1,0 +1,77 @@
+{
+  "umask": "077",
+  "environment": {
+    "GOCACHE": "/tmp/tap-go-cache",
+    "TMPDIR": "/var/tmp/tap-m09"
+  },
+  "checks": [
+    {
+      "command": [
+        "/usr/local/go/bin/go",
+        "test",
+        "-json",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 1.116,
+      "log": "software.jsonl"
+    },
+    {
+      "command": [
+        "/usr/local/go/bin/go",
+        "test",
+        "-race",
+        "-json",
+        "./internal/runtimeagent",
+        "./internal/runtimeengine",
+        "./internal/runtimeprofile",
+        "./internal/runtimerpc",
+        "./internal/artifacts"
+      ],
+      "exit_code": 0,
+      "seconds": 2.735,
+      "log": "race.jsonl"
+    },
+    {
+      "command": [
+        "/usr/local/go/bin/go",
+        "vet",
+        "./..."
+      ],
+      "exit_code": 0,
+      "seconds": 0.265,
+      "log": "vet.log"
+    },
+    {
+      "command": [
+        "/usr/local/go/bin/go",
+        "test",
+        "./internal/runtimeagent",
+        "-run",
+        "^$",
+        "-fuzz",
+        "^FuzzCommandDecode$",
+        "-fuzztime=5s",
+        "-parallel=2"
+      ],
+      "exit_code": 0,
+      "seconds": 6.441,
+      "log": "command-fuzz.log"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "infra/runtime",
+        "-p",
+        "test_report.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.064,
+      "log": "reporter-test.log"
+    }
+  ]
+}

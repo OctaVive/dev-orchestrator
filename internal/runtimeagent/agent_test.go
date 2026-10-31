@@ -53,12 +53,18 @@ type fakeEngine struct {
 	logs                                      []byte
 }
 
-func (f *fakeEngine) Probe(context.Context) (Inventory, error) {
+func (f *fakeEngine) Probe(_ context.Context, c Command, check func() error) (Inventory, error) {
 	f.probes++
 	if f.unsupported {
 		return Inventory{}, ErrUnsupported
 	}
-	return inventory(), nil
+	if check() != nil {
+		return Inventory{}, ErrDenied
+	}
+	i := inventory()
+	i.AppID = c.AppID
+	i.Challenge = c.Nonce
+	return i, nil
 }
 func (f *fakeEngine) Prepare(_ context.Context, _ Command, check func() error) error {
 	f.prepares++
@@ -86,7 +92,7 @@ func (f *fakeEngine) Remove(_ context.Context, _ Command, check func() error) er
 }
 func inventory() Inventory {
 	now := time.Now().UTC()
-	return Inventory{Version: 1, WorkerID: identity, Incarnation: identity, Challenge: strings.Repeat("a", 64), MeasuredAt: now, ExpiresAt: now.Add(time.Minute), TemplateHash: contracts.Digest([]byte("template")), Kernel: "kernel", Engine: "engine", API: "1.47", DaemonID: "daemon", PolicyHash: policy.Hash(), Controls: policy.RequiredControls()}
+	return Inventory{AppID: identity, BackendHash: contracts.Digest([]byte("backend")), Version: 2, WorkerID: identity, Incarnation: identity, Challenge: strings.Repeat("a", 64), MeasuredAt: now, ExpiresAt: now.Add(time.Minute), TemplateHash: contracts.Digest([]byte("template")), Kernel: "kernel", Engine: "engine", API: "1.47", DaemonID: "daemon", PolicyHash: policy.Hash(), Controls: policy.RequiredControls()}
 }
 func spec() contracts.RuntimeSpecV2 {
 	return contracts.RuntimeSpecV2{Version: 2, Profile: policy.Profile, PolicyHash: policy.Hash(), AppID: identity, DeploymentID: identity, SHA: strings.Repeat("a", 40), ContextID: strings.Repeat("b", 64), PlanHash: contracts.Digest([]byte("plan")), Services: []contracts.RuntimeServiceV2{{Name: "web", Image: image, AdmissionID: "admitted", UID: 1000, GID: 1000, Command: []string{"/web"}, Expose: []int{8080}, Resources: policy.Defaults()}}, Ingress: contracts.Ingress{Service: "web", Port: 8080, HealthPath: "/health"}}
@@ -122,7 +128,11 @@ func setup(t *testing.T) *fixture {
 		t.Fatal(e)
 	}
 	f := &fixture{ledger: l, engine: &fakeEngine{}, approval: &authority{}, lease: &authority{}, key: key, path: p}
-	f.agent, e = New(Config{WorkerID: identity, Incarnation: identity, Keys: map[string]ed25519.PublicKey{"controller": pub}, Resolver: resolver{}, Approval: f.approval, Lease: f.lease, Engine: f.engine, Ledger: l})
+	_, reportKey, e := ed25519.GenerateKey(rand.Reader)
+	if e != nil {
+		t.Fatal(e)
+	}
+	f.agent, e = New(Config{InventoryKey: reportKey, WorkerID: identity, Incarnation: identity, Keys: map[string]ed25519.PublicKey{"controller": pub}, Resolver: resolver{}, Approval: f.approval, Lease: f.lease, Engine: f.engine, Ledger: l})
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -395,6 +405,23 @@ func TestInventorySignatureAndControls(t *testing.T) {
 	bad.Engine = "changed"
 	if bad.Verify(time.Now(), identity, identity, bad.Challenge, pub) == nil {
 		t.Fatal("tampered inventory")
+	}
+	if i.VerifyFor(time.Now(), identity, identity, identity, i.BackendHash, i.Challenge, pub) != nil {
+		t.Fatal("app-scoped signature")
+	}
+	for _, field := range []string{"app", "backend"} {
+		bad := i
+		if field == "app" {
+			bad.AppID = other
+		} else {
+			bad.BackendHash = contracts.Digest([]byte("other-backend"))
+		}
+		if bad.Verify(time.Now(), identity, identity, bad.Challenge, pub) == nil {
+			t.Fatal("unsigned binding change", field)
+		}
+	}
+	if i.VerifyFor(time.Now(), identity, identity, other, i.BackendHash, i.Challenge, pub) == nil || i.VerifyFor(time.Now(), identity, identity, identity, contracts.Digest([]byte("other")), i.Challenge, pub) == nil {
+		t.Fatal("wrong enrolled assignment")
 	}
 	if i.Verify(time.Now().Add(2*time.Minute), identity, identity, i.Challenge, pub) == nil {
 		t.Fatal("expired inventory")

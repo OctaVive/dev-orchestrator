@@ -1,0 +1,37 @@
+{
+  "scope": "incremental verification; not runtime acceptance",
+  "cases": [
+    {
+      "id": "BF01",
+      "status": "PASS",
+      "scope": "software verification"
+    },
+    {
+      "id": "BF02",
+      "status": "PASS",
+      "scope": "software verification"
+    },
+    {
+      "id": "BF03",
+      "status": "PASS",
+      "scope": "software verification"
+    },
+    {
+      "id": "BF04",
+      "status": "PASS",
+      "scope": "software verification"
+    },
+    {
+      "id": "BF05",
+      "status": "PASS",
+      "scope": "VM backend identity diagnostic"
+    },
+    {
+      "id": "BF06",
+      "status": "PASS",
+      "scope": "software verification"
+    }
+  ],
+  "required_runtime_acceptance": "INCOMPLETE",
+  "runtime_cases_passed": 0
+}

@@ -67,6 +67,7 @@ func (d *Delivery) Prepare(ctx context.Context, c runtimeagent.Command, s contra
 	}()
 	claim := artifacts.RuntimeClaim{WorkerID: c.WorkerID, Incarnation: c.Incarnation, AppID: c.AppID, DeploymentID: c.DeploymentID, Generation: c.Generation, SpecHash: c.SpecHash, PolicyHash: c.PolicyHash, AdmissionID: s.AdmissionID, Image: s.Image}
 	if d.Transport.Fetch(ctx, claim, object, f) != nil || f.Sync() != nil {
+		os.Stderr.WriteString("runtime_delivery_transfer_denied\n")
 		return runtimeagent.ErrDenied
 	}
 	if _, e = f.Seek(0, io.SeekStart); e != nil {
@@ -83,7 +84,11 @@ func (d *Delivery) Prepare(ctx context.Context, c runtimeagent.Command, s contra
 	if _, e = f.Seek(0, io.SeekStart); e != nil {
 		return runtimeagent.ErrDenied
 	}
-	return d.Client.load(ctx, f, object.Bytes)
+	if err := d.Client.load(ctx, f, object.Bytes); err != nil {
+		os.Stderr.WriteString("runtime_delivery_import_denied\n")
+		return err
+	}
+	return nil
 }
 func (c *Client) load(ctx context.Context, source io.Reader, size int64) error {
 	req, e := http.NewRequestWithContext(ctx, "POST", "http://engine/v"+APIVersion+"/images/load?quiet=true", io.LimitReader(source, size))

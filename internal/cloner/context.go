@@ -282,5 +282,38 @@ func (r *runner) export(entries []treeEntry, j contracts.CloneJob, dest string) 
 			count++
 		}
 	}
+	if normalizeContextModes(root, entries, j.BuildContext) != nil {
+		return 0, 0, errDenied
+	}
 	return count, size, nil
+}
+
+// Keep the context root private, while preserving Git's canonical content modes
+// for Docker COPY. Private staging modes (0600/0700) must not become image modes:
+// those make root-owned copied executables inaccessible to a nonroot workload.
+func normalizeContextModes(root *os.Root, entries []treeEntry, context string) error {
+	for _, entry := range entries {
+		if !insideContext(entry.name, context) {
+			continue
+		}
+		name := entry.name
+		if context != "." {
+			name = strings.TrimPrefix(name, context+"/")
+		}
+		var mode os.FileMode
+		switch entry.mode {
+		case "040000", "100755":
+			mode = 0755
+		case "100644":
+			mode = 0644
+		case "120000":
+			continue
+		default:
+			return errDenied
+		}
+		if root.Chmod(name, mode) != nil {
+			return errDenied
+		}
+	}
+	return nil
 }

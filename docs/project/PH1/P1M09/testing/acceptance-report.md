@@ -89,3 +89,23 @@ does not complete R01 or change any required runtime gate to PASS. The
 [recovery sequence](../implementation-plan.md#recovery-sequence-after-the-incomplete-implementation-increment)
 starts with app-scoped engine ownership and measured enforcement, then one
 complete signed lifecycle before the remaining test suite.
+
+## Current backend recovery increment
+
+M09 remains **INCOMPLETE / NOT PASSED**, with R01 FAIL and R02–R10 NOT_RUN.
+The 137-case software record above is the earlier baseline. The new
+[159-case component record](backend-factory/software-cases.json),
+[verification commands](backend-factory/checks.json),
+[source freeze](backend-factory/source-freeze.json), and
+[VM identity observation](backend-factory/observation.json) cover the subsequent
+app backend increment. Full tests, vet, five-package race checks and bounded
+normalized-command fuzzing pass on the new source. Guest-only/historical skips
+retain their old scope.
+
+Durable app backend reservations/bindings, app-selected guarded clients, a real
+Linux backend identity observer and signed app/backend capability binding are
+implemented. No complete enforcement adapter, accepted runtime template or wired
+runtime-agent service is delivered. Identity-only VM diagnostic success cannot
+pass R01 or any other required runtime gate. See the updated
+[implementation evidence](../implementation-evidence.md) and
+[post-implementation test plan](../test-plan.md#post-implementation-plan-app-scoped-backend-recovery-increment).

@@ -5,9 +5,10 @@
       "id": "R01",
       "status": "FAIL",
       "evidence": [
-        "docs/project/PH1/P1M09/testing/runtime-feasibility.log"
+        "docs/project/PH1/P1M09/testing/runtime-feasibility.log",
+        "docs/project/PH1/P1M09/testing/backend-factory/observation.json"
       ],
-      "reason": "Complete restricted-profile fixture did not start; current runtime supplement is not accepted."
+      "reason": "Complete restricted-profile fixture did not start; current runtime supplement is not accepted. Final-source backend identity diagnostic passes only its narrow scope; full measured enforcement/service integration remains incomplete."
     },
     {
       "id": "R02",

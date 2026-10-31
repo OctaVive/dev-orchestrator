@@ -2,14 +2,15 @@
 
 ## Runtime agent
 
-Dedicated Unix account inside runtime VM owns rootless daemon/socket and only managed storage. No generic shell, exec console, arbitrary Docker API or arbitrary filesystem RPC. Supported operations: validate capability, prepare image by approved digest, create candidate, inspect status, bounded logs, stop/drain, remove owned container/network, managed volume attach/backup/delete. Agent never receives management DB keys. Relay is separate identity and cannot deploy.
+The current M09 recovery design uses a dedicated Unix account inside the runtime VM and a separate rootless engine/socket/data root and user namespace for each app. Durable app reservations and measured bindings select the backend; the agent cannot route an app command to a shared engine. Bounded provisioning and measured enforcement now have concrete implementations and isolated development diagnostics; the complete acceptance suite is still incomplete. No generic shell, exec console, arbitrary Docker API or arbitrary filesystem RPC. Supported operations: validate capability, prepare image by approved digest, create candidate, inspect status, bounded logs, stop/drain, remove owned container/network, managed volume attach/backup/delete. Agent never receives management DB keys. Relay is separate identity and cannot deploy.
 
 ```mermaid
 flowchart TB
   subgraph RV[Runtime VM guest kernel]
-    A[Agent dedicated user] --> D[Rootless Docker socket]
-    D --> N1[App A private network]
-    D --> N2[App B private network]
+    A[Agent dedicated user] --> D1[App A rootless engine/socket]
+    A --> D2[App B rootless engine/socket]
+    D1 --> N1[App A private network]
+    D2 --> N2[App B private network]
     N1 --> C1[Non-root app A containers]
     N2 --> C2[Non-root app B containers]
     V1[Managed app A disk] --> C1

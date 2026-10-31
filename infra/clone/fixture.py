@@ -9,6 +9,7 @@ import hashlib
 import http.server
 import ipaddress
 import json
+import os
 from pathlib import Path
 import socket
 import socketserver
@@ -63,9 +64,21 @@ def repository(scenario, external=None):
                  (b'100755', b'rootfs/bin/sh', Path('/usr/bin/busybox').read_bytes()),
                  (b'100644', b'rootfs/etc/os-release', b'NAME=Alpine\nID=alpine\nVERSION_ID=3.23.0\n'),
                  (b'100644', b'rootfs/lib/apk/db/installed', b'P:m07-inert\nV:1.0.0-r0\nA:x86_64\nS:0\nI:0\nT:Inert acceptance fixture\nL:MIT\no:m07-inert\nm:fixture\nt:0\nc:0000000000000000000000000000000000000000\n\n')]
+    # Explicit M09 handoff fixture: actual cloned/built/scanned HTTP workload.
+    # Only trusted source bytes are constructed here; the guest runs the parser.
+    if scenario in ('m08-dockerfile', 'm08-compose') and os.environ.get('M09_HANDOFF_DIRECTORY'):
+        files = [(mode, name, data.replace(b'USER 1000\n', b'USER 1000:1000\nCMD ["/bin/busybox","httpd","-f","-p","8080","-h","/srv"]\n') if name == b'Dockerfile' else data)
+                 for mode, name, data in files]
+        files.extend([(b'100755', b'rootfs/bin/busybox', Path('/usr/bin/busybox').read_bytes()),
+                      (b'100644', b'rootfs/srv/health', b'ready')])
     if scenario in ('m08-compose','m08-denied'):
         image=external or 'registry.example.org/apps/db@sha256:'+('a'*64)
         compose='services:\n  web:\n    build: {context: ., dockerfile: Dockerfile}\n    expose: ["8080"]\n    depends_on: [db]\n  db:\n    image: '+image+'\n'
+        if scenario == 'm08-compose' and os.environ.get('M09_HANDOFF_DIRECTORY'):
+            web = ['/bin/busybox', 'sh', '-c', 'for i in 1 2 3 4 5; do if /bin/busybox wget -q -T 1 -O /tmp/db http://db:8081/health; then exec /bin/busybox httpd -f -p 8080 -h /srv; fi; /bin/busybox sleep 1; done; exit 1']
+            limits = '    deploy: {resources: {limits: {cpus: "0.5", memory: "256m", pids: 64}}}\n'
+            compose = ('services:\n  web:\n    build: {context: ., dockerfile: Dockerfile}\n    expose: ["8080"]\n    depends_on: [db]\n    command: ' + json.dumps(web) + '\n' + limits +
+                       '  db:\n    image: ' + image + '\n    expose: ["8081"]\n    command: ["/bin/busybox", "httpd", "-f", "-p", "8081", "-h", "/srv"]\n' + limits)
         if scenario=='m08-denied': compose+='    privileged: false\n'
         files.append((b'100644', b'compose.yaml', compose.encode()))
     if scenario == 'executable':

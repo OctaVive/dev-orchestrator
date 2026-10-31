@@ -14,6 +14,7 @@ Current status:
 PH1M09 is INCOMPLETE / NOT PASSED. Substantial code is uncommitted. Preserve existing work; inspect git status/diff first. Do not reset, discard, or assume these files are unrelated changes.
 
 Implemented foundation:
+- Follow-up backend increment: durable pre-provision app reservations and measured bindings, schema-1-to-2 migration, app-scoped guarded engine factory, concrete Linux backend identity observer, and signed app/backend inventory v2. Read testing/backend-factory/ and the new implementation-evidence section. The factory selects existing backends; bounded daemon provisioning/reconciliation and the full Enforcement adapter remain unfinished.
 - internal/runtimeagent: signed v3 commands, policy/approval/lease interfaces, durable SQLite replay/generation/ownership ledger, bounded results/logs, capability inventory.
 - internal/runtimeengine: typed Docker API 1.47 client, candidate lifecycle, inspected constraints, ownership, log framing, artifact delivery/spooling.
 - internal/runtimerpc: outbound mTLS polling and artifact download.
@@ -22,7 +23,7 @@ Implemented foundation:
 - internal/runtimeprofile and cmd/runtime-runc: experimental OCI hardening supplement, not integrated or accepted.
 - infra/runtime: experimental lab material and fail-closed reporting.
 
-Recorded software baseline: full Go tests and vet passed; targeted race checks passed; 137 named tests/subtests across five changed packages passed; normalized-command fuzzing passed. These are component tests, many using simulated engines, NOT runtime acceptance. Required ledger currently has R01 FAIL and R02–R10 NOT_RUN.
+Earlier software baseline: full Go tests and vet passed; targeted race checks passed; 137 named tests/subtests across five changed packages passed; normalized-command fuzzing passed. These are component tests, many using simulated engines, NOT runtime acceptance. Required ledger currently has R01 FAIL and R02–R10 NOT_RUN.
 
 Critical findings and chosen direction:
 1. Shared rootless Docker engine:
@@ -49,10 +50,10 @@ Implementation recovery order:
 3. Wire a real runtime-agent process and concrete trusted current approval/admission/lease adapters, then run one stateless admitted image through mTLS polling and signed create → inspected readiness → stop → remove.
 4. Complete crash recovery, drift/quarantine, revocation, concurrency, resource/network attacks and the complete acceptance driver. Freeze final source/templates and execute every required case before PASS.
 
-Interface gaps to examine:
-- Engine currently holds one Client; routing must become app-scoped.
-- Engine.Probe currently receives only context, so app-scoped selection/report binding needs explicit design.
-- Inventory currently binds worker/incarnation/daemon, not explicit app ownership.
+Interface gaps to examine (the backend-factory increment resolves selection/binding only):
+- App-scoped Factory now constructs a guarded client from durable bindings. Integrate real bounded daemon provisioning and reconciliation; never route service execution directly through a shared Engine.
+- Engine.Probe now receives the authenticated command; capability inventory v2 binds app/backend hash. Preserve this binding in production enforcement and controller verification.
+- Inventory v1 is rejected; v2 app/backend signatures and VerifyFor are implemented. Concrete report signing and service wiring remain unfinished.
 - Engine configuration currently selects runc and expects engine-reported AppArmorProfile; the tested fixed MAC supplement can enforce MAC while Docker’s inspect field stays empty. Require independent measured verification, never an “ignore MAC” bypass.
 - Enforcement remains an interface with no production implementation.
 - Approval/lease/admission integration and agent service wiring remain unfinished.
@@ -80,6 +81,7 @@ Lab:
 - Hostile workloads belong only in isolated lab VMs.
 
 Verification:
+Current backend increment has full tests (23 packages), 159 named component cases/subcases in the five runtime/artifact packages, five-package race checks, vet and bounded command fuzzing PASS. The actual Go observer passed the identity-only disposable VM diagnostic on two real app daemons, with eight altered-binding denials and ledger reopen. This is not R01 or full runtime acceptance. Use TMPDIR=/var/tmp/tap-m09 (private and short): /tmp currently lacks enough free space for artifact reservation tests, and the long m09-tools temporary directory exceeds Unix socket fixture path limits.
 Use umask 077; existing metadata tests require private parent directories.
 Use GOCACHE=/tmp/tap-go-cache and /usr/local/go/bin/go.
 Appropriate checks include go test ./..., go vet ./..., targeted race tests and bounded normalized-command fuzzing.

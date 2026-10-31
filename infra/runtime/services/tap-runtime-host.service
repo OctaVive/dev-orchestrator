@@ -1,0 +1,18 @@
+[Unit]
+Description=Provision fixed TAP runtime app slots
+After=local-fs.target apparmor.service
+Requires=apparmor.service
+Before=tap-runtime-measure.service tap-runtime-agent.service
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+ExecStart=/usr/local/bin/tap-runtime-host
+RemainAfterExit=yes
+TimeoutStartSec=180
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
